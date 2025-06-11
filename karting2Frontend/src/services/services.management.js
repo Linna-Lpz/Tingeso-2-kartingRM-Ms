@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BOOKING_API_URL = `http://localhost:8001/booking`;
-const CLIENT_API_URL = `$http://localhost:8001/client`; 
+const CLIENT_API_URL = `http://localhost:8001/client`; 
 const VOUCHER_API_URL = `http://localhost:8001/voucher`;
 const RACK_API_URL = `http://localhost:8004/rack`;
 const REPORT_API_URL = `http://localhost:8006/reports`;
