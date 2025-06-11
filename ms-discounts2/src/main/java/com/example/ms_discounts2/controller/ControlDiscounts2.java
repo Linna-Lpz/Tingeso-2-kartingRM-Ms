@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/discounts2")
+@CrossOrigin(origins = "*")
 public class ControlDiscounts2 {
     @Autowired
     ServiceDiscounts2 serviceDiscounts2;
