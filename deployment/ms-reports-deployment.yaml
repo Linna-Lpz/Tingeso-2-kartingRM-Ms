@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-reports-deployment
+  labels:
+    app: ms-reports-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ms-reports-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ms-reports-deployment
+    spec:
+      containers:
+        - name: ms-reports
+          image: calpz/ms-reports-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8006
+          env:
+            - name: SERVER_PORT
+              value: "0"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-reports-service
+  labels:
+    app: ms-reports-service
+spec:
+  selector:
+    app: ms-reports-deployment
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP

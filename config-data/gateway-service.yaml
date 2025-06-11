@@ -1,0 +1,63 @@
+server:
+  port: 8080
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedMethods: 
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+            maxAge: 3600
+      routes:
+        - id: ms-booking
+          uri: lb:/ms-booking
+          predicates:
+            - Path=/booking/**
+
+        - id: ms-discounts1
+          uri: lb://ms-discounts1
+          predicates:
+            - Path=/discounts1/**
+
+        - id: ms-discounts2
+          uri: lb://ms-discounts2
+          predicates:
+            - Path=/discounts2/**
+
+        - id: ms-rack
+          uri: lb://ms-rack
+          predicates:
+            - Path=/rack/**
+
+        - id: ms-rates
+          uri: lb://ms-rates
+          predicates:
+            - Path=/rates/**
+
+        - id: ms-reports
+          uri: lb://ms-reports
+          predicates:
+            - Path=/reports/**
+
+        - id: ms-special-rates
+          uri: lb://ms-special-rates
+          predicates:
+            - Path=/special-rates/**

@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-rack-deployment
+  labels:
+    app: ms-rack-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-rack-deployment
+  template:
+    metadata:
+      labels:
+        app: ms-rack-deployment
+    spec:
+      containers:
+        - name: ms-rack
+          image: calpz/ms-rack-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8004
+          env:
+            - name: SERVER_PORT
+              value: "0"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_HOST_RACK
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_PORT_RACK
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_NAME_RACK
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_USERNAME_RACK
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_PASSWORD_RACK
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-rack-service
+  labels:
+    app: ms-rack-service
+spec:
+  selector:
+    app: ms-rack-deployment
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP

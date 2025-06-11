@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-booking-deployment
+  labels:
+    app: ms-booking-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-booking-deployment
+  template:
+    metadata:
+      labels:
+        app: ms-booking-deployment
+    spec:
+      containers:
+        - name: ms-booking
+          image: calpz/ms-booking-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8001
+          env:
+            - name: SERVER_PORT
+              value: "0"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_HOST_BOOKING
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_PORT_BOOKING
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config-map
+                  key: DB_NAME_BOOKING
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_USERNAME_BOOKING
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_PASSWORD_BOOKING
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-booking-service
+  labels:
+    app: ms-booking-service
+spec:
+  selector:
+    app: ms-booking-deployment
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP

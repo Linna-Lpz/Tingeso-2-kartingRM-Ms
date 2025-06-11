@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-rates-deployment
+  labels:
+    app: ms-rates-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ms-rates-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ms-rates-deployment
+    spec:
+      containers:
+        - name: ms-rates
+          image: calpz/ms-rates-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8005
+          env:
+            - name: SERVER_PORT
+              value: "0"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-rates-service
+  labels:
+    app: ms-rates-service
+spec:
+  selector:
+    app: ms-rates-deployment
+  ports:
+    - protocol: TCP
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP

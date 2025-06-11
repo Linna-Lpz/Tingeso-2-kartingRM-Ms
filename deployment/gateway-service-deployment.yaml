@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service-deployment
+  labels:
+    app: gateway-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app: gateway-service-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway-service-deployment
+    spec:
+      containers:
+        - name: gateway-service
+          image: calpz/gateway-service-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+          - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY
+            value: DEBUG
+          - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY_FILTER
+            value: DEBUG
+          - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY_ROUTE
+            value: DEBUG
+          - name: LOGGING_LEVEL_REACTOR_NETTY
+            value: DEBUG
+          - name: LOGGING_LEVEL_ROOT
+            value: INFO
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service-service
+  labels:
+    app: gateway-service-service
+spec:
+  selector:
+    app: gateway-service-deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
