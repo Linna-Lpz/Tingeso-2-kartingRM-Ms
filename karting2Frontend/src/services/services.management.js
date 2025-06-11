@@ -1,13 +1,10 @@
 import axios from "axios";
 
-const GATEWAY_INTERNAL_URL = "http://127.0.0.1:51599"; //direccion b c api-gateway
-
-// Rutas corregidas según el gateway
-const BOOKING_API_URL = `${GATEWAY_INTERNAL_URL}/booking`;
-const CLIENT_API_URL = `${GATEWAY_INTERNAL_URL}/booking`; // Cliente está en ms-booking
-const VOUCHER_API_URL = `${GATEWAY_INTERNAL_URL}/booking`; // Voucher está en ms-booking
-const RACK_API_URL = `${GATEWAY_INTERNAL_URL}/rack`;
-const REPORT_API_URL = `${GATEWAY_INTERNAL_URL}/reports`; // Corregido: reports (plural)
+const BOOKING_API_URL = `http://localhost:8001/booking`;
+const CLIENT_API_URL = `$http://localhost:8001/client`; 
+const VOUCHER_API_URL = `http://localhost:8001/voucher`;
+const RACK_API_URL = `http://localhost:8004/rack`;
+const REPORT_API_URL = `http://localhost:8006/reports`;
 
 // ------------------ Booking ------------------
 function saveBooking(data) {
