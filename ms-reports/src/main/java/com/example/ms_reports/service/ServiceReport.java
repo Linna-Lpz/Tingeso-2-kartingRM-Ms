@@ -16,22 +16,26 @@ public class ServiceReport {
     @Autowired
     private RestTemplate restTemplate;
 
+    // TO DO: Obtener ingresos según un rango dado de fechas
+    // Debt ratio de la deuda técnica
+
     /**
      * Método para obtener una LISTA de ingresos por mes según número de vueltas
-     * [10, valor1, valor2, valor3, valor4, valor5, . . ., valor12, total]
+     * [numVueltas, valor1, valor2, valor3, valor4, valor5, . . ., valor12, total]
      * @param lapsOrTimeMax número de vueltas o tiempo máximo
      * @return lista de ingresos por mes
      */
-    public List<Integer> getIncomesForMonthOfLaps(Integer lapsOrTimeMax) {
+    public List<Integer> getIncomesForMonthOfLaps(Integer lapsOrTimeMax, Integer startMonth, Integer endMonth) {
         List<Integer> incomes = new ArrayList<>();
         Integer totalIncomes = 0;
         incomes.add(lapsOrTimeMax);
-        for (int month = 1; month <= 12; month++) {
-            String monthString = String.format("%02d", month);
+        while (startMonth <= endMonth) {
+            String monthString = String.format("%02d", startMonth);
             Integer income = getIncomesForTimeAndMonth(lapsOrTimeMax, monthString);
             System.out.println("Mes: " + monthString + ", Ingreso: " + income);//
             totalIncomes += income;
             incomes.add(income);
+            startMonth++;
         }
         incomes.add(totalIncomes);
         return incomes;
@@ -58,17 +62,18 @@ public class ServiceReport {
      * Método para SUMAR los ingresos totales de un mes para el reporte 1
      * @return lista de ingresos totales
      */
-    public List<Integer> getIncomesForLapsOfMonth(){
+    public List<Integer> getIncomesForLapsOfMonth(Integer startMonth, Integer endMonth){
+        int numMonths = endMonth - startMonth;
         List<Integer> totalIncomes = new ArrayList<>();
-        for (int i = 1; i <= 12; i++){
-            Integer value1 = getIncomesForMonthOfLaps(10).get(i);
-            Integer value2 = getIncomesForMonthOfLaps(15).get(i);
-            Integer value3 = getIncomesForMonthOfLaps(20).get(i);
+        for (int i = 1; i <= numMonths; i++){
+            Integer value1 = getIncomesForMonthOfLaps(10, startMonth, endMonth).get(i);
+            Integer value2 = getIncomesForMonthOfLaps(15, startMonth, endMonth).get(i);
+            Integer value3 = getIncomesForMonthOfLaps(20, startMonth, endMonth).get(i);
             totalIncomes.add(value1 + value2 + value3);
         }
-        Integer value1 = getIncomesForMonthOfLaps(10).get(13);
-        Integer value2 = getIncomesForMonthOfLaps(15).get(13);
-        Integer value3 = getIncomesForMonthOfLaps(20).get(13);
+        Integer value1 = getIncomesForMonthOfLaps(10, startMonth, endMonth).get(numMonths + 1);
+        Integer value2 = getIncomesForMonthOfLaps(15, startMonth, endMonth).get(numMonths + 1);
+        Integer value3 = getIncomesForMonthOfLaps(20, startMonth, endMonth).get(numMonths + 1);
         totalIncomes.add(value1 + value2 + value3);
         return totalIncomes;
     }
@@ -92,23 +97,26 @@ public class ServiceReport {
     /**
      * Método para obtener una LISTA de ingresos por mes según número personas (1-2)
      * [10, valor1, valor2, valor3, valor4, valor5, . . ., valor12, total]
-     * @param
+     * @param people número de personas
+     * @param startMonth mes de inicio
+     * @param endMonth mes de fin
      * @return lista de ingresos por mes
      */
-    public List<Integer> getIncomesForMonthOfNumOfPeople(Integer people) {
+    public List<Integer> getIncomesForMonthOfNumOfPeople(Integer people, Integer startMonth, Integer endMonth) {
         List<Integer> incomes = new ArrayList<>();
         Integer totalIncomes = 0;
-        for (int month = 1; month <= 12; month++) {
-            String monthString = String.format("%02d", month);
+        //for (int month = 1; month <= 12; month++) {
+        while (startMonth <= endMonth) {
+            String monthString = String.format("%02d", startMonth);
             System.out.println("Mes: " + monthString);//
             Integer income = getIncomesForNumOfPeople(people, monthString);
             totalIncomes += income;
             incomes.add(income);
+            startMonth++;
         }
         incomes.add(totalIncomes);
         return incomes;
     }
-
 
     /**
      * Método para sumar los ingresos totales de UN MES según cantidad de personas
@@ -143,19 +151,20 @@ public class ServiceReport {
      * Método para SUMAR los ingresos totales de un mes para el reporte 2
      * @return lista de ingresos totales
      */
-    public List<Integer> getIncomesForNumOfPeopleOfMonth(){
+    public List<Integer> getIncomesForNumOfPeopleOfMonth(Integer startMonth, Integer endMonth){
+        int numMonths = endMonth - startMonth;
         List<Integer> totalIncomes = new ArrayList<>();
-        for (int i = 0; i < 12; i++){
-            Integer value1 = getIncomesForMonthOfNumOfPeople(2).get(i);
-            Integer value2 = getIncomesForMonthOfNumOfPeople(5).get(i);
-            Integer value3 = getIncomesForMonthOfNumOfPeople(10).get(i);
-            Integer value4 = getIncomesForMonthOfNumOfPeople(15).get(i);
+        for (int i = 0; i < numMonths; i++){
+            Integer value1 = getIncomesForMonthOfNumOfPeople(2, startMonth, endMonth).get(i);
+            Integer value2 = getIncomesForMonthOfNumOfPeople(5, startMonth, endMonth).get(i);
+            Integer value3 = getIncomesForMonthOfNumOfPeople(10, startMonth, endMonth).get(i);
+            Integer value4 = getIncomesForMonthOfNumOfPeople(15, startMonth, endMonth).get(i);
             totalIncomes.add(value1 + value2 + value3 + value4);
         }
-        Integer value1 = getIncomesForMonthOfNumOfPeople(2).get(13);
-        Integer value2 = getIncomesForMonthOfNumOfPeople(5).get(13);
-        Integer value3 = getIncomesForMonthOfNumOfPeople(10).get(13);
-        Integer value4 = getIncomesForMonthOfNumOfPeople(15).get(13);
+        Integer value1 = getIncomesForMonthOfNumOfPeople(2, startMonth, endMonth).get(numMonths + 1);
+        Integer value2 = getIncomesForMonthOfNumOfPeople(5, startMonth, endMonth).get(numMonths + 1);
+        Integer value3 = getIncomesForMonthOfNumOfPeople(10, startMonth, endMonth).get(numMonths + 13);
+        Integer value4 = getIncomesForMonthOfNumOfPeople(15, startMonth, endMonth).get(numMonths + 1);
         totalIncomes.add(value1 + value2 + value3 + value4);
         return totalIncomes;
     }

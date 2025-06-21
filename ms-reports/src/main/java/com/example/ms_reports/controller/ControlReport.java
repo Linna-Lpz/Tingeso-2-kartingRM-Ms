@@ -19,18 +19,18 @@ public class ControlReport {
      * @param lapsOrTimeMax Número de vueltas o tiempo máximo permitido
      * @return Lista de ingresos totales
      */
-    @GetMapping("/getBookingsForReport1/{lapsOrTimeMax}")
-    public ResponseEntity<List<Integer>> getIncomesForMonthOfLaps(@PathVariable Integer lapsOrTimeMax) {
-        List<Integer> incomes = serviceReport.getIncomesForMonthOfLaps(lapsOrTimeMax);
+    @GetMapping("/getBookingsForReport1/{lapsOrTimeMax}/{startMonth}/{endMonth}")
+    public ResponseEntity<List<Integer>> getIncomesForMonthOfLaps(@PathVariable Integer lapsOrTimeMax, @PathVariable Integer startMonth, @PathVariable Integer endMonth) {
+        List<Integer> incomes = serviceReport.getIncomesForMonthOfLaps(lapsOrTimeMax, startMonth, endMonth);
         return ResponseEntity.ok(incomes);
     }
 
     /**
      * Método para obtener ingresos totales de un mes de todas las vueltas
      */
-    @GetMapping("/getTotalForReport1")
-    public ResponseEntity<List<Integer>> getIncomesForLapsOfMonth(){
-        List<Integer> incomes = serviceReport.getIncomesForLapsOfMonth();
+    @GetMapping("/getTotalForReport1/{startMonth}/{endMonth}")
+    public ResponseEntity<List<Integer>> getIncomesForLapsOfMonth(@PathVariable Integer startMonth, @PathVariable Integer endMonth){
+        List<Integer> incomes = serviceReport.getIncomesForLapsOfMonth(startMonth, endMonth);
         return ResponseEntity.ok(incomes);
     }
 
@@ -39,18 +39,18 @@ public class ControlReport {
      * @param people Número de personas
      * @return Lista de ingresos totales
      */
-    @GetMapping("/getBookingsForReport2/{people}")
-    public ResponseEntity<List<Integer>> getIncomesForMonthOfNumOfPeople(@PathVariable Integer people){
-        List<Integer> incomes = serviceReport.getIncomesForMonthOfNumOfPeople(people);
+    @GetMapping("/getBookingsForReport2/{people}/{startMonth}/{endMonth}")
+    public ResponseEntity<List<Integer>> getIncomesForMonthOfNumOfPeople(@PathVariable Integer people, @PathVariable Integer startMonth, @PathVariable Integer endMonth){
+        List<Integer> incomes = serviceReport.getIncomesForMonthOfNumOfPeople(people, startMonth, endMonth);
         return ResponseEntity.ok(incomes);
     }
 
     /**
      * Método para obtener ingresos totales de un mes de todas las vueltas
      */
-    @GetMapping("/getTotalForReport2")
-    public ResponseEntity<List<Integer>> getIncomesForNumOfPeopleOfMonth(){
-        List<Integer> incomes = serviceReport.getIncomesForLapsOfMonth();
+    @GetMapping("/getTotalForReport2/{startMonth}/{endMonth}")
+    public ResponseEntity<List<Integer>> getIncomesForNumOfPeopleOfMonth(@PathVariable Integer startMonth, @PathVariable Integer endMonth){
+        List<Integer> incomes = serviceReport.getIncomesForLapsOfMonth(startMonth, endMonth);
         return ResponseEntity.ok(incomes);
     }
 }
