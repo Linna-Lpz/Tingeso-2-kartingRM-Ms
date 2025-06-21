@@ -10,4 +10,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleClientValidationException(ClientValidationException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+    @ExceptionHandler(BookingValidationException.class)
+    public ResponseEntity<String> handleBookingValidationException(BookingValidationException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

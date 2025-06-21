@@ -2,6 +2,7 @@ package com.example.ms_booking.service;
 
 import com.example.ms_booking.entity.EntityBooking;
 import com.example.ms_booking.entity.EntityClient;
+import com.example.ms_booking.exception.BookingValidationException;
 import com.example.ms_booking.repository.RepoBooking;
 import com.example.ms_booking.repository.RepoClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ServiceBooking {
     RestTemplate restTemplate;
 
     public void saveBooking(EntityBooking booking) {
+        // Validar datos de la reserva
+        validateBooking(booking);
+
         // Establecer tarifa base y duración de la reserva
         setPriceAndDuration(booking);
 
@@ -43,6 +47,47 @@ public class ServiceBooking {
 
         // Guardar la reserva
         repoBooking.save(booking);
+    }
+
+    //-----------------------------------------------------------
+    //    Métodos para validar los datos de la reserva
+    //-----------------------------------------------------------
+    public boolean validateBooking(EntityBooking booking) {
+        // Validar que la fecha de reserva no sea nula
+        if (booking.getBookingDate() == null) {
+            throw new BookingValidationException("La fecha de reserva no puede ser nula");
+        }
+
+        // Validar que la hora de reserva no sea nula
+        if (booking.getBookingTime() == null) {
+            throw new BookingValidationException("La hora de reserva no puede ser nula");
+        }
+
+        // Validar el número de vueltas o tiempo máximo permitido
+        if ( booking.getLapsOrMaxTimeAllowed() != 10 &&
+             booking.getLapsOrMaxTimeAllowed() != 15 &&
+             booking.getLapsOrMaxTimeAllowed() != 20) {
+            throw new BookingValidationException("El número de vueltas o tiempo máximo permitido debe ser 10, 15 o 20");
+        }
+
+        // Validar que el número de personas sea mayor a 0 y menor o igual a 15
+        if (booking.getNumOfPeople() <= 0) {
+            throw new BookingValidationException("El número de personas debe ser mayor a 0 y menor o igual a 15");
+        }
+
+        // Validar que el RUT del cliente no sea nulo o vacío
+        if (booking.getClientsRUT() == null || booking.getClientsRUT().isEmpty()) {
+            throw new BookingValidationException("El RUT del cliente no puede ser nulo o vacío");
+        }
+
+        // Validar que el RUT tenga el formato correcto
+        String[] clientsRUT = booking.getClientsRUT().split(",");
+        for (String rut : clientsRUT) {
+            if (!rut.matches("\\d{1,8}-[\\dkK]")) {
+                throw new BookingValidationException("El RUT '" + rut + "' no tiene el formato correcto (12345678-9)");            }
+        }
+
+        return true;
     }
 
     //-----------------------------------------------------------
@@ -196,7 +241,7 @@ public class ServiceBooking {
      */
     public void confirmBooking(Long bookingId) {
         EntityBooking booking = repoBooking.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + bookingId));
+                .orElseThrow(() -> new BookingValidationException("Reserva no encontrada con ID: " + bookingId));
         booking.setBookingStatus("confirmada");
         saveRack(booking.getId(), booking.getBookingDate(), booking.getBookingTime(), booking.getBookingTimeEnd(), booking.getBookingStatus(), booking.getClientsNames().split(",")[0]);
         repoBooking.save(booking);
@@ -208,7 +253,7 @@ public class ServiceBooking {
      */
     public void cancelBooking(Long bookingId) {
         EntityBooking booking = repoBooking.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + bookingId));
+                .orElseThrow(() -> new BookingValidationException("Reserva no encontrada con ID: " + bookingId));
         booking.setBookingStatus("cancelada");
         deleteRack(booking.getId());
         repoBooking.save(booking);
