@@ -11,8 +11,18 @@ import Reports from './components/Reports';
 function App() {
   return (
       <Router>
-          <div className="container">
-          <Navegate></Navegate>
+          {/* Header */}
+          <div style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            width: '100%', 
+            }}
+          >
+            <Navegate />
+          </div>
+          {/* Contenido principal */}
+          <div className="container" style={{ marginTop: '20px', padding: '20px' }}>
             <Routes>
               <Route path="/" element={<Home/>} />
               <Route path='/kartBookingForm' element={<KartBookingForm/>} />

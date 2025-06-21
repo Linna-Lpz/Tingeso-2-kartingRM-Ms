@@ -3,11 +3,11 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DigitalClock, DateCalendar } from '@mui/x-date-pickers';
 import { es } from 'date-fns/locale';
 import { Container, Typography, TextField, Button, Paper, Grid, 
-        IconButton, List, ListItem, ListItemText, Divider, Box} from '@mui/material';
+        IconButton, List, ListItem, ListItemText, Divider, Box, Alert, 
+        FormControl, InputLabel, Select, MenuItem} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import bookingService from '../services/services.management';
-import clientService from '../services/services.management';
 import { useNavigate } from 'react-router-dom';
 
 // Inicialización del formulario
@@ -21,7 +21,18 @@ const KartBookingForm = () => {
   const [numOfPeople, setNumOfPeople] = useState(1);
   const [person, setPerson] = useState({ rut: '', name: '', email: '' });
   const [people, setPeople] = useState([]);
-  const [errors, setErrors] = useState({});
+  
+  // Estados para errores específicos
+  const [lapsError, setLapsError] = useState('');
+  const [peopleError, setPeopleError] = useState('');
+  const [dateError, setDateError] = useState('');
+  const [timeError, setTimeError] = useState('');
+  const [rutError, setRutError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [generalError, setGeneralError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  
   const navigate = useNavigate();
 
   // Definición de días feriados MM-DD
@@ -37,6 +48,57 @@ const KartBookingForm = () => {
   if(lapsOrMaxTime === 10) blockDuration = 30;
   else if(lapsOrMaxTime === 15) blockDuration = 35;
   else if(lapsOrMaxTime === 20) blockDuration = 40;
+
+  // Función para limpiar todos los errores
+  const clearErrors = () => {
+    setLapsError('');
+    setPeopleError('');
+    setDateError('');
+    setTimeError('');
+    setRutError('');
+    setNameError('');
+    setEmailError('');
+    setGeneralError('');
+    setSuccessMessage('');
+  };
+
+  // Función para manejar errores específicos del backend
+  const handleValidationError = (errorMsg) => {
+    clearErrors();
+    
+    // Errores específicos de vueltas/tiempo máximo
+    if (errorMsg.includes('vueltas') || errorMsg.includes('tiempo máximo') || errorMsg.includes('10, 15 o 20')) {
+      setLapsError(errorMsg);
+    } 
+    // Errores específicos de número de personas
+    else if (errorMsg.includes('número de personas') || errorMsg.includes('mayor a 0') || errorMsg.includes('menor o igual a 15')) {
+      setPeopleError(errorMsg);
+    } 
+    // Errores específicos de fecha
+    else if (errorMsg.includes('fecha de reserva') || errorMsg.includes('fecha') || errorMsg.includes('nula')) {
+      setDateError(errorMsg);
+    } 
+    // Errores específicos de hora
+    else if (errorMsg.includes('hora de reserva') || errorMsg.includes('hora')) {
+      setTimeError(errorMsg);
+    } 
+    // Errores específicos de RUT
+    else if (errorMsg.includes('RUT') || errorMsg.includes('formato correcto') || errorMsg.includes('12345678-9')) {
+      setRutError(errorMsg);
+    } 
+    // Errores específicos de nombre
+    else if (errorMsg.includes('nombre') || errorMsg.includes('nulo o vacío')) {
+      setNameError(errorMsg);
+    } 
+    // Errores específicos de email
+    else if (errorMsg.includes('email') || errorMsg.includes('correo')) {
+      setEmailError(errorMsg);
+    } 
+    // Errores generales de validación
+    else {
+      setGeneralError(errorMsg);
+    }
+  };
 
   // Función para obtener los horarios reservados (inicio y fin) y bloquear los horarios intermedios
   const fetchReservedTimes = async (date) => {
@@ -83,17 +145,25 @@ const KartBookingForm = () => {
   // Función para manejar el cambio de hora seleccionada
   const handleTimeChange = (newTime) => {
     setBookingTime(newTime);
+    setTimeError(''); // Limpiar error cuando se selecciona una hora
   };
 
   const handleLapsOrMaxTimeChange = (value) => {
-    if (value < 10 || value > 20) {
-      return true;
-    } else if (10 < value && value < 15){
-      return true;
-    } else if (15 < value && value < 20){
-      return true;
+    setLapsOrMaxTime(value);
+    if (value !== 10 && value !== 15 && value !== 20) {
+      setLapsError('El número de vueltas o tiempo máximo permitido debe ser 10, 15 ó 20');
+    } else {
+      setLapsError('');
     }
-    return false;
+  };
+
+  const handleNumOfPeopleChange = (value) => {
+    setNumOfPeople(value);
+    if (value < 1 || value > 15) {
+      setPeopleError('El número de personas debe ser entre 1 y 15');
+    } else {
+      setPeopleError('');
+    }
   };
   
   // Función para verificar si la fecha es un feriado
@@ -150,6 +220,7 @@ const KartBookingForm = () => {
   // Función para manejar el cambio de fecha y obtener los horarios reservados
   const handleDateChange = (newDate) => {
     setBookingDate(newDate);
+    setDateError(''); // Limpiar error cuando se selecciona una fecha
     if (newDate) {
       fetchReservedTimes(newDate); // Llama a la función unificada para obtener los horarios reservados
     }
@@ -157,45 +228,42 @@ const KartBookingForm = () => {
 
   // Función para validar de los datos del cliente que reserva
   const validatePerson = () => {
-    const newErrors = {};
-    if (!person.rut) newErrors.rut = 'RUT es requerido';
-    if (!person.name) newErrors.name = 'Nombre es requerido';
-    if (!person.email) newErrors.email = 'Email es requerido';
-    return newErrors;
+    let hasErrors = false;
+    
+    if (!person.rut) {
+      setRutError('RUT es requerido');
+      hasErrors = true;
+    } else {
+      setRutError('');
+    }
+    
+    if (!person.name) {
+      setNameError('Nombre es requerido');
+      hasErrors = true;
+    } else {
+      setNameError('');
+    }
+    
+    if (!person.email) {
+      setEmailError('Email es requerido');
+      hasErrors = true;
+    } else {
+      setEmailError('');
+    }
+    
+    return hasErrors;
   };
 
   // Función para añadir una persona a la lista de participantes
   const addPerson = async () => {
-    const newErrors = validatePerson();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    const hasErrors = validatePerson();
+    if (hasErrors) {
       return;
-    }
-  
-    // Si es la primera persona (quien hace la reserva), verificar que esté registrada
-    if (people.length === 0) {
-      try {
-        const response = await clientService.getClientByRut(person.rut);
-        
-        // Verifica si la respuesta indica que no hay cliente
-        const noClientFound = !response.data.clientRUT;
-        
-        if (noClientFound) {
-          setErrors({ rut: 'El cliente no está registrado en el sistema' });
-          return;
-        }
-        
-        // Cliente verificado, se añade a la lista
-      } catch (error) {
-        console.error('Error al verificar el cliente:', error);
-        setErrors({ rut: 'Error al verificar el cliente en el sistema' });
-        return;
-      }
     }
     
     setPeople([...people, person]);
     setPerson({ rut: '', name: '', email: '' });
-    setErrors({});
+    clearErrors();
   };
 
   // Función para eliminar una persona de la lista de participantes
@@ -208,9 +276,10 @@ const KartBookingForm = () => {
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    clearErrors();
 
     if (!bookingDate || !bookingTime || people.length < numOfPeople || !lapsOrMaxTime) {
-
+      setGeneralError('Por favor complete todos los campos requeridos y agregue el número correcto de participantes');
       return;
     }
 
@@ -236,16 +305,45 @@ const KartBookingForm = () => {
     try {
       const response = await bookingService.saveBooking(reservationData);
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         setBookingDate(null);
         setBookingTime(null);
         setPeople([]);
-        alert('Reserva guardada exitosamente! \n' +
-              'A continuación será redirigido para validar su reserva');
-        navigate("/statusKartBooking");
+        clearErrors();
+        setSuccessMessage('Reserva guardada exitosamente! A continuación será redirigido para validar su reserva');
+        setTimeout(() => {
+          navigate("/statusKartBooking");
+        }, 2000);
       }
     } catch (error) {
       console.error('Error al guardar la reserva:', error);
+      
+      // Manejo mejorado de errores del backend
+      if (error.response && error.response.data) {
+        // Extraer el mensaje de error del backend
+        let errorMessage;
+        
+        if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.error) {
+          errorMessage = error.response.data.error;
+        } else {
+          errorMessage = 'Error de validación en el servidor';
+        }
+        
+        handleValidationError(errorMessage);
+      } else if (error.message) {
+        // Error de conexión o red
+        if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
+          setGeneralError('Error de conexión. Por favor, verifique su conexión a internet e intente nuevamente.');
+        } else {
+          setGeneralError(error.message);
+        }
+      } else {
+        setGeneralError('Error inesperado. Por favor intente nuevamente.');
+      }
     }
   };
    
@@ -258,22 +356,49 @@ const KartBookingForm = () => {
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          {generalError && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {generalError}
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit}>
             {/* Sección de detalles */}
             <Typography variant="h6" gutterBottom>Detalles de la Actividad</Typography>
+            
+            {lapsError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {lapsError}
+              </Alert>
+            )}
+            
+            {peopleError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {peopleError}
+              </Alert>
+            )}
+
             <Grid container spacing={2} sx={{ mb: 5 }} justifyContent={'center'}>
               <Grid>
-                <TextField
-                  fullWidth
-                  label="Vueltas o tiempo máximo"
-                  type="number"
-                  value={lapsOrMaxTime}
-                  onChange={(e) => setLapsOrMaxTime(parseInt(e.target.value))}
-                  inputProps={{ min: 10, max: 20, step: 5 }}
-                  error={handleLapsOrMaxTimeChange(lapsOrMaxTime)}
-                  helperText={handleLapsOrMaxTimeChange(lapsOrMaxTime) ? 'El número de vueltas o tiempo máximo permitido debe ser 10, 15 ó 20' : ''}
-                  sx={{ minWidth: 200 }}
-                />
+                <FormControl fullWidth sx={{ minWidth: 200 }} error={!!lapsError}>
+                  <InputLabel id="laps-select-label">Vueltas o tiempo máximo</InputLabel>
+                  <Select
+                    labelId="laps-select-label"
+                    value={lapsOrMaxTime}
+                    label="Vueltas o tiempo máximo"
+                    onChange={(e) => handleLapsOrMaxTimeChange(e.target.value)}
+                  >
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid>
                 <TextField
@@ -281,10 +406,9 @@ const KartBookingForm = () => {
                   label="Número de personas"
                   type="number"
                   value={numOfPeople}
-                  onChange={(e) => setNumOfPeople(parseInt(e.target.value))}
+                  onChange={(e) => handleNumOfPeopleChange(parseInt(e.target.value))}
                   slotProps={{min: 1, max: 15}}
-                  error={numOfPeople < 1 || numOfPeople > 15}
-                  helperText={numOfPeople < 1 || numOfPeople > 15 ? 'El número de personas debe ser entre 1 y 15' : ''}
+                  error={!!peopleError}
                   sx={{ minWidth: 200 }}
                 />
               </Grid>
@@ -292,6 +416,19 @@ const KartBookingForm = () => {
 
             {/* Sección de fecha y hora */}
             <Typography variant="h6" gutterBottom>Fecha y hora</Typography>
+            
+            {dateError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {dateError}
+              </Alert>
+            )}
+            
+            {timeError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {timeError}
+              </Alert>
+            )}
+
             <Grid container spacing={2} sx={{ mb: 2 }} justifyContent={'center'}>
               <Grid>
                 <DateCalendar
@@ -301,7 +438,8 @@ const KartBookingForm = () => {
                   slotProps={{
                     textField: {
                       fullWidth: true,
-                      required: true
+                      required: true,
+                      error: !!dateError
                     }
                   }}
                 />
@@ -327,6 +465,25 @@ const KartBookingForm = () => {
             {/* Sección de participantes */}
             <Typography variant="h6" gutterBottom>Datos de las personas</Typography>
             <Typography variant="subtitle1" gutterBottom color='textSecondary'> Ingresa primero a quien realiza la reserva</Typography>
+            
+            {rutError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {rutError}
+              </Alert>
+            )}
+            
+            {nameError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {nameError}
+              </Alert>
+            )}
+            
+            {emailError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {emailError}
+              </Alert>
+            )}
+
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid>
                 <TextField
@@ -335,8 +492,7 @@ const KartBookingForm = () => {
                   placeholder="Formato 12345678-9"
                   value={person.rut}
                   onChange={(e) => setPerson({ ...person, rut: e.target.value })}
-                  error={!!errors.rut}
-                  helperText={errors.rut}
+                  error={!!rutError}
                 />
               </Grid>
               <Grid>
@@ -346,8 +502,7 @@ const KartBookingForm = () => {
                   placeholder="Ej: Juan Pérez"
                   value={person.name}
                   onChange={(e) => setPerson({ ...person, name: e.target.value })}
-                  error={!!errors.name}
-                  helperText={errors.name}
+                  error={!!nameError}
                 />
               </Grid>
               <Grid>
@@ -357,8 +512,7 @@ const KartBookingForm = () => {
                   type="email"
                   value={person.email}
                   onChange={(e) => setPerson({ ...person, email: e.target.value })}
-                  error={!!errors.email}
-                  helperText={errors.email}
+                  error={!!emailError}
                 />
               </Grid>
               <Grid sx={{ display: 'flex', alignItems: 'center' }}>
@@ -395,7 +549,8 @@ const KartBookingForm = () => {
                       />
                     </ListItem>
                   ))
-                )}
+                )
+                }
               </List>
             </Paper>
 
@@ -408,7 +563,7 @@ const KartBookingForm = () => {
                 size="large"
                 disabled={people.length < numOfPeople || !bookingDate || !bookingTime || !lapsOrMaxTime}
               >
-                Reservar.
+                Reservar
               </Button>
             </Box>
           </form>

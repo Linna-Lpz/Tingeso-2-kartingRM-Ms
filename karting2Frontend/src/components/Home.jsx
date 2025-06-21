@@ -1,13 +1,28 @@
 import { Typography, Paper, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow } from '@mui/material';
+  TableContainer, TableHead, TableRow, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+    const navigate = useNavigate();
+
     return (
       <div>
         <h1>KartingRM: Reserva tu kart!</h1>
         <p style={{ textAlign: 'center' }}>
           Ven con tus amigos y familiares a disfrutar una emocionante experiencia!
         </p>
+
+        {/* Botón para reservar */}
+        <Box display="flex" justifyContent="center" my={4}>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ fontSize: 24, px: 6, py: 2 }}
+            onClick={() => navigate('/kartBookingForm')}
+          >
+            ¡Reserva aquí!
+          </Button>
+        </Box>
 
         {/* Sección de información de tarifas */}
         <Typography variant="h6" gutterBottom align="center">
@@ -40,8 +55,6 @@ const Home = () => {
             </Table>
           </TableContainer>
       </div>
-      
-      
     );
   };
   

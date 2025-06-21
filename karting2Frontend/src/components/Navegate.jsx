@@ -3,54 +3,108 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Menu from "./Menu";
-import { useState } from "react";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+import HomeIcon from "@mui/icons-material/Home";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from "react-router-dom";
 
 export default function Navegate() {
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const toggleDrawer = (open) => (event) => {
-    setOpen(open);
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
-    <Box sx={{ flexGrow: 1 , maxWidth: "100%" }}>
+    <Box sx={{ flexGrow: 1, maxWidth: "100%" }}>
       <AppBar position="static">
-        <Toolbar sx={{ 
-          background: "linear-gradient(90deg, #FF8C00 0%, #FFA500 100%)",
-          padding: "8px 16px"
-        }}>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={toggleDrawer(true)}
-          >
-            <MenuIcon />
-            <Typography variant="subtitle1" sx={{ ml: 1, fontWeight: "500" }}>
-              Menú
-            </Typography>
-          </IconButton>
-
-          <Typography 
-            variant="h5" 
-            component="div" 
-            sx={{ 
-              flexGrow: 1, 
+        <Toolbar
+          sx={{
+            padding: "8px 16px",
+          }}
+        >
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{
               fontWeight: "bold",
               letterSpacing: "1px",
-              textShadow: "1px 1px 2px rgba(0,0,0,0.2)"
+              textShadow: "1px 1px 2px rgba(0,0,0,0.2)",
+              mr: 4,
             }}
           >
+            KartingRM
           </Typography>
+
+          <Button
+            color="inherit"
+            startIcon={<HomeIcon />}
+            onClick={() => navigate("/")}
+            sx={{ mx: 1 }}
+          >
+            Home
+          </Button>
+          <Button
+            color="inherit"
+            startIcon={<PersonAddAltOutlinedIcon />}
+            onClick={() => navigate("/clientRegister")}
+            sx={{ mx: 1 }}
+          >
+            Registro de usuario
+          </Button>
+          <Button
+            color="inherit"
+            startIcon={<MoreVertIcon />}
+            onClick={handleMenuOpen}
+            sx={{ mx: 1 }}
+          >
+            Más opciones
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate("/statusKartBooking");
+                handleMenuClose();
+              }}
+            >
+              <CollectionsBookmarkOutlinedIcon sx={{ mr: 1 }} />
+              Reservas del cliente
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/RackWeekly");
+                handleMenuClose();
+              }}
+            >
+              <EventOutlinedIcon sx={{ mr: 1 }} />
+              Reservas semanales
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/Reports");
+                handleMenuClose();
+              }}
+            >
+              <EventOutlinedIcon sx={{ mr: 1 }} />
+              Reportes de venta
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
-
-      <Menu open={open} toggleDrawer={toggleDrawer}></Menu>
     </Box>
   );
 }
