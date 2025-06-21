@@ -50,20 +50,20 @@ function getBookingsForRack(month, year){
 }
 
 // ------------------ Report ------------------
-function getBookingsForReport1(lapsOrTimeMax){
-    return axios.get(`${REPORT_API_URL}/getBookingsForReport1/${lapsOrTimeMax}`);
+function getBookingsForReport1(lapsOrTimeMax, startMonth, endMonth){
+    return axios.get(`${REPORT_API_URL}/getBookingsForReport1/${lapsOrTimeMax}/${startMonth}/${endMonth}`);
 }
 
-function getIncomesForLapsOfMonth(){
-    return axios.get(`${REPORT_API_URL}/getTotalForReport1`);
+function getIncomesForLapsOfMonth(startMonth, endMonth){
+    return axios.get(`${REPORT_API_URL}/getTotalForReport1/${startMonth}/${endMonth}`);
 }
 
-function getBookingsForReport2(people){
-    return axios.get(`${REPORT_API_URL}/getBookingsForReport2/${people}`);
+function getBookingsForReport2(people, startMonth, endMonth){
+    return axios.get(`${REPORT_API_URL}/getBookingsForReport2/${people}/${startMonth}/${endMonth}`);
 }
 
-function getIncomesForNumOfPeopleOfMonth(){
-    return axios.get(`${REPORT_API_URL}/getTotalForReport2`);
+function getIncomesForNumOfPeopleOfMonth(startMonth, endMonth){
+    return axios.get(`${REPORT_API_URL}/getTotalForReport2/${startMonth}/${endMonth}`);
 }
 
 // ------------------ Client ------------------
