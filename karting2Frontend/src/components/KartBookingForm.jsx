@@ -1,14 +1,35 @@
 import React, { useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider, DigitalClock, DateCalendar } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { es } from 'date-fns/locale';
-import { Container, Typography, TextField, Button, Paper, Grid, 
-        IconButton, List, ListItem, ListItemText, Divider, Box, Alert, 
-        FormControl, InputLabel, Select, MenuItem} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import { 
+  Container, 
+  Typography, 
+  Button, 
+  Paper, 
+  Divider, 
+  Box, 
+  Alert,
+  Stepper,
+  Step,
+  StepLabel,
+  CircularProgress,
+  Chip,
+  Card,
+  CardContent
+} from '@mui/material';
+import { 
+  CheckCircle as CheckCircleIcon, 
+  Info as InfoIcon,
+  Warning as WarningIcon 
+} from '@mui/icons-material';
 import bookingService from '../services/services.management';
 import { useNavigate } from 'react-router-dom';
+
+// Importar los componentes modulares
+import ActivityDetailsSection from './booking/ActivityDetailsSection';
+import DateTimeSection from './booking/DateTimeSection';
+import ParticipantsSection from './booking/ParticipantsSection';
 
 // Inicialización del formulario
 const KartBookingForm = () => {
@@ -33,7 +54,20 @@ const KartBookingForm = () => {
   const [generalError, setGeneralError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
+  // Estados para mejorar UX (Nielsen: Visibilidad del estado del sistema)
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [loadingTimes, setLoadingTimes] = useState(false);
+  
   const navigate = useNavigate();
+
+  // Pasos del proceso (Nielsen: Visibilidad del estado del sistema)
+  const steps = [
+    'Detalles de la actividad',
+    'Fecha y hora',
+    'Participantes',
+    'Confirmar reserva'
+  ];
 
   // Definición de días feriados MM-DD
   const holidays = [
@@ -49,6 +83,14 @@ const KartBookingForm = () => {
   else if(lapsOrMaxTime === 15) blockDuration = 35;
   else if(lapsOrMaxTime === 20) blockDuration = 40;
 
+  // Función para determinar el paso actual basado en datos completados
+  const getCurrentStep = () => {
+    if (!lapsOrMaxTime || !numOfPeople) return 0;
+    if (!bookingDate || !bookingTime) return 1;
+    if (people.length < numOfPeople) return 2;
+    return 3;
+  };
+
   // Función para limpiar todos los errores
   const clearErrors = () => {
     setLapsError('');
@@ -62,37 +104,44 @@ const KartBookingForm = () => {
     setSuccessMessage('');
   };
 
-  // Función para manejar errores específicos del backend
+  // Función mejorada para mostrar feedback específico (Nielsen: Prevención de errores)
   const handleValidationError = (errorMsg) => {
     clearErrors();
     
     // Errores específicos de vueltas/tiempo máximo
     if (errorMsg.includes('vueltas') || errorMsg.includes('tiempo máximo') || errorMsg.includes('10, 15 o 20')) {
       setLapsError(errorMsg);
+      setActiveStep(0);
     } 
     // Errores específicos de número de personas
     else if (errorMsg.includes('número de personas') || errorMsg.includes('mayor a 0') || errorMsg.includes('menor o igual a 15')) {
       setPeopleError(errorMsg);
+      setActiveStep(0);
     } 
     // Errores específicos de fecha
     else if (errorMsg.includes('fecha de reserva') || errorMsg.includes('fecha') || errorMsg.includes('nula')) {
       setDateError(errorMsg);
+      setActiveStep(1);
     } 
     // Errores específicos de hora
     else if (errorMsg.includes('hora de reserva') || errorMsg.includes('hora')) {
       setTimeError(errorMsg);
+      setActiveStep(1);
     } 
     // Errores específicos de RUT
     else if (errorMsg.includes('RUT') || errorMsg.includes('formato correcto') || errorMsg.includes('12345678-9')) {
       setRutError(errorMsg);
+      setActiveStep(2);
     } 
     // Errores específicos de nombre
     else if (errorMsg.includes('nombre') || errorMsg.includes('nulo o vacío')) {
       setNameError(errorMsg);
+      setActiveStep(2);
     } 
     // Errores específicos de email
     else if (errorMsg.includes('email') || errorMsg.includes('correo')) {
       setEmailError(errorMsg);
+      setActiveStep(2);
     } 
     // Errores generales de validación
     else {
@@ -100,11 +149,13 @@ const KartBookingForm = () => {
     }
   };
 
-  // Función para obtener los horarios reservados (inicio y fin) y bloquear los horarios intermedios
+  // Función mejorada con indicador de carga (Nielsen: Visibilidad del estado del sistema)
   const fetchReservedTimes = async (date) => {
     if (!date) return;
-  
+    
+    setLoadingTimes(true);
     const formattedDate = date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    
     try {
       const [startResponse, endResponse] = await Promise.all([
         bookingService.getTimesByDate(formattedDate),
@@ -139,6 +190,9 @@ const KartBookingForm = () => {
   
     } catch (error) {
       console.error('Error al obtener los horarios reservados:', error);
+      setGeneralError('Error al cargar horarios disponibles. Por favor, intente nuevamente.');
+    } finally {
+      setLoadingTimes(false);
     }
   };
   
@@ -146,6 +200,7 @@ const KartBookingForm = () => {
   const handleTimeChange = (newTime) => {
     setBookingTime(newTime);
     setTimeError(''); // Limpiar error cuando se selecciona una hora
+    setActiveStep(getCurrentStep());
   };
 
   const handleLapsOrMaxTimeChange = (value) => {
@@ -154,6 +209,7 @@ const KartBookingForm = () => {
       setLapsError('El número de vueltas o tiempo máximo permitido debe ser 10, 15 ó 20');
     } else {
       setLapsError('');
+      setActiveStep(getCurrentStep());
     }
   };
 
@@ -163,6 +219,7 @@ const KartBookingForm = () => {
       setPeopleError('El número de personas debe ser entre 1 y 15');
     } else {
       setPeopleError('');
+      setActiveStep(getCurrentStep());
     }
   };
   
@@ -221,6 +278,7 @@ const KartBookingForm = () => {
   const handleDateChange = (newDate) => {
     setBookingDate(newDate);
     setDateError(''); // Limpiar error cuando se selecciona una fecha
+    setActiveStep(getCurrentStep());
     if (newDate) {
       fetchReservedTimes(newDate); // Llama a la función unificada para obtener los horarios reservados
     }
@@ -264,6 +322,7 @@ const KartBookingForm = () => {
     setPeople([...people, person]);
     setPerson({ rut: '', name: '', email: '' });
     clearErrors();
+    setActiveStep(getCurrentStep());
   };
 
   // Función para eliminar una persona de la lista de participantes
@@ -271,15 +330,18 @@ const KartBookingForm = () => {
     const updatedPeople = [...people];
     updatedPeople.splice(index, 1);
     setPeople(updatedPeople);
+    setActiveStep(getCurrentStep());
   };
 
-  // Función para manejar el envío del formulario
+  // Función mejorada con mejor feedback (Nielsen: Visibilidad del estado del sistema)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     clearErrors();
 
     if (!bookingDate || !bookingTime || people.length < numOfPeople || !lapsOrMaxTime) {
       setGeneralError('Por favor complete todos los campos requeridos y agregue el número correcto de participantes');
+      setIsLoading(false);
       return;
     }
 
@@ -310,10 +372,10 @@ const KartBookingForm = () => {
         setBookingTime(null);
         setPeople([]);
         clearErrors();
-        setSuccessMessage('Reserva guardada exitosamente! A continuación será redirigido para validar su reserva');
+        setSuccessMessage('¡Reserva guardada exitosamente! Será redirigido para validar su reserva en 3 segundos...');
         setTimeout(() => {
           navigate("/statusKartBooking");
-        }, 2000);
+        }, 3000);
       }
     } catch (error) {
       console.error('Error al guardar la reserva:', error);
@@ -344,227 +406,257 @@ const KartBookingForm = () => {
       } else {
         setGeneralError('Error inesperado. Por favor intente nuevamente.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
    
+  // Función para mostrar resumen de la reserva (Nielsen: Prevención de errores)
+  const renderBookingSummary = () => {
+    if (getCurrentStep() < 3) return null;
+
+    return (
+      <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <InfoIcon />
+            Resumen de su reserva
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+            <Chip 
+              label={`${lapsOrMaxTime} vueltas/minutos`} 
+              color="secondary" 
+              size="small"
+            />
+            <Chip 
+              label={`${numOfPeople} persona${numOfPeople > 1 ? 's' : ''}`} 
+              color="secondary" 
+              size="small"
+            />
+            {bookingDate && (
+              <Chip 
+                label={bookingDate.toLocaleDateString('es-CL')} 
+                color="secondary" 
+                size="small"
+              />
+            )}
+            {bookingTime && (
+              <Chip 
+                label={bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} 
+                color="secondary" 
+                size="small"
+              />
+            )}
+            <Chip 
+              label={`Duración: ${blockDuration} min`} 
+              color="secondary" 
+              size="small"
+            />
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 3 }}>
-          <Typography variant="h4" gutterBottom align="center">
+          {/* Header con información clara (Nielsen: Estándares y consistencia) */}
+          <Typography variant="h4" gutterBottom align="center" color="primary">
             Reserva de Karts
+          </Typography>
+          <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 2 }}>
+            Complete el formulario paso a paso para reservar su experiencia
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
+          {/* Indicador de progreso fijo (Nielsen: Visibilidad del estado del sistema) */}
+          <Box 
+            sx={{ 
+              position: 'sticky',
+              top: 80,
+              zIndex: 1000,
+              backgroundColor: 'background.paper',
+              py: 2,
+              mb: 2,
+              borderRadius: 1,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Stepper 
+              activeStep={getCurrentStep()} 
+              sx={{ 
+                '& .MuiStepLabel-root': {
+                  cursor: 'default'
+                }
+              }}
+            >
+              {steps.map((label, index) => (
+                <Step key={label}>
+                  <StepLabel 
+                    icon={getCurrentStep() > index ? <CheckCircleIcon color="success" /> : undefined}
+                    sx={{
+                      '& .MuiStepLabel-label': {
+                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                        fontWeight: getCurrentStep() === index ? 600 : 400,
+                        color: getCurrentStep() === index ? 'primary.main' : 'text.secondary'
+                      }
+                    }}
+                  >
+                    {label}
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            
+            {/* Indicador de progreso visual adicional */}
+            <Box sx={{ mt: 2, px: 2 }}>
+              <Box 
+                sx={{ 
+                  width: '100%', 
+                  height: 4, 
+                  backgroundColor: 'grey.200', 
+                  borderRadius: 2,
+                  overflow: 'hidden'
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: `${(getCurrentStep() / (steps.length - 1)) * 100}%`, 
+                    height: '100%', 
+                    backgroundColor: 'primary.main',
+                    transition: 'width 0.3s ease-in-out'
+                  }}
+                />
+              </Box>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  display: 'block', 
+                  textAlign: 'center', 
+                  mt: 1, 
+                  color: 'text.secondary',
+                  fontWeight: 500
+                }}
+              >
+                Paso {getCurrentStep() + 1} de {steps.length}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Mensajes de estado (Nielsen: Visibilidad del estado del sistema) */}
           {successMessage && (
-            <Alert severity="success" sx={{ mb: 3 }}>
+            <Alert 
+              severity="success" 
+              sx={{ mb: 3 }}
+              icon={<CheckCircleIcon />}
+            >
               {successMessage}
             </Alert>
           )}
 
           {generalError && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert 
+              severity="error" 
+              sx={{ mb: 3 }}
+              icon={<WarningIcon />}
+            >
               {generalError}
             </Alert>
           )}
 
+          {/* Información de horarios (Nielsen: Ayuda y documentación) */}
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="body2" sx={{ display: 'inline', alignItems: 'center' }}>
+              <strong>Horarios de atención:</strong><br />
+              • Lunes a Viernes: 14:00 - 22:00<br />
+              • Fines de semana y feriados: 10:00 - 22:00
+            </Typography>
+          </Alert>
+
+          {/* Indicador de carga para horarios (Nielsen: Visibilidad del estado del sistema) */}
+          {loadingTimes && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <CircularProgress size={20} />
+                Cargando horarios disponibles...
+              </Box>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit}>
-            {/* Sección de detalles */}
-            <Typography variant="h6" gutterBottom>Detalles de la Actividad</Typography>
-            
-            {lapsError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {lapsError}
-              </Alert>
-            )}
-            
-            {peopleError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {peopleError}
-              </Alert>
-            )}
+            <ActivityDetailsSection
+              lapsOrMaxTime={lapsOrMaxTime}
+              numOfPeople={numOfPeople}
+              onLapsChange={handleLapsOrMaxTimeChange}
+              onPeopleChange={handleNumOfPeopleChange}
+              lapsError={lapsError}
+              peopleError={peopleError}
+            />
 
-            <Grid container spacing={2} sx={{ mb: 5 }} justifyContent={'center'}>
-              <Grid>
-                <FormControl fullWidth sx={{ minWidth: 200 }} error={!!lapsError}>
-                  <InputLabel id="laps-select-label">Vueltas o tiempo máximo</InputLabel>
-                  <Select
-                    labelId="laps-select-label"
-                    value={lapsOrMaxTime}
-                    label="Vueltas o tiempo máximo"
-                    onChange={(e) => handleLapsOrMaxTimeChange(e.target.value)}
-                  >
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={15}>15</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="Número de personas"
-                  type="number"
-                  value={numOfPeople}
-                  onChange={(e) => handleNumOfPeopleChange(parseInt(e.target.value))}
-                  slotProps={{min: 1, max: 15}}
-                  error={!!peopleError}
-                  sx={{ minWidth: 200 }}
-                />
-              </Grid>
-            </Grid>
+            <DateTimeSection
+              bookingDate={bookingDate}
+              bookingTime={bookingTime}
+              onDateChange={handleDateChange}
+              onTimeChange={handleTimeChange}
+              shouldDisableTime={shouldDisableTime}
+              dateError={dateError}
+              timeError={timeError}
+              loadingTimes={loadingTimes}
+            />
 
-            {/* Sección de fecha y hora */}
-            <Typography variant="h6" gutterBottom>Fecha y hora</Typography>
-            
-            {dateError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {dateError}
-              </Alert>
-            )}
-            
-            {timeError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {timeError}
-              </Alert>
-            )}
+            <ParticipantsSection
+              person={person}
+              people={people}
+              numOfPeople={numOfPeople}
+              onPersonChange={setPerson}
+              onAddPerson={addPerson}
+              onRemovePerson={removePerson}
+              rutError={rutError}
+              nameError={nameError}
+              emailError={emailError}
+            />
 
-            <Grid container spacing={2} sx={{ mb: 2 }} justifyContent={'center'}>
-              <Grid>
-                <DateCalendar
-                  value={bookingDate}
-                  onChange={handleDateChange}
-                  disablePast
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      required: true,
-                      error: !!dateError
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid>
-                <Paper sx={{ p: 2, minWidth: 280 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Horarios disponibles
-                  </Typography>
-                  <DigitalClock
-                    value={bookingTime}
-                    onChange={handleTimeChange}
-                    disabled={!bookingDate}
-                    shouldDisableTime={shouldDisableTime}
-                    skipDisabled
-                    ampm={false}
-                    timeStep={1}
-                  />
-                </Paper>
-              </Grid>
-            </Grid>
+            {/* Resumen de la reserva (Nielsen: Prevención de errores) */}
+            {renderBookingSummary()}
 
-            {/* Sección de participantes */}
-            <Typography variant="h6" gutterBottom>Datos de las personas</Typography>
-            <Typography variant="subtitle1" gutterBottom color='textSecondary'> Ingresa primero a quien realiza la reserva</Typography>
-            
-            {rutError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {rutError}
-              </Alert>
-            )}
-            
-            {nameError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {nameError}
-              </Alert>
-            )}
-            
-            {emailError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {emailError}
-              </Alert>
-            )}
-
-            <Grid container spacing={2} sx={{ mb: 2 }}>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="RUT"
-                  placeholder="Formato 12345678-9"
-                  value={person.rut}
-                  onChange={(e) => setPerson({ ...person, rut: e.target.value })}
-                  error={!!rutError}
-                />
-              </Grid>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="Nombre y Apellido"
-                  placeholder="Ej: Juan Pérez"
-                  value={person.name}
-                  onChange={(e) => setPerson({ ...person, name: e.target.value })}
-                  error={!!nameError}
-                />
-              </Grid>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  type="email"
-                  value={person.email}
-                  onChange={(e) => setPerson({ ...person, email: e.target.value })}
-                  error={!!emailError}
-                />
-              </Grid>
-              <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton 
-                  color="primary" 
-                  onClick={addPerson}
-                  disabled={people.length >= numOfPeople}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
-
-            {/* Lista de participantes */}
-            <Paper variant="outlined" sx={{ maxHeight: 200, overflow: 'auto', mb: 3 }}>
-              <List dense>
-                {people.length === 0 ? (
-                  <ListItem>
-                    <ListItemText secondary="No hay personas agregadas" />
-                  </ListItem>
-                ) : (
-                  people.map((p, index) => (
-                    <ListItem 
-                      key={index}
-                      secondaryAction={
-                        <IconButton edge="end" onClick={() => removePerson(index)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      }
-                    >
-                      <ListItemText 
-                        primary={`${p.name} (${p.rut})`} 
-                        secondary={p.email} 
-                      />
-                    </ListItem>
-                  ))
-                )
-                }
-              </List>
-            </Paper>
-
-            {/* Botón de envío */}
-            <Box sx={{ textAlign: 'center' }}>
+            {/* Botón de envío mejorado (Nielsen: Control y libertad del usuario) */}
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 size="large"
-                disabled={people.length < numOfPeople || !bookingDate || !bookingTime || !lapsOrMaxTime}
+                disabled={
+                  people.length < numOfPeople || 
+                  !bookingDate || 
+                  !bookingTime || 
+                  !lapsOrMaxTime ||
+                  isLoading
+                }
+                sx={{ 
+                  minWidth: 200,
+                  position: 'relative'
+                }}
               >
-                Reservar
+                {isLoading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} color="inherit" />
+                    Procesando...
+                  </Box>
+                ) : (
+                  'Confirmar Reserva'
+                )}
               </Button>
+              
+              {/* Texto de ayuda (Nielsen: Ayuda y documentación) */}
+              <Typography variant="caption" display="block" sx={{ mt: 1, color: 'text.secondary' }}>
+                {people.length < numOfPeople && 
+                  `Faltan ${numOfPeople - people.length} participante${numOfPeople - people.length > 1 ? 's' : ''}`}
+              </Typography>
             </Box>
           </form>
         </Paper>

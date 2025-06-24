@@ -8,7 +8,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import HomeIcon from "@mui/icons-material/Home";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
