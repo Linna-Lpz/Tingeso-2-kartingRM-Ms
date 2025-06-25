@@ -1,59 +1,120 @@
-import { Typography, Paper, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Button, Box } from '@mui/material';
+import { Typography, Button, Box, Container, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 const Home = () => {
     const navigate = useNavigate();
 
     return (
       <div>
-        <h1>KartingRM: Reserva tu kart!</h1>
-        <p style={{ textAlign: 'center' }}>
-          Ven con tus amigos y familiares a disfrutar de una emocionante experiencia!
-        </p>
+        {/* Header section */}
+        <h1 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '1rem', padding: '30px', color: '#1976d2' }}>
+          Bienvenido a Karting RM
+        </h1>
+        <p>¡Ven con tus amigos y familiares a disfrutar de una emocionante experiencia!</p>
+        <Container maxWidth="md" sx={{ py: 4 }}>
+          {/* Main reserve button */}
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/kartBookingForm')}
+              sx={{
+                fontSize: '24px',
+                px: 8,
+                py: 3,
+                borderRadius: '50px',
+                backgroundColor: '#1976d2',
+                '&:hover': {
+                  backgroundColor: '#1565c0',
+                }
+              }}
+            >
+              RESERVA AQUÍ
+            </Button>
+          </Box>
 
-        {/* Botón para reservar */}
-        <Box display="flex" justifyContent="center" my={4}>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ fontSize: 24, px: 6, py: 2 }}
-            onClick={() => navigate('/kartBookingForm')}
+          {/* Bottom navigation cards */}
+          <Box 
+            sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)', 
+              gap: 3,
+              mt: 4 
+            }}
           >
-            ¡Reserva aquí!
-          </Button>
-        </Box>
+            {/* Reservas semanales */}
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': { 
+                  boxShadow: 6,
+                  transform: 'translateY(-2px)',
+                  transition: 'all 0.3s ease'
+                }
+              }}
+              onClick={() => navigate('/RackWeekly')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <EventOutlinedIcon sx={{ fontSize: 60, color: '#1976d2', mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Planifica tu visita
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 1 }}>
+                  Reservas semanales
+                </Typography>
+              </CardContent>
+            </Card>
 
-        {/* Sección de información de tarifas */}
-        <Typography variant="h6" gutterBottom align="center">
-            Tarifas
-          </Typography>
-          
-          {/* Tabla de tarifas */}
-          <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Número de vueltas o tiempo máximo permitido</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Precios regulares</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell align="center">10 vueltas o máx 10 min</TableCell>
-                  <TableCell align="center">$15.000</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell align="center">15 vueltas o máx 15 min</TableCell>
-                  <TableCell align="center">$20.000</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell align="center">20 vueltas o máx 20 min</TableCell>
-                  <TableCell align="center">$25.000</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+            {/* Registro de usuario */}
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': { 
+                  boxShadow: 6,
+                  transform: 'translateY(-2px)',
+                  transition: 'all 0.3s ease'
+                }
+              }}
+              onClick={() => navigate('/clientRegister')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <PersonAddAltOutlinedIcon sx={{ fontSize: 60, color: '#1976d2', mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Regístrate y obtén descuentos
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 1 }}>
+                  Registro de usuario
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Reportes */}
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': { 
+                  boxShadow: 6,
+                  transform: 'translateY(-2px)',
+                  transition: 'all 0.3s ease'
+                }
+              }}
+              onClick={() => navigate('/Reports')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <BarChartIcon sx={{ fontSize: 60, color: '#1976d2', mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Información para empresas
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 1 }}>
+                  Reportes de venta
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        </Container>
       </div>
     );
   };

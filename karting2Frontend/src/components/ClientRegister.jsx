@@ -125,30 +125,65 @@ const ClientRegister = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Registrar Cliente
+      <Paper 
+        elevation={6} 
+        sx={{ 
+          p: { xs: 3, sm: 4, md: 5 },
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          border: '1px solid',
+          borderColor: 'grey.200'
+        }}
+      >
+        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+          Registro de Cliente
+        </Typography>
+        <Typography variant="subtitle1" align="center" color="textSecondary" sx={{ mb: 2 }}>
+          Complete todos los campos para crear su cuenta en el sistema de karting
         </Typography>
         <Divider sx={{ mb: 4 }} />
 
+        {/* Mensajes de estado con mejor visibilidad */}
         {successMessage && (
-          <Alert severity="success" sx={{ mb: 3 }}>
-            {successMessage}
+          <Alert 
+            severity="success" 
+            sx={{ 
+              mb: 3,
+              '& .MuiAlert-icon': {
+                fontSize: '1.5rem'
+              },
+              fontWeight: 'medium'
+            }}
+          >
+            ✅ {successMessage}
           </Alert>
         )}
 
         {errorMessage && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {errorMessage}
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 3,
+              '& .MuiAlert-icon': {
+                fontSize: '1.5rem'
+              },
+              fontWeight: 'medium'
+            }}
+          >
+            ❌ {errorMessage}
           </Alert>
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Sección 1: Información Personal (flujo lógico de identificación) */}
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom align="center">
-              Información del Cliente
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              1. Información Personal
             </Typography>
-            <Grid container spacing={3} justifyContent="center">
+            <Divider sx={{ mb: 3, backgroundColor: 'primary.light' }} />
+            
+            <Grid container spacing={3}>
+              {/* RUT - Campo principal de identificación (primer lugar) */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -158,47 +193,75 @@ const ClientRegister = () => {
                   onChange={(e) => setClientRut(e.target.value)}
                   required
                   error={!!rutError}
-                  helperText={rutError}
+                  helperText={rutError || "Ingrese el RUT sin puntos y con guión"}
                   InputProps={{
                     inputProps: { maxLength: 10 }
                   }}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 />
               </Grid>
+              
+              {/* Nombre completo - Información personal básica */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth 
-                  label="Nombre"
+                  label="Nombre y Apellido"
+                  placeholder="Ej: Juan Pérez"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   required
                   error={!!nameError}
-                  helperText={nameError}
+                  helperText={nameError || "Ingrese nombre y apellido"}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 />
               </Grid>
+            </Grid>
+          </Box>
+
+          {/* Sección 2: Información de Contacto */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              2. Información de Contacto
+            </Typography>
+            <Divider sx={{ mb: 3, backgroundColor: 'primary.light' }} />
+            
+            <Grid container spacing={3} justifyContent="center">
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label="Correo Electrónico"
                   type="email"
+                  placeholder="ejemplo@correo.com"
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   required
                   error={!!emailError}
-                  helperText={emailError}
+                  helperText={emailError || "Será usado para enviar su comprobante de compra"}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 />
               </Grid>
-              
-              {/* Campos de fecha separados */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Fecha de Nacimiento
-                </Typography>
-                {birthdayError && (
-                  <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
-                    {birthdayError}
-                  </Alert>
-                )}
-              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Sección 3: Fecha de Nacimiento - Agrupada lógicamente */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              3. Fecha de Nacimiento
+            </Typography>
+            <Divider sx={{ mb: 3, backgroundColor: 'primary.light' }} />
+            
+            {birthdayError && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {birthdayError}
+              </Alert>
+            )}
+            
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+              Seleccione su fecha de nacimiento
+            </Typography>
+            
+            <Grid container spacing={10} justifyContent="center">
+              {/* Orden lógico: Día, Mes, Año */}
               <Grid item xs={12} sm={4}>
                 <TextField
                   select
@@ -208,15 +271,17 @@ const ClientRegister = () => {
                   onChange={(e) => setDay(e.target.value)}
                   required
                   error={!!birthdayError}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 >
-                  <MenuItem value="">Seleccionar día</MenuItem>
+                  <MenuItem value="">Día</MenuItem>
                   {days.map((d) => (
                     <MenuItem key={d} value={d}>
-                      {d}
+                      {String(d).padStart(2, '0')}
                     </MenuItem>
                   ))}
                 </TextField>
               </Grid>
+              
               <Grid item xs={12} sm={4}>
                 <TextField
                   select
@@ -226,8 +291,9 @@ const ClientRegister = () => {
                   onChange={(e) => setMonth(e.target.value)}
                   required
                   error={!!birthdayError}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 >
-                  <MenuItem value="">Seleccionar mes</MenuItem>
+                  <MenuItem value="">Mes</MenuItem>
                   {months.map((m) => (
                     <MenuItem key={m.value} value={m.value}>
                       {m.label}
@@ -235,6 +301,7 @@ const ClientRegister = () => {
                   ))}
                 </TextField>
               </Grid>
+              
               <Grid item xs={12} sm={4}>
                 <TextField
                   select
@@ -244,8 +311,9 @@ const ClientRegister = () => {
                   onChange={(e) => setYear(e.target.value)}
                   required
                   error={!!birthdayError}
+                  sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 >
-                  <MenuItem value="">Seleccionar año</MenuItem>
+                  <MenuItem value="">Año</MenuItem>
                   {years.map((y) => (
                     <MenuItem key={y} value={y}>
                       {y}
@@ -256,22 +324,67 @@ const ClientRegister = () => {
             </Grid>
           </Box>
 
-          <Box sx={{ textAlign: 'center', mt: 4 }}>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              color="primary" 
-              size="large"
-              disabled={loading}
-              sx={{ 
-                backgroundColor: "#FFA500",
-                '&:hover': {
-                  backgroundColor: "#FF8C00"
-                }
-              }}
-            >
-              {loading ? 'Registrando...' : 'Registrar Usuario'}
-            </Button>
+          {/* Sección de Envío con indicadores claros */}
+          <Box sx={{ mt: 6, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="body2" color="textSecondary" align="center" sx={{ mb: 3 }}>
+              * Campos obligatorios
+            </Typography>
+            
+            {/* Indicador de progreso visual */}
+            <Box sx={{ textAlign: 'center' }}>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                size="large"
+                disabled={loading}
+                sx={{ 
+                  backgroundColor: "#FFA500",
+                  '&:hover': {
+                    backgroundColor: "#FF8C00"
+                  },
+                  '&:disabled': {
+                    backgroundColor: "#FFE4B5"
+                  },
+                  minWidth: 200,
+                  py: 1.5,
+                  px: 4,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold'
+                }}
+              >
+                {loading ? (
+                  <>
+                    <Box 
+                      component="span" 
+                      sx={{ 
+                        display: 'inline-block',
+                        width: 20,
+                        height: 20,
+                        border: '2px solid #ffffff40',
+                        borderTop: '2px solid #ffffff',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        mr: 2,
+                        '@keyframes spin': {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                        }
+                      }}
+                    />
+                    Registrando Cliente...
+                  </>
+                ) : (
+                  'Registrar Cliente'
+                )}
+              </Button>
+            </Box>
+            
+            {/* Información adicional para el usuario */}
+            <Typography variant="caption" display="block" color="textSecondary" align="center" sx={{ mt: 2 }}>
+              Al registrarse, acepta nuestros términos y condiciones de uso del karting
+            </Typography>
           </Box>
         </form>
       </Paper>
