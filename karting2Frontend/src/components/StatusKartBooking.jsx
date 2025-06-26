@@ -1,4 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Grid,
+  Alert,
+  Box,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  Divider,
+  Paper,
+  Snackbar
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  Payment as PaymentIcon,
+  Cancel as CancelIcon,
+  CheckCircle as CheckCircleIcon,
+  Info as InfoIcon,
+  Schedule as ScheduleIcon,
+  Group as GroupIcon,
+  CalendarToday as CalendarIcon
+} from '@mui/icons-material';
 import bookingService from '../services/services.management';
 
 const StatusKartBooking = () => {
@@ -6,50 +37,126 @@ const StatusKartBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState(null);
   const [cancelBookingId, setCancelBookingId] = useState(null);
-  const [refresh, setRefresh] = useState(false); // Estado para forzar la actualización
+  const [refresh, setRefresh] = useState(false);
+  
+  // Estados para mejorar UX (Nielsen: Visibilidad del estado del sistema)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, booking: null, action: null });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  // Función para cargar las reservas
+  // Función para validar RUT (Nielsen: Prevención de errores)
+  const validateRut = (rut) => {
+    const rutRegex = /^\d{7,8}-[\dkK]$/; // Formato: 12345678-9 o 1234567-K
+    return rutRegex.test(rut.trim());
+  };
+
+  // Función para obtener el color del estado (Nielsen: Reconocimiento antes que recuerdo)
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'confirmada':
+        return 'success';
+      case 'pendiente':
+        return 'warning';
+      case 'cancelada':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  // Función para obtener el ícono del estado (Nielsen: Reconocimiento antes que recuerdo)
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'confirmada':
+        return <CheckCircleIcon />;
+      case 'pendiente':
+        return <ScheduleIcon />;
+      case 'cancelada':
+        return <CancelIcon />;
+      default:
+        return <InfoIcon />;
+    }
+  };
+
+  // Función para cargar las reservas (Nielsen: Visibilidad del estado del sistema)
   const fetchBookings = async () => {
     if (!rut.trim()) {
       setError('Debes ingresar un RUT válido.');
       return;
     }
 
+    if (!validateRut(rut)) {
+      setError('El formato del RUT no es válido. Debe ser: 12345678-9');
+      return;
+    }
+
+    setIsSearching(true);
+    setError(null);
+
     try {
       const response = await bookingService.getBookingByUserRut(rut);
       setBookings(response.data);
-      setError(null);
+      
+      if (response.data.length === 0) {
+        setError('No se encontraron reservas para este RUT.');
+      }
     } catch (err) {
-      setError('Error al obtener las reservas. Inténtalo de nuevo más tarde.');
+      console.error('Error al obtener las reservas:', err);
+      setError('Error al obtener las reservas. Verifique el RUT e intente nuevamente.');
+    } finally {
+      setIsSearching(false);
     }
   };
 
-  // Función para confirmar la reserva
+  // Función para confirmar la reserva (Nielsen: Control y libertad del usuario)
   const handleConfirmBooking = async (bookingId) => {
+    setIsLoading(true);
     try {
       await bookingService.confirmBooking(bookingId);
-      alert('Reserva confirmada con éxito.');
       await bookingService.sendVoucherByEmail(bookingId);
-      alert('Voucher enviado al correo electrónico.');
-      setRefresh((prev) => !prev); // Forzar actualización
+      
+      setSuccessMessage('Reserva confirmada con éxito. Voucher enviado al correo electrónico.');
+      setSnackbarOpen(true);
+      setRefresh((prev) => !prev);
     } catch (err) {
-      setError('Error al confirmar la reserva.');
+      console.error('Error al confirmar la reserva:', err);
+      setError('Error al confirmar la reserva. Intente nuevamente.');
+    } finally {
+      setIsLoading(false);
+      setConfirmDialog({ open: false, booking: null, action: null });
     }
   };
 
-  // useEffect para manejar la cancelación de reservas
+  // Función para mostrar diálogo de confirmación (Nielsen: Prevención de errores)
+  const showConfirmDialog = (booking, action) => {
+    setConfirmDialog({ open: true, booking, action });
+  };
+
+  // Función para cerrar diálogo
+  const handleCloseDialog = () => {
+    setConfirmDialog({ open: false, booking: null, action: null });
+  };
+
+  // useEffect para manejar la cancelación de reservas (Nielsen: Visibilidad del estado del sistema)
   useEffect(() => {
     const cancelBooking = async () => {
       if (!cancelBookingId) return;
 
+      setIsLoading(true);
       try {
         await bookingService.cancelBooking(cancelBookingId);
-        alert('Reserva cancelada con éxito.');
-        setCancelBookingId(null); // Reiniciar el estado después de cancelar
-        setRefresh((prev) => !prev); // Forzar actualización
+        setSuccessMessage('Reserva cancelada con éxito.');
+        setSnackbarOpen(true);
+        setCancelBookingId(null);
+        setRefresh((prev) => !prev);
       } catch (err) {
-        setError('Error al cancelar la reserva.');
-        setCancelBookingId(null); // Reiniciar el estado incluso si ocurre un error
+        console.error('Error al cancelar la reserva:', err);
+        setError('Error al cancelar la reserva. Intente nuevamente.');
+        setCancelBookingId(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -58,103 +165,297 @@ const StatusKartBooking = () => {
 
   // useEffect para recargar las reservas cuando cambie el estado `refresh`
   useEffect(() => {
-    if (rut.trim()) {
+    if (rut.trim() && validateRut(rut)) {
       fetchBookings();
     }
   }, [refresh]);
 
-  // Función para establecer el bookingId a cancelar
+  // Función para establecer el bookingId a cancelar (Nielsen: Control y libertad del usuario)
   const handleCancelBooking = (bookingId) => {
     setCancelBookingId(bookingId);
   };
 
+  // Función para manejar el Enter en el campo de búsqueda (Nielsen: Flexibilidad y eficiencia de uso)
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      fetchBookings();
+    }
+  };
+
+  // Función para limpiar errores (Nielsen: Control y libertad del usuario)
+  const clearError = () => {
+    setError(null);
+  };
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h3>Consulta tus reservas</h3>
-      <div>
-        <input
-          type="text"
-          value={rut}
-          onChange={(e) => setRut(e.target.value)}
-          placeholder="Ingresa tu RUT"
-        />
-        <button onClick={fetchBookings}>Buscar reservas</button>
-      </div>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      {/* Header con información clara (Nielsen: Estándares y consistencia) */}
+      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h4" gutterBottom align="center" color="primary">
+          Estado de Reservas
+        </Typography>
+        <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 3 }}>
+          Consulte, confirme o cancele sus reservas de karting
+        </Typography>
+        <Divider />
+      </Paper>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {/* Formulario de búsqueda (Nielsen: Prevención de errores) */}
+      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <SearchIcon color="primary" />
+          Buscar Reservas
+        </Typography>
+        
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', mt: 2 }}>
+          <TextField
+            fullWidth
+            label="RUT del cliente"
+            value={rut}
+            onChange={(e) => {
+              setRut(e.target.value);
+              if (error) clearError(); // Limpiar error al escribir
+            }}
+            onKeyUp={handleKeyPress}
+            placeholder="Ej: 12345678-9"
+            error={!!error}
+            helperText={error || "Ingrese su RUT para buscar sus reservas"}
+            disabled={isSearching}
+            sx={{ maxWidth: 300 }}
+          />
+          
+          <Button
+            variant="contained"
+            onClick={fetchBookings}
+            disabled={isSearching || !rut.trim()}
+            startIcon={isSearching ? <CircularProgress size={20} /> : <SearchIcon />}
+            sx={{ minWidth: 140, height: 56 }}
+          >
+            {isSearching ? 'Buscando...' : 'Buscar'}
+          </Button>
+        </Box>
 
-      {/* Mostrar reservas si existen */}
-      <div style={{ display: 'flex', gap: '20px', marginTop: '20px', flexWrap: 'wrap' }}>
-        {bookings.length > 0 ? (
-          bookings.map((booking) => (
-            <div
-              key={booking.id}
-              style={{
-                border: '2px solid black',
-                padding: '10px',
-                width: '200px',
-                borderRadius: '10px',
-              }}
-            >
-              <p>
-                <strong>Fecha:</strong> {booking.bookingDate}
-              </p>
-              <p>
-                <strong>Hora:</strong> {booking.bookingTime}
-              </p>
-              <p>
-                <strong>Vueltas o tiempo máx:</strong> {booking.lapsOrMaxTimeAllowed}
-              </p>
-              <p>
-                <strong>Cantidad de personas:</strong> {booking.numOfPeople}
-              </p>
-              <p>
-                <strong>Estado:</strong> {booking.bookingStatus}
-              </p>
-              <p>
-                <strong>Valor total:</strong> {booking.totalAmount}
-              </p>
+        {/* Ayuda contextual (Nielsen: Ayuda y documentación) */}
+        <Alert severity="info" sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            <strong>Información:</strong> Ingrese su RUT completo con guión y dígito verificador (Ej: 12345678-9)
+          </Typography>
+        </Alert>
+      </Paper>
 
-              {booking.bookingStatus !== 'confirmada' && booking.bookingStatus !== 'cancelada' && (
-                <button
-                  onClick={() => handleConfirmBooking(booking.id)}
-                  style={{
-                    marginTop: '10px',
-                    backgroundColor: '#fff',
-                    border: '2px solid rgb(0, 128, 19)',
-                    color: 'black',
-                    padding: '5px 10px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
+      {/* Mensajes de error mejorados (Nielsen: Visibilidad del estado del sistema) */}
+      {error && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 3 }}
+          onClose={clearError}
+          action={
+            <Button color="inherit" size="small" onClick={clearError}>
+              Cerrar
+            </Button>
+          }
+        >
+          {error}
+        </Alert>
+      )}
+
+      {/* Grid de reservas (Nielsen: Reconocimiento antes que recuerdo) */}
+      {bookings.length > 0 && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <InfoIcon color="primary" />
+            Sus Reservas ({bookings.length})
+          </Typography>
+          
+          <Grid container spacing={3}>
+            {bookings.map((booking) => (
+              <Grid item xs={12} sm={6} md={4} key={booking.id}>
+                <Card 
+                  elevation={2}
+                  sx={{ 
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    '&:hover': {
+                      boxShadow: 4
+                    }
                   }}
                 >
-                  Pagar reserva
-                </button>
-              )}
+                  <Box sx={{ position: 'absolute', top: 5, right: 16 }}>
+                    <Chip
+                      icon={getStatusIcon(booking.bookingStatus)}
+                      label={booking.bookingStatus?.toUpperCase()}
+                      color={getStatusColor(booking.bookingStatus)}
+                      size="small"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                  {/* Tarjeta con información resumen de la reserva */}
+                  <CardContent sx={{ flexGrow: 1, pt: 5 }}>
+                    {/* Información principal con iconos (Nielsen: Reconocimiento antes que recuerdo) */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CalendarIcon color="primary" fontSize="small" />
+                        <Typography variant="body2">
+                          <strong>Fecha:</strong> {booking.bookingDate}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <ScheduleIcon color="primary" fontSize="small" />
+                        <Typography variant="body2">
+                          <strong>Hora:</strong> {booking.bookingTime}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <GroupIcon color="primary" fontSize="small" />
+                        <Typography variant="body2">
+                          <strong>Personas:</strong> {booking.numOfPeople}
+                        </Typography>
+                      </Box>
+                      
+                      <Typography variant="body2">
+                        <strong>Vueltas/Tiempo:</strong> {booking.lapsOrMaxTimeAllowed}
+                      </Typography>
+                      
+                      <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                        <strong>Total: ${booking.totalAmount?.toLocaleString()}</strong>
+                      </Typography>
+                    </Box>
+                  </CardContent>
 
-              {booking.bookingStatus === 'confirmada' && (
-                <button
-                  onClick={() => handleCancelBooking(booking.id)}
-                  style={{
-                    marginTop: '10px',
-                    backgroundColor: '#fff',
-                    border: '2px solid rgb(169, 0, 0)',
-                    color: 'black',
-                    padding: '5px 10px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancelar reserva
-                </button>
-              )}
-            </div>
-          ))
-        ) : (
-          <p>Ingrese su rut para pagar o cancelar una reserva.</p>
-        )}
-      </div>
-    </div>
+                  {/* Acciones contextuales (Nielsen: Control y libertad del usuario) */}
+                  <CardActions sx={{ p: 2, pt: 0 }}>
+                    {booking.bookingStatus !== 'confirmada' && booking.bookingStatus !== 'cancelada' && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        startIcon={<PaymentIcon />}
+                        onClick={() => showConfirmDialog(booking, 'confirm')}
+                        disabled={isLoading}
+                        fullWidth
+                      >
+                        Pagar Reserva
+                      </Button>
+                    )}
+
+                    {booking.bookingStatus === 'confirmada' && (
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        startIcon={<CancelIcon />}
+                        onClick={() => showConfirmDialog(booking, 'cancel')}
+                        disabled={isLoading}
+                        fullWidth
+                      >
+                        Cancelar Reserva
+                      </Button>
+                    )}
+
+                    {booking.bookingStatus === 'cancelada' && (
+                      <Typography variant="body2" color="text.secondary" sx={{ width: '100%', textAlign: 'center' }}>
+                        Reserva cancelada
+                      </Typography>
+                    )}
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
+
+      {/* Estado vacío (Nielsen: Ayuda y documentación) */}
+      {bookings.length === 0 && !error && !isSearching && (
+        <Paper elevation={1} sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.50' }}>
+          <InfoIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            No hay reservas para mostrar
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ingrese su RUT para buscar sus reservas de karting
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Diálogo de confirmación (Nielsen: Prevención de errores) */}
+      <Dialog
+        open={confirmDialog.open}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {confirmDialog.action === 'confirm' ? 'Confirmar Pago' : 'Cancelar Reserva'}
+        </DialogTitle>
+        
+        <DialogContent>
+          {confirmDialog.booking && (
+            <Box>
+              <Alert severity={confirmDialog.action === 'confirm' ? 'info' : 'warning'} sx={{ mb: 2 }}>
+                {confirmDialog.action === 'confirm' 
+                  ? 'Al confirmar el pago, se procesará su reserva y se enviará a cada integrante, un comprobante por email. Este debe ser presentado al momento de la visita.'
+                  : 'Esta acción no se puede deshacer. ¿Está seguro de que desea cancelar esta reserva?'
+                }
+              </Alert>
+              
+              <Typography variant="body1" gutterBottom>
+                <strong>Detalles de la reserva:</strong>
+              </Typography>
+              
+              <Box sx={{ ml: 2 }}>
+                <Typography variant="body2">• Fecha: {confirmDialog.booking.bookingDate}</Typography>
+                <Typography variant="body2">• Hora: {confirmDialog.booking.bookingTime}</Typography>
+                <Typography variant="body2">• Personas: {confirmDialog.booking.numOfPeople}</Typography>
+                <Typography variant="body2">• Total: ${confirmDialog.booking.totalAmount?.toLocaleString()}</Typography>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        
+        <DialogActions>
+          <Button onClick={handleCloseDialog} disabled={isLoading}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => {
+              if (confirmDialog.action === 'confirm') {
+                handleConfirmBooking(confirmDialog.booking.id);
+              } else {
+                handleCancelBooking(confirmDialog.booking.id);
+              }
+            }}
+            variant="contained"
+            color={confirmDialog.action === 'confirm' ? 'success' : 'error'}
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={16} /> : null}
+          >
+            {isLoading ? 'Procesando...' : (confirmDialog.action === 'confirm' ? 'Confirmar Pago' : 'Cancelar Reserva')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar para mensajes de éxito (Nielsen: Visibilidad del estado del sistema) */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setSnackbarOpen(false)} 
+          severity="success" 
+          sx={{ width: '100%' }}
+          variant="filled"
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
