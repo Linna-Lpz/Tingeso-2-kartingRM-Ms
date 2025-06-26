@@ -83,12 +83,33 @@ const KartBookingForm = () => {
   else if(lapsOrMaxTime === 15) blockDuration = 35;
   else if(lapsOrMaxTime === 20) blockDuration = 40;
 
-  // Función para determinar el paso actual basado en datos completados
-  const getCurrentStep = () => {
-    if (!lapsOrMaxTime || !numOfPeople) return 0;
-    if (!bookingDate || !bookingTime) return 1;
-    if (people.length < numOfPeople) return 2;
-    return 3;
+  // Funciones para navegación entre pasos
+  const nextStep = () => {
+    if (activeStep < steps.length - 1) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (activeStep > 0) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
+  // Función para validar si se puede avanzar al siguiente paso
+  const canProceedToNextStep = () => {
+    switch (activeStep) {
+      case 0: // Detalles de la actividad
+        return lapsOrMaxTime && numOfPeople >= 1 && numOfPeople <= 15;
+      case 1: // Fecha y hora
+        return bookingDate && bookingTime;
+      case 2: // Participantes
+        return people.length === numOfPeople;
+      case 3: // Confirmar reserva
+        return true;
+      default:
+        return false;
+    }
   };
 
   // Función para limpiar todos los errores
@@ -200,7 +221,6 @@ const KartBookingForm = () => {
   const handleTimeChange = (newTime) => {
     setBookingTime(newTime);
     setTimeError(''); // Limpiar error cuando se selecciona una hora
-    setActiveStep(getCurrentStep());
   };
 
   const handleLapsOrMaxTimeChange = (value) => {
@@ -209,7 +229,6 @@ const KartBookingForm = () => {
       setLapsError('El número de vueltas o tiempo máximo permitido debe ser 10, 15 ó 20');
     } else {
       setLapsError('');
-      setActiveStep(getCurrentStep());
     }
   };
 
@@ -219,7 +238,10 @@ const KartBookingForm = () => {
       setPeopleError('El número de personas debe ser entre 1 y 15');
     } else {
       setPeopleError('');
-      setActiveStep(getCurrentStep());
+      // Resetear lista de participantes si el número cambia
+      if (people.length > value) {
+        setPeople(people.slice(0, value));
+      }
     }
   };
   
@@ -278,7 +300,6 @@ const KartBookingForm = () => {
   const handleDateChange = (newDate) => {
     setBookingDate(newDate);
     setDateError(''); // Limpiar error cuando se selecciona una fecha
-    setActiveStep(getCurrentStep());
     if (newDate) {
       fetchReservedTimes(newDate); // Llama a la función unificada para obtener los horarios reservados
     }
@@ -322,7 +343,6 @@ const KartBookingForm = () => {
     setPeople([...people, person]);
     setPerson({ rut: '', name: '', email: '' });
     clearErrors();
-    setActiveStep(getCurrentStep());
   };
 
   // Función para eliminar una persona de la lista de participantes
@@ -330,7 +350,6 @@ const KartBookingForm = () => {
     const updatedPeople = [...people];
     updatedPeople.splice(index, 1);
     setPeople(updatedPeople);
-    setActiveStep(getCurrentStep());
   };
 
   // Función mejorada con mejor feedback (Nielsen: Visibilidad del estado del sistema)
@@ -411,50 +430,138 @@ const KartBookingForm = () => {
     }
   };
    
-  // Función para mostrar resumen de la reserva (Nielsen: Prevención de errores)
+  // Función para renderizar el resumen de la reserva completo
   const renderBookingSummary = () => {
-    if (getCurrentStep() < 3) return null;
-
     return (
-      <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+      <Card sx={{ mb: 3, bgcolor: 'background.paper' }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <InfoIcon />
-            Resumen de su reserva
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+            <InfoIcon color="primary" />
+            Resumen de la reserva
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
-            <Chip 
-              label={`${lapsOrMaxTime} vueltas/minutos`} 
-              color="secondary" 
-              size="small"
-            />
-            <Chip 
-              label={`${numOfPeople} persona${numOfPeople > 1 ? 's' : ''}`} 
-              color="secondary" 
-              size="small"
-            />
-            {bookingDate && (
-              <Chip 
-                label={bookingDate.toLocaleDateString('es-CL')} 
-                color="secondary" 
-                size="small"
-              />
-            )}
-            {bookingTime && (
-              <Chip 
-                label={bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} 
-                color="secondary" 
-                size="small"
-              />
-            )}
-            <Chip 
-              label={`Duración: ${blockDuration} min`} 
-              color="secondary" 
-              size="small"
-            />
+          
+          <Box sx={{ display: 'grid', gap: 2 }}>
+            <Typography variant="body1" align="left">
+              <strong>N° de vueltas o tiempo máximo:</strong> {lapsOrMaxTime}
+            </Typography>
+            
+            <Typography variant="body1" align="left">
+              <strong>Cantidad de integrantes:</strong> {numOfPeople}
+            </Typography>
+            
+            <Typography variant="body1" align="left">
+              <strong>Fecha y hora:</strong> {bookingDate ? bookingDate.toLocaleDateString('es-CL') : ''} {bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}
+            </Typography>
+            
+            <Box>
+              <Typography variant="body1" sx={{ mb: 1 }}  align="left">
+                <strong>Integrantes:</strong>
+              </Typography>
+              {people.map((person, index) => (
+                <Typography key={index} variant="body2" sx={{ ml: 2 }}>
+                  {person.rut} - {person.name} - {person.email}
+                </Typography>
+              ))}
+            </Box>
           </Box>
         </CardContent>
       </Card>
+    );
+  };
+
+  // Función para renderizar el contenido de cada paso
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <ActivityDetailsSection
+            lapsOrMaxTime={lapsOrMaxTime}
+            numOfPeople={numOfPeople}
+            onLapsChange={handleLapsOrMaxTimeChange}
+            onPeopleChange={handleNumOfPeopleChange}
+            lapsError={lapsError}
+            peopleError={peopleError}
+          />
+        );
+      case 1:
+        return (
+          <DateTimeSection
+            bookingDate={bookingDate}
+            bookingTime={bookingTime}
+            onDateChange={handleDateChange}
+            onTimeChange={handleTimeChange}
+            shouldDisableTime={shouldDisableTime}
+            dateError={dateError}
+            timeError={timeError}
+            loadingTimes={loadingTimes}
+          />
+        );
+      case 2:
+        return (
+          <ParticipantsSection
+            person={person}
+            people={people}
+            numOfPeople={numOfPeople}
+            onPersonChange={setPerson}
+            onAddPerson={addPerson}
+            onRemovePerson={removePerson}
+            rutError={rutError}
+            nameError={nameError}
+            emailError={emailError}
+          />
+        );
+      case 3:
+        return renderBookingSummary();
+      default:
+        return null;
+    }
+  };
+
+  // Función para renderizar los botones de navegación
+  const renderNavigationButtons = () => {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+        <Button
+          variant="outlined"
+          onClick={prevStep}
+          disabled={activeStep === 0}
+          sx={{ minWidth: 120 }}
+        >
+          Anterior
+        </Button>
+        
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {activeStep < 3 && (
+            <Button
+              variant="contained"
+              onClick={nextStep}
+              disabled={!canProceedToNextStep()}
+              sx={{ minWidth: 120 }}
+            >
+              Siguiente
+            </Button>
+          )}
+          
+          {activeStep === 3 && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              sx={{ minWidth: 160 }}
+            >
+              {isLoading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={20} color="inherit" />
+                  Procesando...
+                </Box>
+              ) : (
+                'Realizar reserva'
+              )}
+            </Button>
+          )}
+        </Box>
+      </Box>
     );
   };
 
@@ -462,32 +569,16 @@ const KartBookingForm = () => {
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 3 }}>
-          {/* Header con información clara (Nielsen: Estándares y consistencia) */}
-          <Typography variant="h4" gutterBottom align="center" color="primary">
-            Reserva de Karts
-          </Typography>
-          <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 2 }}>
-            Complete el formulario paso a paso para reservar su experiencia
+          {/* Header con información clara */}
+          <Typography variant="h5" align="center" color="text.secondary" sx={{ mb: 2 }}>
+            Reserva tu kart
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
-          {/* Indicador de progreso fijo (Nielsen: Visibilidad del estado del sistema) */}
-          <Box 
-            sx={{ 
-              position: 'sticky',
-              top: 80,
-              zIndex: 1000,
-              backgroundColor: 'background.paper',
-              py: 2,
-              mb: 2,
-              borderRadius: 1,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              border: '1px solid',
-              borderColor: 'divider'
-            }}
-          >
+          {/* Indicador de progreso */}
+          <Box sx={{ mb: 4 }}>
             <Stepper 
-              activeStep={getCurrentStep()} 
+              activeStep={activeStep} 
               sx={{ 
                 '& .MuiStepLabel-root': {
                   cursor: 'default'
@@ -497,12 +588,12 @@ const KartBookingForm = () => {
               {steps.map((label, index) => (
                 <Step key={label}>
                   <StepLabel 
-                    icon={getCurrentStep() > index ? <CheckCircleIcon color="success" /> : undefined}
+                    icon={activeStep > index ? <CheckCircleIcon color="success" /> : undefined}
                     sx={{
                       '& .MuiStepLabel-label': {
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                        fontWeight: getCurrentStep() === index ? 600 : 400,
-                        color: getCurrentStep() === index ? 'primary.main' : 'text.secondary'
+                        fontWeight: activeStep === index ? 600 : 400,
+                        color: activeStep === index ? 'primary.main' : 'text.secondary'
                       }
                     }}
                   >
@@ -512,7 +603,7 @@ const KartBookingForm = () => {
               ))}
             </Stepper>
             
-            {/* Indicador de progreso visual adicional */}
+            {/* Indicador de progreso visual */}
             <Box sx={{ mt: 2, px: 2 }}>
               <Box 
                 sx={{ 
@@ -525,7 +616,7 @@ const KartBookingForm = () => {
               >
                 <Box 
                   sx={{ 
-                    width: `${(getCurrentStep() / (steps.length - 1)) * 100}%`, 
+                    width: `${(activeStep / (steps.length - 1)) * 100}%`, 
                     height: '100%', 
                     backgroundColor: 'primary.main',
                     transition: 'width 0.3s ease-in-out'
@@ -542,12 +633,12 @@ const KartBookingForm = () => {
                   fontWeight: 500
                 }}
               >
-                Paso {getCurrentStep() + 1} de {steps.length}
+                Paso {activeStep + 1} de {steps.length}
               </Typography>
             </Box>
           </Box>
 
-          {/* Mensajes de estado (Nielsen: Visibilidad del estado del sistema) */}
+          {/* Mensajes de estado */}
           {successMessage && (
             <Alert 
               severity="success" 
@@ -568,16 +659,18 @@ const KartBookingForm = () => {
             </Alert>
           )}
 
-          {/* Información de horarios (Nielsen: Ayuda y documentación) */}
-          <Alert severity="info" sx={{ mb: 3 }}>
-            <Typography variant="body2" sx={{ display: 'inline', alignItems: 'center' }}>
-              <strong>Horarios de atención:</strong><br />
-              • Lunes a Viernes: 14:00 - 22:00<br />
-              • Fines de semana y feriados: 10:00 - 22:00
-            </Typography>
-          </Alert>
+          {/* Información de horarios */}
+          {activeStep === 1 && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Typography variant="body2">
+                <strong>Horarios de atención:</strong><br />
+                • Lunes a Viernes: 14:00 - 22:00<br />
+                • Fines de semana y feriados: 10:00 - 22:00
+              </Typography>
+            </Alert>
+          )}
 
-          {/* Indicador de carga para horarios (Nielsen: Visibilidad del estado del sistema) */}
+          {/* Indicador de carga para horarios */}
           {loadingTimes && (
             <Alert severity="info" sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -587,78 +680,13 @@ const KartBookingForm = () => {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <ActivityDetailsSection
-              lapsOrMaxTime={lapsOrMaxTime}
-              numOfPeople={numOfPeople}
-              onLapsChange={handleLapsOrMaxTimeChange}
-              onPeopleChange={handleNumOfPeopleChange}
-              lapsError={lapsError}
-              peopleError={peopleError}
-            />
+          {/* Contenido del paso actual */}
+          <Box sx={{ minHeight: 400 }}>
+            {renderStepContent()}
+          </Box>
 
-            <DateTimeSection
-              bookingDate={bookingDate}
-              bookingTime={bookingTime}
-              onDateChange={handleDateChange}
-              onTimeChange={handleTimeChange}
-              shouldDisableTime={shouldDisableTime}
-              dateError={dateError}
-              timeError={timeError}
-              loadingTimes={loadingTimes}
-            />
-
-            <ParticipantsSection
-              person={person}
-              people={people}
-              numOfPeople={numOfPeople}
-              onPersonChange={setPerson}
-              onAddPerson={addPerson}
-              onRemovePerson={removePerson}
-              rutError={rutError}
-              nameError={nameError}
-              emailError={emailError}
-            />
-
-            {/* Resumen de la reserva (Nielsen: Prevención de errores) */}
-            {renderBookingSummary()}
-
-            {/* Botón de envío mejorado (Nielsen: Control y libertad del usuario) */}
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                disabled={
-                  people.length < numOfPeople || 
-                  !bookingDate || 
-                  !bookingTime || 
-                  !lapsOrMaxTime ||
-                  isLoading
-                }
-                sx={{ 
-                  minWidth: 200,
-                  position: 'relative'
-                }}
-              >
-                {isLoading ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CircularProgress size={20} color="inherit" />
-                    Procesando...
-                  </Box>
-                ) : (
-                  'Confirmar Reserva'
-                )}
-              </Button>
-              
-              {/* Texto de ayuda (Nielsen: Ayuda y documentación) */}
-              <Typography variant="caption" display="block" sx={{ mt: 1, color: 'text.secondary' }}>
-                {people.length < numOfPeople && 
-                  `Faltan ${numOfPeople - people.length} participante${numOfPeople - people.length > 1 ? 's' : ''}`}
-              </Typography>
-            </Box>
-          </form>
+          {/* Botones de navegación */}
+          {renderNavigationButtons()}
         </Paper>
       </Container>
     </LocalizationProvider>
