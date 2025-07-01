@@ -382,12 +382,6 @@ const RackWeekly = () => {
                         padding: 1.5,
                         border: '1px solid',
                         borderColor: 'grey.300',
-                        backgroundColor: slotBookings.length > 0 ? 'orange.50' : 'inherit',
-                        position: 'relative',
-                        '&:hover': {
-                          backgroundColor: slotBookings.length > 0 ? 'orange.100' : 'grey.100',
-                          cursor: 'pointer'
-                        }
                       }}
                     >
                       {slotBookings.length === 0 ? (
@@ -419,11 +413,6 @@ const RackWeekly = () => {
                               fontSize: '0.85rem',
                               border: '2px solid',
                               position: 'relative',
-                              '&:hover': {
-                                transform: 'scale(1.02)',
-                                boxShadow: 4
-                              },
-                              transition: 'all 0.2s ease-in-out'
                             }}
                           >
                             <Typography 

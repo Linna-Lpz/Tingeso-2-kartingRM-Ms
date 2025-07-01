@@ -1,8 +1,6 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +47,31 @@ export default function Navegate() {
             Karting RM
           </Button>
 
-          <Box sx={{ width: "100px" }} />
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              color="inherit"
+              startIcon={<HomeIcon />}
+              onClick={() => navigate("/clientRegister")}
+              sx={{ 
+                fontSize: "1rem",
+                fontWeight: "medium"
+              }}
+            >
+              Registro
+            </Button>
+
+            <Button
+              color="inherit"
+              startIcon={<HomeIcon />}
+              onClick={() => navigate("/reports")}
+              sx={{ 
+                fontSize: "1rem",
+                fontWeight: "medium"
+              }}
+            >
+              Gestión
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
