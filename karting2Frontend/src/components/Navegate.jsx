@@ -33,11 +33,12 @@ export default function Navegate() {
             Inicio
           </Button>
 
-          <Typography
-            variant="h5"
-            component="div"
+          <Button
+            color="inherit"
+            onClick={() => navigate("/")}
             sx={{
               fontWeight: "bold",
+              fontSize: "1.5rem",
               letterSpacing: "1px",
               textShadow: "1px 1px 2px rgba(0,0,0,0.2)",
               position: "absolute",
@@ -46,7 +47,7 @@ export default function Navegate() {
             }}
           >
             Karting RM
-          </Typography>
+          </Button>
 
           <Box sx={{ width: "100px" }} />
         </Toolbar>
