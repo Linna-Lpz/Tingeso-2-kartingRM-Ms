@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { es } from 'date-fns/locale';
@@ -14,7 +14,6 @@ import {
   Step,
   StepLabel,
   CircularProgress,
-  Chip,
   Card,
   CardContent
 } from '@mui/material';
@@ -450,12 +449,16 @@ const KartBookingForm = () => {
             </Typography>
             
             <Typography variant="body1" align="left">
-              <strong>Fecha y hora:</strong> {bookingDate ? bookingDate.toLocaleDateString('es-CL') : ''} {bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}
+              <strong>Fecha:</strong> {bookingDate ? bookingDate.toLocaleDateString('es-CL') : ''}
+            </Typography>
+
+            <Typography variant="body1" align="left">
+              <strong>Hora:</strong> {bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}
             </Typography>
             
             <Box>
               <Typography variant="body1" sx={{ mb: 1 }}  align="left">
-                <strong>Integrantes:</strong>
+                <strong>Datos de los integrantes:</strong>
               </Typography>
               {people.map((person, index) => (
                 <Typography key={index} variant="body2" sx={{ ml: 2 }}>

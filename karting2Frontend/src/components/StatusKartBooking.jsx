@@ -80,6 +80,39 @@ const StatusKartBooking = () => {
     }
   };
 
+  // Función para extraer mensaje de error del backend
+  const extractErrorMessage = (error) => {
+    if (error.response && error.response.data) {
+      // Si el backend retorna un string directamente
+      if (typeof error.response.data === 'string') {
+        return error.response.data;
+      }
+      // Si el backend retorna un objeto con mensaje
+      if (error.response.data.message) {
+        return error.response.data.message;
+      }
+      // Si el backend retorna un objeto con error
+      if (error.response.data.error) {
+        return error.response.data.error;
+      }
+      // Si hay otros campos comunes de error
+      if (error.response.data.details) {
+        return error.response.data.details;
+      }
+    }
+    
+    // Si es un error de red
+    if (error.message) {
+      if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
+        return 'Error de conexión. Verifique su conexión a internet e intente nuevamente.';
+      }
+      return error.message;
+    }
+    
+    // Mensaje genérico como último recurso
+    return 'Ha ocurrido un error inesperado. Por favor, intente nuevamente.';
+  };
+
   // Función para cargar las reservas (Nielsen: Visibilidad del estado del sistema)
   const fetchBookings = async () => {
     if (!rut.trim()) {
@@ -100,11 +133,13 @@ const StatusKartBooking = () => {
       setBookings(response.data);
       
       if (response.data.length === 0) {
+        // Mensaje cuando no hay resultados (puede venir del backend o ser local)
         setError('No se encontraron reservas para este RUT.');
       }
     } catch (err) {
       console.error('Error al obtener las reservas:', err);
-      setError('Error al obtener las reservas. Verifique el RUT e intente nuevamente.');
+      // Usar el mensaje del backend
+      setError(extractErrorMessage(err));
     } finally {
       setIsSearching(false);
     }
@@ -122,7 +157,8 @@ const StatusKartBooking = () => {
       setRefresh((prev) => !prev);
     } catch (err) {
       console.error('Error al confirmar la reserva:', err);
-      setError('Error al confirmar la reserva. Intente nuevamente.');
+      // Usar el mensaje del backend
+      setError(extractErrorMessage(err));
     } finally {
       setIsLoading(false);
       setConfirmDialog({ open: false, booking: null, action: null });
@@ -153,7 +189,8 @@ const StatusKartBooking = () => {
         setRefresh((prev) => !prev);
       } catch (err) {
         console.error('Error al cancelar la reserva:', err);
-        setError('Error al cancelar la reserva. Intente nuevamente.');
+        // Usar el mensaje del backend
+        setError(extractErrorMessage(err));
         setCancelBookingId(null);
       } finally {
         setIsLoading(false);
