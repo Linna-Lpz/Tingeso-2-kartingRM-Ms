@@ -15,7 +15,13 @@ import {
   StepLabel,
   CircularProgress,
   Card,
-  CardContent
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import { 
   CheckCircle as CheckCircleIcon, 
@@ -455,16 +461,30 @@ const KartBookingForm = () => {
             <Typography variant="body1" align="left">
               <strong>Hora:</strong> {bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}
             </Typography>
-            
-            <Box>
+              <Box>
               <Typography variant="body1" sx={{ mb: 1 }}  align="left">
                 <strong>Datos de los integrantes:</strong>
               </Typography>
-              {people.map((person, index) => (
-                <Typography key={index} variant="body2" sx={{ ml: 2 }}>
-                  {person.rut} - {person.name} - {person.email}
-                </Typography>
-              ))}
+              <TableContainer component={Paper} sx={{ mt: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><strong>RUT</strong></TableCell>
+                      <TableCell><strong>Nombre</strong></TableCell>
+                      <TableCell><strong>Email</strong></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {people.map((person, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{person.rut}</TableCell>
+                        <TableCell>{person.name}</TableCell>
+                        <TableCell>{person.email}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Box>
           </Box>
         </CardContent>
@@ -497,6 +517,7 @@ const KartBookingForm = () => {
             dateError={dateError}
             timeError={timeError}
             loadingTimes={loadingTimes}
+            isHoliday={isHoliday}
           />
         );
       case 2:
