@@ -7,6 +7,7 @@ import Navegate from './components/Navegate';
 import RackWeekly from './components/RackWeekly';
 import StatusKartBooking from './components/StatusKartBooking';
 import Reports from './components/Reports';
+import Information from './components/Information';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/rackWeekly" element={<RackWeekly/>} />
               <Route path="/statusKartBooking" element={<StatusKartBooking/>} />
               <Route path="/reports" element={<Reports/>} />
+              <Route path="/information" element={<Information/>} />
             </Routes>
           </div>
       </Router>
