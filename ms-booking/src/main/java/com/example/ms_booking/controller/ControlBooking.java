@@ -1,25 +1,24 @@
 package com.example.ms_booking.controller;
 
 import com.example.ms_booking.entity.EntityBooking;
-import com.example.ms_booking.repository.RepoBooking;
 import com.example.ms_booking.service.ServiceBooking;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/booking")
 @CrossOrigin(origins = "*")
 public class ControlBooking {
-    @Autowired
-    ServiceBooking serviceBooking;
-    @Autowired
-    RepoBooking repoBooking;
+
+    private final ServiceBooking serviceBooking;
+
+    public ControlBooking(ServiceBooking serviceBooking) {
+        this.serviceBooking = serviceBooking;
+    }
 
     @PostMapping("/save")
     public ResponseEntity<EntityBooking> saveBooking(@RequestBody EntityBooking booking) {

@@ -44,7 +44,7 @@ public class EntityBooking {
     @Column(length = 1000)
     private String totalPrice; // Tarifa con descuentos aplicados
 
-    private String Iva = "19"; // Porcentaje impuesto
+    private String iva = "19"; // Porcentaje impuesto
     private String totalWithIva; // Total con impuesto
     private Integer totalAmount; // Suma de los valores por cliente (Precio final)
 }

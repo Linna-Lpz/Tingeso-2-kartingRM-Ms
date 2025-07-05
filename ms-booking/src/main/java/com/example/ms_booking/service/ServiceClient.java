@@ -3,7 +3,6 @@ package com.example.ms_booking.service;
 import com.example.ms_booking.entity.EntityClient;
 import com.example.ms_booking.exception.ClientValidationException;
 import com.example.ms_booking.repository.RepoClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,8 +10,12 @@ import java.time.format.DateTimeParseException;
 
 @Service
 public class ServiceClient {
-    @Autowired
-    private RepoClient repoClient;
+
+    private final RepoClient repoClient;
+
+    public ServiceClient(RepoClient repoClient) {
+        this.repoClient = repoClient;
+    }
 
     /**
      * Método para crear un nuevo cliente

@@ -2,6 +2,8 @@ package com.example.ms_booking.service;
 
 import com.example.ms_booking.entity.EntityBooking;
 import com.example.ms_booking.repository.RepoBooking;
+import com.itextpdf.text.*;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -10,15 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -35,10 +31,16 @@ import java.util.Objects;
 
 @Service
 public class ServiceVoucher {
-    @Autowired
-    RepoBooking repoBooking;
-    @Autowired
-    private JavaMailSender mailSender;
+
+    private final RepoBooking repoBooking;
+    private final JavaMailSender mailSender;
+
+    public ServiceVoucher(RepoBooking repoBooking, JavaMailSender mailSender) {
+        this.repoBooking = repoBooking;
+        this.mailSender = mailSender;
+    }
+
+    private static final String MESSAGE_ERROR = "Reserva no encontrada con ID: ";
 
     /**
      * Método para exportar el comprobante a Excel
@@ -47,30 +49,18 @@ public class ServiceVoucher {
      */
     public ResponseEntity<byte[]> exportVoucherToExcel(Long bookingId) {
         EntityBooking booking = repoBooking.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + bookingId));
+                .orElseThrow(() -> new RuntimeException(MESSAGE_ERROR + bookingId));
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Comprobante");
 
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            Row headerRow = sheet.createRow(0);
+            CellStyle headerStyle = createHeaderStyle(workbook);
             String[] columns = {
                     "Nombre integrante", "Tarifa base", "Tipo descuento",
                     "Monto con descuento", "IVA (%)", "Monto total con IVA"
             };
 
-            for (int i = 0; i < columns.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(columns[i]);
-                cell.setCellStyle(headerStyle);
-                sheet.autoSizeColumn(i);
-            }
+            createHeaderRow(sheet, columns, headerStyle);
 
             String[] clientNames = booking.getClientsNames().split(",");
             String[] discounts = booking.getDiscounts().split(",");
@@ -78,27 +68,17 @@ public class ServiceVoucher {
             String[] totalWithIva = booking.getTotalWithIva().split(",");
             Integer totalAmount = booking.getTotalAmount();
 
-            for (int j = 0; j < booking.getNumOfPeople(); j++) {
-                Row dataRow = sheet.createRow(j + 1);
-
-                dataRow.createCell(0).setCellValue(clientNames.length > j ? clientNames[j] : "");
-                dataRow.createCell(1).setCellValue(booking.getBasePrice() != null ? booking.getBasePrice() : "");
-                dataRow.createCell(2).setCellValue(discounts.length > j ? discounts[j] : "");
-                dataRow.createCell(3).setCellValue(totalPrices.length > j ? totalPrices[j] : "");
-                dataRow.createCell(4).setCellValue(booking.getIva() != null ? booking.getIva() : "");
-                dataRow.createCell(5).setCellValue(totalWithIva.length > j ? totalWithIva[j] : "");
-            }
+            writeDataRows(sheet, booking, clientNames, discounts, totalPrices, totalWithIva);
 
             for (int i = 0; i < columns.length; i++) {
-                sheet.autoSizeColumn(i); // Ajustar el ancho de la columna
+                sheet.autoSizeColumn(i);
             }
 
-            Row amountRow = sheet.createRow(booking.getNumOfPeople() + 2); // Crear fila para "Total a Pagar"
+            Row amountRow = sheet.createRow(booking.getNumOfPeople() + 2);
             Cell cell = amountRow.createCell(columns.length - 1);
             cell.setCellValue("Total a Pagar");
             cell.setCellStyle(headerStyle);
 
-            // Crear fila debajo para el valor de totalAmount
             Row totalAmountRow = sheet.createRow(booking.getNumOfPeople() + 3);
             Cell totalAmountCell = totalAmountRow.createCell(columns.length - 1);
             totalAmountCell.setCellValue(totalAmount);
@@ -118,7 +98,39 @@ public class ServiceVoucher {
                     .body(excelBytes);
 
         } catch (IOException e) {
-            throw new RuntimeException("Error al generar el archivo Excel del comprobante: " + e.getMessage());
+            throw new IllegalArgumentException("Error al generar el archivo Excel del comprobante: " + e.getMessage());
+        }
+    }
+
+    private CellStyle createHeaderStyle(Workbook workbook) {
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        return headerStyle;
+    }
+
+    private void createHeaderRow(Sheet sheet, String[] columns, CellStyle headerStyle) {
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < columns.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columns[i]);
+            cell.setCellStyle(headerStyle);
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    private void writeDataRows(Sheet sheet, EntityBooking booking, String[] clientNames, String[] discounts, String[] totalPrices, String[] totalWithIva) {
+        for (int j = 0; j < booking.getNumOfPeople(); j++) {
+            Row dataRow = sheet.createRow(j + 1);
+            dataRow.createCell(0).setCellValue(clientNames.length > j ? clientNames[j] : "");
+            dataRow.createCell(1).setCellValue(booking.getBasePrice() != null ? booking.getBasePrice() : "");
+            dataRow.createCell(2).setCellValue(discounts.length > j ? discounts[j] : "");
+            dataRow.createCell(3).setCellValue(totalPrices.length > j ? totalPrices[j] : "");
+            dataRow.createCell(4).setCellValue(booking.getIva() != null ? booking.getIva() : "");
+            dataRow.createCell(5).setCellValue(totalWithIva.length > j ? totalWithIva[j] : "");
         }
     }
 
@@ -128,7 +140,7 @@ public class ServiceVoucher {
      */
     public ResponseEntity<byte[]> convertExcelToPdf(Long bookingId) {
         EntityBooking booking = repoBooking.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + bookingId));
+                .orElseThrow(() -> new RuntimeException(MESSAGE_ERROR + bookingId));
 
         Long id = booking.getId();
         String bookingDate = booking.getBookingDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -178,7 +190,7 @@ public class ServiceVoucher {
             for (String header : headers) {
                 PdfPCell headerCell = new PdfPCell(new Phrase(header));
                 headerCell.setBackgroundColor(new BaseColor(230, 230, 250)); // Color de fondo para los encabezados
-                headerCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER); // Alinear texto al centro
+                headerCell.setHorizontalAlignment(Element.ALIGN_CENTER); // Alinear texto al centro
                 headerCell.setPadding(8); // Añadir padding
                 pdfTable.addCell(headerCell);
             }
@@ -192,7 +204,7 @@ public class ServiceVoucher {
                 for (Cell cell : row) {
                     String value = getCellValueAsString(cell);
                     PdfPCell pdfCell = new PdfPCell(new Phrase(value));
-                    pdfCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER); // Alinear texto al centro
+                    pdfCell.setHorizontalAlignment(Element.ALIGN_CENTER); // Alinear texto al centro
                     pdfCell.setPadding(8); // Añadir padding
                     pdfTable.addCell(pdfCell);
                 }
@@ -216,7 +228,7 @@ public class ServiceVoucher {
                     .body(pdfBytes);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al convertir Excel a PDF: " + e.getMessage());
+            throw new IllegalArgumentException("Error al convertir Excel a PDF: " + e.getMessage());
         }
     }
 
@@ -244,7 +256,7 @@ public class ServiceVoucher {
      */
     public void sendVoucherByEmail(Long bookingId) {
         EntityBooking booking = repoBooking.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + bookingId));
+                .orElseThrow(() -> new RuntimeException(MESSAGE_ERROR + bookingId));
 
         String[] clientsEmails = booking.getClientsEmails().split(",");
 
@@ -252,7 +264,7 @@ public class ServiceVoucher {
         byte[] pdfBytes = pdfResponse.getBody();
 
         if (pdfBytes == null) {
-            throw new RuntimeException("No se pudo generar el comprobante en PDF.");
+            throw new IllegalArgumentException("No se pudo generar el comprobante en PDF.");
         }
 
         try {
@@ -276,7 +288,7 @@ public class ServiceVoucher {
             tempFile.deleteOnExit();
 
         } catch (IOException e) {
-            throw new RuntimeException("Error al guardar el PDF temporalmente: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Error al guardar el PDF temporalmente: " + e.getMessage(), e);
         }
     }
 
@@ -303,11 +315,14 @@ public class ServiceVoucher {
             helper.setText(text);
 
             FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
-            helper.addAttachment(file.getFilename(), file);
+            String filename = file.getFilename();
+            if (filename != null) {
+                helper.addAttachment(filename, file);
+            }
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Error sending email: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Error sending email: " + e.getMessage(), e);
         }
     }
 }

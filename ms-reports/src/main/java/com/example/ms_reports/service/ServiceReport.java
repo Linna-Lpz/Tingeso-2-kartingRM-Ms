@@ -1,7 +1,6 @@
 package com.example.ms_reports.service;
 
 import com.example.ms_reports.dto.EntityBookingDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +12,14 @@ import java.util.List;
 
 @Service
 public class ServiceReport {
-    @Autowired
-    private RestTemplate restTemplate;
 
-    // TO DO: Obtener ingresos según un rango dado de fechas
-    // Debt ratio de la deuda técnica
+    private final RestTemplate restTemplate;
+
+    public ServiceReport(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    private static final String STATUS_CONFIRMADA = "confirmada";
 
     /**
      * Método para obtener una LISTA de ingresos por mes según número de vueltas
@@ -32,7 +34,6 @@ public class ServiceReport {
         while (startMonth <= endMonth) {
             String monthString = String.format("%02d", startMonth);
             Integer income = getIncomesForTimeAndMonth(lapsOrTimeMax, monthString);
-            System.out.println("Mes: " + monthString + ", Ingreso: " + income);//
             totalIncomes += income;
             incomes.add(income);
             startMonth++;
@@ -48,7 +49,7 @@ public class ServiceReport {
      * @return ingresos totales
      */
     public Integer getIncomesForTimeAndMonth(Integer lapsOrTimeMax, String month) {
-        List<EntityBookingDTO> bookings = findByStatusAndDayAndLapsOrMaxTime("confirmada", month, lapsOrTimeMax);
+        List<EntityBookingDTO> bookings = findByStatusAndDayAndLapsOrMaxTime(STATUS_CONFIRMADA, month, lapsOrTimeMax);
         Integer incomes = 0;
         for (EntityBookingDTO booking : bookings) {
             Integer numOfPeople = booking.getNumOfPeople();
@@ -105,10 +106,9 @@ public class ServiceReport {
     public List<Integer> getIncomesForMonthOfNumOfPeople(Integer people, Integer startMonth, Integer endMonth) {
         List<Integer> incomes = new ArrayList<>();
         Integer totalIncomes = 0;
-        //for (int month = 1; month <= 12; month++) {
+
         while (startMonth <= endMonth) {
             String monthString = String.format("%02d", startMonth);
-            System.out.println("Mes: " + monthString);//
             Integer income = getIncomesForNumOfPeople(people, monthString);
             totalIncomes += income;
             incomes.add(income);
@@ -126,17 +126,17 @@ public class ServiceReport {
      * @return ingresos totales
      */
     public Integer getIncomesForNumOfPeople(Integer people, String month) {
-        List<EntityBookingDTO> bookings = new ArrayList<>();
+        List<EntityBookingDTO> bookings;
         if (people == 1 || people == 2) {
-            bookings = findByStatusAndDayAndNumOfPeople1or2("confirmada", month, people);
+            bookings = findByStatusAndDayAndNumOfPeople1or2(STATUS_CONFIRMADA, month, people);
         } else if (people >= 3 && people <= 5) {
-            bookings = findByStatusAndDayAndNumOfPeople3to5("confirmada", month, people);
+            bookings = findByStatusAndDayAndNumOfPeople3to5(STATUS_CONFIRMADA, month, people);
         } else if (people >= 6 && people <= 10) {
-            bookings = findByStatusAndDayAndNumOfPeople6to10("confirmada", month, people);
+            bookings = findByStatusAndDayAndNumOfPeople6to10(STATUS_CONFIRMADA, month, people);
         } else if (people >= 11 && people <= 15) {
-            bookings = findByStatusAndDayAndNumOfPeople11to15("confirmada", month, people);
+            bookings = findByStatusAndDayAndNumOfPeople11to15(STATUS_CONFIRMADA, month, people);
         } else {
-            System.out.println("Error: Número de personas no válido");
+            throw new IllegalArgumentException("Número de personas no válido");
         }
         Integer incomes = 0;
         for (EntityBookingDTO booking : bookings) {

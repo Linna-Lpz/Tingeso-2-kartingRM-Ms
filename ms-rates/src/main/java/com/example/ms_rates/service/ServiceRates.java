@@ -7,19 +7,29 @@ public class ServiceRates {
 
     public int calculatePrice(Integer lapsOrMaxTimeAllowed){
         int basePrice;
-        basePrice = (lapsOrMaxTimeAllowed == 10)? 15000
-                : (lapsOrMaxTimeAllowed == 15) ? 20000
-                : (lapsOrMaxTimeAllowed == 20) ? 25000
-                : 0;
+        if (lapsOrMaxTimeAllowed == 10) {
+            basePrice = 15000;
+        } else if (lapsOrMaxTimeAllowed == 15) {
+            basePrice = 20000;
+        } else if (lapsOrMaxTimeAllowed == 20) {
+            basePrice = 25000;
+        } else {
+            basePrice = 0;
+        }
         return basePrice;
     }
 
     public int calculateDuration(Integer lapsOrMaxTimeAllowed){
         int duration;
-        duration = (lapsOrMaxTimeAllowed == 10)? 30
-                : (lapsOrMaxTimeAllowed == 15) ? 35
-                : (lapsOrMaxTimeAllowed == 20) ? 40
-                : 0;
+        if (lapsOrMaxTimeAllowed == 10) {
+            duration = 30;
+        } else if (lapsOrMaxTimeAllowed == 15) {
+            duration = 35;
+        } else if (lapsOrMaxTimeAllowed == 20) {
+            duration = 40;
+        } else {
+            duration = 0;
+        }
         return duration;
     }
 }

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +14,12 @@ import com.example.ms_rack.service.ServiceRack;
 @RequestMapping("/rack")
 @CrossOrigin(origins = "*")
 public class ControlRack {
-    @Autowired
-    ServiceRack serviceRack;
+
+    private final ServiceRack serviceRack;
+
+    public ControlRack(ServiceRack serviceRack) {
+        this.serviceRack = serviceRack;
+    }
 
     @PostMapping("/save/{id}/{bookingDate}/{bookingTime}/{bookingTimeEnd}/{bookingStatus}/{clientName}")
     public void saveRack(@PathVariable Long id,

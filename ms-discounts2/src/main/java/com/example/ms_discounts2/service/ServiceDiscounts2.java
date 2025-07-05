@@ -12,10 +12,15 @@ public class ServiceDiscounts2 {
      */
     public int discountForVisitsPerMonth(Integer visitsPerMonth, int basePrice) {
         int discount;
-        discount = (2 <= visitsPerMonth && visitsPerMonth <= 4) ? 10
-                : (5 == visitsPerMonth || visitsPerMonth == 6) ? 20
-                : (visitsPerMonth >= 7) ? 30
-                : 0;
+        if (2 <= visitsPerMonth && visitsPerMonth <= 4) {
+            discount = 10;
+        } else if (visitsPerMonth == 5 || visitsPerMonth == 6) {
+            discount = 20;
+        } else if (visitsPerMonth >= 7) {
+            discount = 30;
+        } else {
+            discount = 0;
+        }
         return basePrice - ((basePrice * discount) / 100);
     }
 }

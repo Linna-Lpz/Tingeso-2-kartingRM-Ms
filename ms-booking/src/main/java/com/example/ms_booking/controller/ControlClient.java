@@ -1,6 +1,5 @@
 package com.example.ms_booking.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +10,12 @@ import com.example.ms_booking.service.ServiceClient;
 @RequestMapping("/client")
 @CrossOrigin(origins = "*")
 public class ControlClient {
-    @Autowired
-    ServiceClient serviceClient;
+
+    private final ServiceClient serviceClient;
+
+    public ControlClient(ServiceClient serviceClient) {
+        this.serviceClient = serviceClient;
+    }
 
     @PostMapping("/save")
     public ResponseEntity<EntityClient> saveClient(@RequestBody EntityClient client) {

@@ -4,15 +4,20 @@ import com.example.ms_rack.entity.EntityRack;
 import com.example.ms_rack.repository.RepoRack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Service
+    @Service
 public class ServiceRack {
-    @Autowired
-    RepoRack repoRack;
+
+    private final RepoRack repoRack;
+
+    public ServiceRack(RepoRack repoRack) {
+        this.repoRack = repoRack;
+    }
 
     public void saveRack(Long id, LocalDate bookingDate, LocalTime bookingTime, LocalTime bookingTimeEnd, String bookingStatus, String clientName) {
         EntityRack entityRack = new EntityRack();

@@ -1,7 +1,6 @@
 package com.example.ms_rates.controller;
 
 import com.example.ms_rates.service.ServiceRates;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +8,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rates")
 @CrossOrigin(origins = "*")
 public class ControlRates {
-    @Autowired
-    ServiceRates serviceRates;
+
+    private final ServiceRates serviceRates;
+
+    public ControlRates(ServiceRates serviceRates) {
+        this.serviceRates = serviceRates;
+    }
 
     /**
      * Método para obtener el precio base de acuerdo a la cantidad de vueltas o tiempo máximo permitido

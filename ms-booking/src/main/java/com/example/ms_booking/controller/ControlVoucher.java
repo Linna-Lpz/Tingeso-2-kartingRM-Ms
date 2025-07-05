@@ -1,7 +1,6 @@
 package com.example.ms_booking.controller;
 
 import com.example.ms_booking.service.ServiceVoucher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,9 +8,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/voucher")
 @CrossOrigin(origins = "*")
 public class ControlVoucher {
-    @Autowired
-    ServiceVoucher serviceVoucher;
 
+    private final ServiceVoucher serviceVoucher;
+
+    public ControlVoucher(ServiceVoucher serviceVoucher) {
+        this.serviceVoucher = serviceVoucher;
+    }
 
     /**
      * Método para exportar el comprobante a Excel

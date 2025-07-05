@@ -1,7 +1,6 @@
 package com.example.ms_reports.controller;
 
 import com.example.ms_reports.service.ServiceReport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +10,12 @@ import java.util.List;
 @RequestMapping("/reports")
 @CrossOrigin(origins = "*")
 public class ControlReport {
-    @Autowired
-    ServiceReport serviceReport;
+
+    private final ServiceReport serviceReport;
+
+    public ControlReport(ServiceReport serviceReport) {
+        this.serviceReport = serviceReport;
+    }
 
     /**
      * Método para obtener los ingresos totales de un mes según número de vueltas
@@ -50,7 +53,7 @@ public class ControlReport {
      */
     @GetMapping("/getTotalForReport2/{startMonth}/{endMonth}")
     public ResponseEntity<List<Integer>> getIncomesForNumOfPeopleOfMonth(@PathVariable Integer startMonth, @PathVariable Integer endMonth){
-        List<Integer> incomes = serviceReport.getIncomesForLapsOfMonth(startMonth, endMonth);
+        List<Integer> incomes = serviceReport.getIncomesForNumOfPeopleOfMonth(startMonth, endMonth);
         return ResponseEntity.ok(incomes);
     }
 }
