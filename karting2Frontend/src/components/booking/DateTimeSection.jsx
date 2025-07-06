@@ -1,6 +1,7 @@
+import React, { useState } from 'react';
 import { Typography, Grid, Paper, Alert, Box, Button } from '@mui/material';
 import { DateCalendar } from '@mui/x-date-pickers';
-import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const DateTimeSection = ({ 
   bookingDate, 
@@ -78,6 +79,21 @@ const DateTimeSection = ({
   };
 
   const hourBlocks = generateHourBlocks();
+  const getButtonTextColor = (block) => {
+    if (!block.hasAvailableTimes) return '#9e9e9e';
+    if (expandedHour === block.hour) return 'white';
+    return 'primary.main';
+  };
+  const getButtonBgColor = (block) => {
+    if (!block.hasAvailableTimes) return '#f5f5f5';
+    if (expandedHour === block.hour) return 'primary.main';
+    return 'transparent';
+  };
+  const getButtonHoverBgColor = (block) => {
+    if (!block.hasAvailableTimes) return '#f5f5f5';
+    if (expandedHour === block.hour) return 'primary.dark';
+    return 'primary.light';
+  };
   return (
     <>
       <Typography variant="h6" gutterBottom>Fecha y hora</Typography>
@@ -132,13 +148,10 @@ const DateTimeSection = ({
                         onClick={() => handleHourBlockClick(block.hour)}
                         sx={{
                           minHeight: 40,
-                          backgroundColor: !block.hasAvailableTimes ? '#f5f5f5' : 
-                                         expandedHour === block.hour ? 'primary.main' : 'transparent',
-                          color: !block.hasAvailableTimes ? '#9e9e9e' : 
-                                expandedHour === block.hour ? 'white' : 'primary.main',
+                          backgroundColor: getButtonBgColor(block),
+                          color: getButtonTextColor(block),
                           '&:hover': {
-                            backgroundColor: !block.hasAvailableTimes ? '#f5f5f5' : 
-                                           expandedHour === block.hour ? 'primary.dark' : 'primary.light',
+                            backgroundColor: getButtonHoverBgColor(block),
                           },
                           '&.Mui-disabled': {
                             backgroundColor: '#f5f5f5',
@@ -158,8 +171,8 @@ const DateTimeSection = ({
                       Horarios disponibles para las {expandedHour.toString().padStart(2, '0')}:00
                     </Typography>
                     <Grid container spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
-                      {hourBlocks.find(b => b.hour === expandedHour)?.availableTimes.map((time, index) => (
-                        <Grid item xs={4} key={index}>
+                      {hourBlocks.find(b => b.hour === expandedHour)?.availableTimes.map((time) => (
+                          <Grid item xs={4} key={time.getTime()}>
                           <Button
                             fullWidth
                             variant={bookingTime && formatTime(bookingTime) === formatTime(time) ? "contained" : "outlined"}
@@ -186,5 +199,14 @@ const DateTimeSection = ({
     </>
   );
 };
-
+DateTimeSection.propTypes = {
+  bookingDate: PropTypes.instanceOf(Date),
+  bookingTime: PropTypes.instanceOf(Date),
+  onDateChange: PropTypes.func.isRequired,
+  onTimeChange: PropTypes.func.isRequired,
+  shouldDisableTime: PropTypes.func.isRequired,
+  dateError: PropTypes.string,
+  timeError: PropTypes.string,
+  isHoliday: PropTypes.func.isRequired
+};
 export default DateTimeSection;

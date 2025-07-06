@@ -47,7 +47,7 @@ const RackWeekly = () => {
   // Cargar reservas cuando cambia la semana, mes o año
   useEffect(() => {
     fetchBookings();
-    // eslint-disable-next-line
+     
   }, [weekStart, selectedMonth, selectedYear]);
 
   // Actualizar la semana cuando cambia el mes o año

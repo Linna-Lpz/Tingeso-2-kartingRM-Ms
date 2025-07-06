@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,7 +10,6 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export default function Navegate() {
   const navigate = useNavigate();
@@ -93,22 +93,24 @@ export default function Navegate() {
             >
               Gestión
             </Button>
-            
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'gestión-button',
-              }}
-            >
-              <MenuItem onClick={() => handleMenuItemClick("/reports")}>
-                Reporte de ventas
-              </MenuItem>
-              <MenuItem onClick={() => handleMenuItemClick("/rackWeekly")}>
-                Rack semanal
-              </MenuItem>
-            </Menu>
+
+              <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  slotProps={{
+                      menuList: {
+                          'aria-labelledby': 'gestión-button',
+                      },
+                  }}
+              >
+                  <MenuItem onClick={() => handleMenuItemClick("/reports")}>
+                      Reporte de ventas
+                  </MenuItem>
+                  <MenuItem onClick={() => handleMenuItemClick("/rackWeekly")}>
+                      Rack semanal
+                  </MenuItem>
+              </Menu>
           </Box>
         </Toolbar>
       </AppBar>

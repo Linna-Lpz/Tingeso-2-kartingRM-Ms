@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { FormControl, InputLabel, Select, MenuItem, Box, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    FormControl, InputLabel, Select, MenuItem, Box, Button } from '@mui/material';
 import bookingService from '../services/services.management';
 
 const Reports = () => {
@@ -34,7 +34,7 @@ const Reports = () => {
             setreportData1(prev => ({...prev, [lapsOrTimeMax]: response.data})); // Actualiza el estado con los datos obtenidos
             setTotalIncomes1(responseTotalIncomes1.data);
             setError(null);
-        } catch (err) {
+        } catch {
             setError("No se pudieron cargar las reservas del reporte 1. Por favor, intente de nuevo más tarde.");
         }
     };
@@ -47,7 +47,7 @@ const Reports = () => {
             setreportData2(prev => ({...prev, [people]: response2.data})); // Actualiza el estado con los datos obtenidos
             setTotalIncomes2(responseTotalIncomes2.data);
             setError(null);
-        } catch (err) {
+        } catch {
             setError("No se pudieron cargar las reservas del reporte 2. Por favor, intente de nuevo más tarde.");
         }
     };
@@ -74,7 +74,7 @@ const Reports = () => {
                         onChange={e => setStartMonth(e.target.value)}
                     >
                         {monthNames.map((name, idx) => (
-                            <MenuItem key={idx+1} value={idx+1}>{name}</MenuItem>
+                            <MenuItem key={name} value={idx+1}>{name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -86,7 +86,7 @@ const Reports = () => {
                         onChange={e => setEndMonth(e.target.value)}
                     >
                         {monthNames.map((name, idx) => (
-                            <MenuItem key={idx+1} value={idx+1}>{name}</MenuItem>
+                            <MenuItem key={name} value={idx+1}>{name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -108,7 +108,7 @@ const Reports = () => {
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>Vueltas/Tiempo</TableCell>
-                                {selectedMonths.map((month, idx) => (
+                                {selectedMonths.map((month) => (
                                     <TableCell key={month} align="center" sx={{ fontWeight: 'bold' }}>
                                         {month}
                                     </TableCell>
@@ -128,9 +128,9 @@ const Reports = () => {
                                     <TableCell align="center">
                                     {`${laps} vueltas o ${laps} mins`}
                                     </TableCell>
-                                    {selectedMonths.map((_, idx) => (
-                                        <TableCell key={idx} align="center">
-                                            {data[startMonth + idx] || 0}
+                                    {selectedMonths.map((_, i) => (
+                                        <TableCell key={selectedMonths[i]} align="center">
+                                            {data[startMonth + i] || 0}
                                         </TableCell>
                                     ))}
                                     <TableCell align="center">
@@ -141,9 +141,9 @@ const Reports = () => {
                             })}
                             <TableRow>
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>Total</TableCell>
-                                {selectedMonths.map((_, idx) => (
-                                    <TableCell key={idx} align="center" sx={{ fontWeight: 'bold' }}>
-                                        {Array.isArray(totalIncomes1) ? (totalIncomes1[startMonth + idx - 1] || 0) : 0}
+                                {selectedMonths.map((month) => (
+                                    <TableCell key={month} align="center" sx={{ fontWeight: 'bold' }}>
+                                        {month}
                                     </TableCell>
                                 ))}
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>
@@ -172,7 +172,7 @@ const Reports = () => {
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>Número de personas</TableCell>
-                                {selectedMonths.map((month, idx) => (
+                                {selectedMonths.map((month) => (
                                     <TableCell key={month} align="center" sx={{ fontWeight: 'bold' }}>
                                         {month}
                                     </TableCell>
@@ -186,14 +186,19 @@ const Reports = () => {
                                 const total = selectedMonths.reduce(
                                     (acc, _, i) => acc + (data[startMonth + i - 1] || 0), 0
                                 );
+                                const getPeopleLabel = (people) => {
+                                    if (people === 2) return `1 a ${people} personas`;
+                                    if (people === 5) return `3 a ${people} personas`;
+                                    return `${people - 4} a ${people} personas`;
+                                };
                                 return (
                                 <TableRow key={people}>
                                     <TableCell align="center">
-                                    {people === 2 ? `1 a ${people} personas` : people === 5 ? `3 a ${people} personas` : `${people-4} a ${people} personas`}
+                                        {getPeopleLabel(people)}
                                     </TableCell>
-                                    {selectedMonths.map((_, idx) => (
-                                        <TableCell key={idx} align="center">
-                                            {data[startMonth + idx - 1] || 0}
+                                    {selectedMonths.map((_, i) => (
+                                        <TableCell key={selectedMonths[i]} align="center">
+                                            {data[startMonth + i] || 0}
                                         </TableCell>
                                     ))}
                                     <TableCell align="center">
@@ -204,8 +209,8 @@ const Reports = () => {
                             })}
                             <TableRow>
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>Total</TableCell>
-                                {selectedMonths.map((_, idx) => (
-                                    <TableCell key={idx} align="center" sx={{ fontWeight: 'bold' }}>
+                                {selectedMonths.map((month, idx) => (
+                                    <TableCell key={month} align="center" sx={{ fontWeight: 'bold' }}>
                                         {Array.isArray(totalIncomes2) ? (totalIncomes2[startMonth + idx - 1] || 0) : 0}
                                     </TableCell>
                                 ))}

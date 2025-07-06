@@ -1,9 +1,6 @@
 import { Typography, Button, Box, Container, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
-import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import CelebrationIcon from '@mui/icons-material/Celebration';
-import BarChartIcon from '@mui/icons-material/BarChart';
 
 const Home = () => {
     const navigate = useNavigate();

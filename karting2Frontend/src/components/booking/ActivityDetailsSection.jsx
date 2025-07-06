@@ -1,4 +1,5 @@
-import { 
+import React from 'react';
+import {
   Typography, 
   Grid, 
   TextField, 
@@ -151,4 +152,14 @@ const ActivityDetailsSection = ({
   );
 };
 
+import PropTypes from 'prop-types';
+
+ActivityDetailsSection.propTypes = {
+  lapsOrMaxTime: PropTypes.number.isRequired,
+  numOfPeople: PropTypes.number.isRequired,
+  onLapsChange: PropTypes.func.isRequired,
+  onPeopleChange: PropTypes.func.isRequired,
+  lapsError: PropTypes.string,
+  peopleError: PropTypes.string
+};
 export default ActivityDetailsSection;

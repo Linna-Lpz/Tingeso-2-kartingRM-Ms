@@ -88,7 +88,7 @@ const ClientRegister = () => {
       console.error('Error al crear el cliente:', error);
       
       // Mostrar el mensaje de error del backend
-      if (error.response && error.response.data) {
+      if (error.response?.data) {
         // Si el backend devuelve un mensaje de error específico
         const errorMsg = typeof error.response.data === 'string' 
           ? error.response.data 
@@ -190,13 +190,13 @@ const ClientRegister = () => {
                   label="RUT"
                   placeholder="Ej: 12345678-9"
                   value={clientRUT}
-                  onChange={(e) => setClientRut(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 10);
+                    setClientRut(value);
+                  }}
                   required
                   error={!!rutError}
                   helperText={rutError || "Ingrese el RUT sin puntos y con guión"}
-                  InputProps={{
-                    inputProps: { maxLength: 10 }
-                  }}
                   sx={{ '& .MuiFormLabel-root.Mui-focused': { color: 'primary.main' } }}
                 />
               </Grid>

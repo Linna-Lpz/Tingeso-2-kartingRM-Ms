@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Container,
   Typography,
@@ -12,18 +13,15 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Divider,
   Chip,
   Alert
 } from '@mui/material';
 import {
   Schedule as ScheduleIcon,
-  LocalOffer as LocalOfferIcon,
   Groups as GroupsIcon,
   Star as StarIcon,
   AttachMoney as AttachMoneyIcon,
   Cake as CakeIcon,
-  Weekend as WeekendIcon
 } from '@mui/icons-material';
 
 const Information = () => {
@@ -149,14 +147,63 @@ const Information = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tarifas.map((tarifa, index) => (
-                  <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                    <TableCell sx={{ fontWeight: 'medium' }}>{tarifa.vueltas}</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: '1.1rem' }}>
-                      {formatPrice(tarifa.precio)}
-                    </TableCell>
-                    <TableCell>{tarifa.duracion}</TableCell>
-                  </TableRow>
+                {tarifas.map((tarifa) => (
+                    <TableRow key={tarifa.vueltas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{tarifa.vueltas}</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: '1.1rem' }}>
+                        {formatPrice(tarifa.precio)}
+                      </TableCell>
+                      <TableCell>{tarifa.duracion}</TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+
+              <TableBody>
+                {descuentosPersonas.map((descuento) => (
+                    <TableRow key={descuento.personas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                      <TableCell>{descuento.personas}</TableCell>
+                      <TableCell>
+                        <Chip
+                            label={descuento.descuento}
+                            color={descuento.descuento === '0%' ? 'default' : 'success'}
+                            size="small"
+                        />
+                      </TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+
+              <TableBody>
+                {descuentosFrecuencia.map((descuento) => (
+                    <TableRow key={descuento.categoria} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.categoria}</TableCell>
+                      <TableCell>{descuento.visitas}</TableCell>
+                      <TableCell>
+                        <Chip
+                            label={descuento.descuento}
+                            color={descuento.descuento === '0%' ? 'default' : 'warning'}
+                            size="small"
+                        />
+                      </TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+
+              <TableBody>
+                {descuentosCumpleanos.map((descuento) => (
+                    <TableRow key={descuento.grupoSize} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.grupoSize}</TableCell>
+                      <TableCell>{descuento.personasDescuento}</TableCell>
+                      <TableCell>
+                        <Chip
+                            label={descuento.descuento}
+                            color="error"
+                            size="small"
+                            sx={{ fontWeight: 'bold' }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.875rem' }}>{descuento.descripcion}</TableCell>
+                    </TableRow>
                 ))}
               </TableBody>
             </Table>
@@ -203,17 +250,17 @@ const Information = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {descuentosPersonas.map((descuento, index) => (
-                      <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                        <TableCell>{descuento.personas}</TableCell>
-                        <TableCell>
-                          <Chip 
-                            label={descuento.descuento} 
-                            color={descuento.descuento === '0%' ? 'default' : 'success'}
-                            size="small"
-                          />
-                        </TableCell>
-                      </TableRow>
+                    {descuentosPersonas.map((descuento) => (
+                        <TableRow key={descuento.personas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                          <TableCell>{descuento.personas}</TableCell>
+                          <TableCell>
+                            <Chip
+                                label={descuento.descuento}
+                                color={descuento.descuento === '0%' ? 'default' : 'success'}
+                                size="small"
+                            />
+                          </TableCell>
+                        </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -253,18 +300,18 @@ const Information = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {descuentosFrecuencia.map((descuento, index) => (
-                      <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                        <TableCell sx={{ fontWeight: 'medium' }}>{descuento.categoria}</TableCell>
-                        <TableCell>{descuento.visitas}</TableCell>
-                        <TableCell>
-                          <Chip 
-                            label={descuento.descuento} 
-                            color={descuento.descuento === '0%' ? 'default' : 'warning'}
-                            size="small"
-                          />
-                        </TableCell>
-                      </TableRow>
+                    {descuentosFrecuencia.map((descuento) => (
+                        <TableRow key={descuento.categoria} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                          <TableCell sx={{ fontWeight: 'medium' }}>{descuento.categoria}</TableCell>
+                          <TableCell>{descuento.visitas}</TableCell>
+                          <TableCell>
+                            <Chip
+                                label={descuento.descuento}
+                                color={descuento.descuento === '0%' ? 'default' : 'warning'}
+                                size="small"
+                            />
+                          </TableCell>
+                        </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -316,20 +363,20 @@ const Information = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {descuentosCumpleanos.map((descuento, index) => (
-                  <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                    <TableCell sx={{ fontWeight: 'medium' }}>{descuento.grupoSize}</TableCell>
-                    <TableCell>{descuento.personasDescuento}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={descuento.descuento} 
-                        color="error"
-                        size="small"
-                        sx={{ fontWeight: 'bold' }}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '0.875rem' }}>{descuento.descripcion}</TableCell>
-                  </TableRow>
+                {descuentosCumpleanos.map((descuento) => (
+                    <TableRow key={descuento.grupoSize} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.grupoSize}</TableCell>
+                      <TableCell>{descuento.personasDescuento}</TableCell>
+                      <TableCell>
+                        <Chip
+                            label={descuento.descuento}
+                            color="error"
+                            size="small"
+                            sx={{ fontWeight: 'bold' }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.875rem' }}>{descuento.descripcion}</TableCell>
+                    </TableRow>
                 ))}
               </TableBody>
             </Table>

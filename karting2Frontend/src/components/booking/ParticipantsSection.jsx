@@ -1,3 +1,4 @@
+import React from 'react';
 import { Typography, Grid, TextField, IconButton, Paper, List, ListItem, ListItemText, Alert } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -87,20 +88,20 @@ const ParticipantsSection = ({
               <ListItemText secondary="No hay personas agregadas" />
             </ListItem>
           ) : (
-            people.map((p, index) => (
-              <ListItem 
-                key={index}
-                secondaryAction={
-                  <IconButton edge="end" onClick={() => onRemovePerson(index)}>
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemText 
-                  primary={`${p.name} (${p.rut})`} 
-                  secondary={p.email} 
-                />
-              </ListItem>
+            people.map((p) => (
+                <ListItem
+                    key={p.rut}
+                    secondaryAction={
+                      <IconButton edge="end" onClick={() => onRemovePerson(p.rut)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                >
+                  <ListItemText
+                      primary={`${p.name} (${p.rut})`}
+                      secondary={p.email}
+                  />
+                </ListItem>
             ))
           )}
         </List>
@@ -108,5 +109,25 @@ const ParticipantsSection = ({
     </>
   );
 };
-
+ParticipantsSection.propTypes = {
+  person: PropTypes.shape({
+    rut: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+  }).isRequired,
+  people: PropTypes.arrayOf(
+      PropTypes.shape({
+        rut: PropTypes.string,
+        name: PropTypes.string,
+        email: PropTypes.string,
+      })
+  ).isRequired,
+  numOfPeople: PropTypes.number.isRequired,
+  onPersonChange: PropTypes.func.isRequired,
+  onAddPerson: PropTypes.func.isRequired,
+  onRemovePerson: PropTypes.func.isRequired,
+  rutError: PropTypes.string,
+  nameError: PropTypes.string,
+  emailError: PropTypes.string,
+};
 export default ParticipantsSection;

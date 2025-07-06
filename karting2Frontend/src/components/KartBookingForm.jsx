@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { es } from 'date-fns/locale';
@@ -358,6 +358,31 @@ const KartBookingForm = () => {
   };
 
   // Función mejorada con mejor feedback (Nielsen: Visibilidad del estado del sistema)
+  const handleBackendError = (error) => {
+    if (error.response?.data) {
+      let errorMessage;
+      if (typeof error.response.data === 'string') {
+        errorMessage = error.response.data;
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data.error) {
+        errorMessage = error.response.data.error;
+      } else {
+        errorMessage = 'Error de validación en el servidor';
+      }
+      handleValidationError(errorMessage);
+    } else if (error.message) {
+      if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
+        setGeneralError('Error de conexión. Por favor, verifique su conexión a internet e intente nuevamente.');
+      } else {
+        setGeneralError(error.message);
+      }
+    } else {
+      setGeneralError('Error inesperado. Por favor intente nuevamente.');
+    }
+  };
+
+// Refactor de handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -372,15 +397,14 @@ const KartBookingForm = () => {
     const duration = blockDuration;
     const endTime = calculateEndTime(bookingTime, duration);
 
-    // Desglosar los datos de los participantes
     const clientsRUT = people.map(p => p.rut).join(',');
     const clientsNames = people.map(p => p.name).join(',');
     const clientsEmails = people.map(p => p.email).join(',');
 
     const reservationData = {
-      bookingDate: bookingDate.toISOString().split('T')[0], // YYYY-MM-DD
-      bookingTime: bookingTime.toTimeString().slice(0,5),   // HH:MM
-      bookingTimeEnd: endTime.toTimeString().slice(0,5),    // HH:MM
+      bookingDate: bookingDate.toISOString().split('T')[0],
+      bookingTime: bookingTime.toTimeString().slice(0,5),
+      bookingTimeEnd: endTime.toTimeString().slice(0,5),
       lapsOrMaxTimeAllowed: lapsOrMaxTime,
       numOfPeople,
       clientsRUT,
@@ -403,33 +427,7 @@ const KartBookingForm = () => {
       }
     } catch (error) {
       console.error('Error al guardar la reserva:', error);
-      
-      // Manejo mejorado de errores del backend
-      if (error.response && error.response.data) {
-        // Extraer el mensaje de error del backend
-        let errorMessage;
-        
-        if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.response.data.error) {
-          errorMessage = error.response.data.error;
-        } else {
-          errorMessage = 'Error de validación en el servidor';
-        }
-        
-        handleValidationError(errorMessage);
-      } else if (error.message) {
-        // Error de conexión o red
-        if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
-          setGeneralError('Error de conexión. Por favor, verifique su conexión a internet e intente nuevamente.');
-        } else {
-          setGeneralError(error.message);
-        }
-      } else {
-        setGeneralError('Error inesperado. Por favor intente nuevamente.');
-      }
+      handleBackendError(error);
     } finally {
       setIsLoading(false);
     }
@@ -475,12 +473,12 @@ const KartBookingForm = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {people.map((person, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{person.rut}</TableCell>
-                        <TableCell>{person.name}</TableCell>
-                        <TableCell>{person.email}</TableCell>
-                      </TableRow>
+                    {people.map((person) => (
+                        <TableRow key={person.rut}>
+                          <TableCell>{person.rut}</TableCell>
+                          <TableCell>{person.name}</TableCell>
+                          <TableCell>{person.email}</TableCell>
+                        </TableRow>
                     ))}
                   </TableBody>
                 </Table>

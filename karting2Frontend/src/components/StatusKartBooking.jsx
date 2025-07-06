@@ -82,7 +82,7 @@ const StatusKartBooking = () => {
 
   // Función para extraer mensaje de error del backend
   const extractErrorMessage = (error) => {
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       // Si el backend retorna un string directamente
       if (typeof error.response.data === 'string') {
         return error.response.data;
@@ -222,6 +222,12 @@ const StatusKartBooking = () => {
   // Función para limpiar errores (Nielsen: Control y libertad del usuario)
   const clearError = () => {
     setError(null);
+  };
+
+  const getDialogActionLabel = () => {
+    if (isLoading) return 'Procesando...';
+    if (confirmDialog.action === 'confirm') return 'Confirmar Pago';
+    return 'Cancelar Reserva';
   };
 
   return (
@@ -459,19 +465,19 @@ const StatusKartBooking = () => {
             Cancelar
           </Button>
           <Button
-            onClick={() => {
-              if (confirmDialog.action === 'confirm') {
-                handleConfirmBooking(confirmDialog.booking.id);
-              } else {
-                handleCancelBooking(confirmDialog.booking.id);
-              }
-            }}
-            variant="contained"
-            color={confirmDialog.action === 'confirm' ? 'success' : 'error'}
-            disabled={isLoading}
-            startIcon={isLoading ? <CircularProgress size={16} /> : null}
+              onClick={() => {
+                if (confirmDialog.action === 'confirm') {
+                  handleConfirmBooking(confirmDialog.booking.id);
+                } else {
+                  handleCancelBooking(confirmDialog.booking.id);
+                }
+              }}
+              variant="contained"
+              color={confirmDialog.action === 'confirm' ? 'success' : 'error'}
+              disabled={isLoading}
+              startIcon={isLoading ? <CircularProgress size={16} /> : null}
           >
-            {isLoading ? 'Procesando...' : (confirmDialog.action === 'confirm' ? 'Confirmar Pago' : 'Cancelar Reserva')}
+            {getDialogActionLabel()}
           </Button>
         </DialogActions>
       </Dialog>
