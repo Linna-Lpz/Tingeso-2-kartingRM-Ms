@@ -14,7 +14,10 @@ import {
   TableRow,
   Paper,
   Chip,
-  Alert
+  Alert,
+  Button,
+  Breadcrumbs,
+  Link
 } from '@mui/material';
 import {
   Schedule as ScheduleIcon,
@@ -22,9 +25,15 @@ import {
   Star as StarIcon,
   AttachMoney as AttachMoneyIcon,
   Cake as CakeIcon,
+  Home as HomeIcon,
+  NavigateNext as NavigateNextIcon,
+  BookOnline as BookOnlineIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const Information = () => {
+  const navigate = useNavigate();
+  
   // Datos de tarifas
   const tarifas = [
     { vueltas: '10 vueltas o máx 10 min', precio: 15000, duracion: '30 min' },
@@ -73,43 +82,99 @@ const Information = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Header Principal */}
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+    <Container maxWidth="lg" sx={{ py: 4, mx: 'auto' }}>
+      {/* Breadcrumb Navigation */}
+      <Breadcrumbs 
+        aria-label="breadcrumb" 
+        sx={{ mb: 3 }}
+        separator={<NavigateNextIcon fontSize="small" />}
+      >
+        <Link 
+          underline="hover" 
+          color="inherit" 
+          href="#" 
+          onClick={() => navigate('/')}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            '&:hover': { color: '#5B21B6' }
+          }}
+        >
+          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+          Inicio
+        </Link>
+        <Typography color="#5B21B6" sx={{ fontWeight: 'medium' }}>
           Tarifas y Horarios
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+      </Breadcrumbs>
+
+      {/* Header Principal */}
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
+          📋 Tarifas y Horarios
+        </Typography>
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
           Información completa sobre precios y beneficios
         </Typography>
+        
+        {/* Quick Action Button */}
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<BookOnlineIcon />}
+          onClick={() => navigate('/kartBookingForm')}
+          sx={{
+            px: 4,
+            py: 1.5,
+            borderRadius: '25px',
+            fontWeight: 'bold',
+            background: ' #F59E0B',
+            boxShadow: 3,
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: 6,
+              background: ' #D97706'
+            },
+            transition: 'all 0.3s ease'
+          }}
+        >
+          ¡Reservar Ahora!
+        </Button>
       </Box>
 
       {/* Sección de Horarios */}
       <Card sx={{ mb: 4, elevation: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <ScheduleIcon sx={{ mr: 1, color: 'primary.main', fontSize: 28 }} />
-            <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-              Horarios de Atención
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <ScheduleIcon sx={{ mr: 1, color: '#1E3A8A', fontSize: 32 }} />
+            <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', color: '#1E3A8A' }}>
+              🕒 Horarios de Atención
             </Typography>
           </Box>
+          
+          <Alert severity="info" sx={{ mb: 3, borderRadius: 2, bgcolor: '#DBEAFE', border: '1px solid #1E3A8A' }}>
+            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
+              ⏰ <strong>Estado actual:</strong> Abierto hoy hasta las 22:00 hrs
+            </Typography>
+          </Alert>
+          
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Alert severity="info" sx={{ height: '100%' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              <Alert severity="info" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1, color: '#5B21B6' }}>
                   Lunes a Viernes
                 </Typography>
-                <Typography variant="h6" color="primary.main">
+                <Typography variant="h6" color="#5B21B6">
                   14:00 - 22:00 horas
                 </Typography>
               </Alert>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Alert severity="success" sx={{ height: '100%' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              <Alert severity="success" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1, color: '#5B21B6' }}>
                   Sábados, Domingos y Feriados
                 </Typography>
-                <Typography variant="h6" color="primary.main">
+                <Typography variant="h6" color="#5B21B6">
                   10:00 - 22:00 horas
                 </Typography>
               </Alert>
@@ -119,95 +184,129 @@ const Information = () => {
       </Card>
 
       {/* Sección de Tarifas */}
-      <Card sx={{ mb: 4, elevation: 3 }}>
+      <Card sx={{ mb: 4, elevation: 3,  }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <AttachMoneyIcon sx={{ mr: 1, color: 'primary.main', fontSize: 28 }} />
-            <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-              Tarifas
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <AttachMoneyIcon sx={{ mr: 1, color: '#5B21B6', fontSize: 32 }} />
+            <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
+              Tarifas Base
             </Typography>
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
-            * No incluye el IVA
-          </Typography>
           
-          <TableContainer component={Paper} elevation={1}>
+          <Alert severity="info" sx={{ mb: 3, borderRadius: 2, bgcolor: '#DBEAFE', border: '1px solid #1E3A8A' }}>
+            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
+              💰 Precios sin IVA incluido | 🎯 Aplicamos automáticamente el mejor descuento disponible
+            </Typography>
+          </Alert>
+          
+          <TableContainer 
+            component={Paper} 
+            elevation={4}
+            sx={{ 
+              borderRadius: 3,
+              overflow: 'hidden',
+              border: '2px solid',
+              borderColor: '#A78BFA',
+              mb: 3
+            }}
+          >
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'primary.light' }}>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Número de vueltas o tiempo máximo permitido
+                <TableRow sx={{ 
+                  background: '#A78BFA',
+                  '& th': { 
+                    border: 'none',
+                    py: 2.5
+                  }
+                }}>
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white', 
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    🏁 Vueltas / Tiempo Máximo
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Precios regulares
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white', 
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    💵 Precio Base
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Duración total de la reserva
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white', 
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    ⏱️ Duración Total
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tarifas.map((tarifa) => (
-                    <TableRow key={tarifa.vueltas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{tarifa.vueltas}</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: '1.1rem' }}>
+                {tarifas.map((tarifa, index) => (
+                  <TableRow 
+                    key={tarifa.vueltas} 
+                    sx={{ 
+                      backgroundColor: index % 2 === 0 ? 'rgba(30, 58, 138, 0.05)' : 'white',
+                      transition: 'all 0.2s ease-in-out'
+                    }}
+                  >
+                    <TableCell sx={{ 
+                      fontWeight: 'medium', 
+                      fontSize: '1rem',
+                      textAlign: 'center',
+                      py: 2,
+                      borderRight: '1px solid rgba(224, 224, 224, 0.5)'
+                    }}>
+                      {tarifa.vueltas}
+                    </TableCell>
+                    <TableCell sx={{ 
+                      fontWeight: 'bold', 
+                      color: '#D97706', 
+                      fontSize: '1.3rem',
+                      textAlign: 'center',
+                      py: 2,
+                      borderRight: '1px solid rgba(224, 224, 224, 0.5)'
+                    }}>
+                      <Box sx={{ 
+                        borderRadius: 2,
+                        py: 1,
+                        px: 2,
+                        display: 'inline-block'
+                      }}>
                         {formatPrice(tarifa.precio)}
-                      </TableCell>
-                      <TableCell>{tarifa.duracion}</TableCell>
-                    </TableRow>
-                ))}
-              </TableBody>
-
-              <TableBody>
-                {descuentosPersonas.map((descuento) => (
-                    <TableRow key={descuento.personas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                      <TableCell>{descuento.personas}</TableCell>
-                      <TableCell>
-                        <Chip
-                            label={descuento.descuento}
-                            color={descuento.descuento === '0%' ? 'default' : 'success'}
-                            size="small"
-                        />
-                      </TableCell>
-                    </TableRow>
-                ))}
-              </TableBody>
-
-              <TableBody>
-                {descuentosFrecuencia.map((descuento) => (
-                    <TableRow key={descuento.categoria} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.categoria}</TableCell>
-                      <TableCell>{descuento.visitas}</TableCell>
-                      <TableCell>
-                        <Chip
-                            label={descuento.descuento}
-                            color={descuento.descuento === '0%' ? 'default' : 'warning'}
-                            size="small"
-                        />
-                      </TableCell>
-                    </TableRow>
-                ))}
-              </TableBody>
-
-              <TableBody>
-                {descuentosCumpleanos.map((descuento) => (
-                    <TableRow key={descuento.grupoSize} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.grupoSize}</TableCell>
-                      <TableCell>{descuento.personasDescuento}</TableCell>
-                      <TableCell>
-                        <Chip
-                            label={descuento.descuento}
-                            color="error"
-                            size="small"
-                            sx={{ fontWeight: 'bold' }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ fontSize: '0.875rem' }}>{descuento.descripcion}</TableCell>
-                    </TableRow>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ 
+                      fontWeight: 'medium',
+                      fontSize: '1rem',
+                      textAlign: 'center',
+                      py: 2,
+                      color: 'text.secondary'
+                    }}>
+                      {tarifa.duracion}
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Nota informativa */}
+          <Box sx={{ 
+            backgroundColor: 'rgba(217, 119, 6, 0.1)', 
+            borderRadius: 2, 
+            p: 2, 
+            border: '1px dashed #D97706',
+            textAlign: 'center'
+          }}>
+            <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#B45309' }}>
+              ✨ Los precios mostrados se ajustarán automáticamente según los descuentos que apliquen
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
 
@@ -215,52 +314,100 @@ const Information = () => {
       <Typography variant="h4" component="h2" gutterBottom sx={{ 
         textAlign: 'center', 
         fontWeight: 'bold', 
-        color: 'primary.main',
+        color: '#5B21B6',
         mb: 3
       }}>
         Beneficios para Clientes Registrados
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Descuentos por Número de Personas */}
         <Grid item xs={12} lg={6}>
-          <Card sx={{ height: '100%', elevation: 3 }}>
+          <Card sx={{ 
+            height: '100%', 
+            elevation: 4,
+            background: 'linear-gradient(135deg, #e8f5e8 0%, #a5d6a7 100%)',
+            border: '2px solid',
+            borderColor: 'success.light',
+          }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <GroupsIcon sx={{ mr: 1, color: 'success.main', fontSize: 28 }} />
-                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
-                  Descuentos por Número de Personas
+                <GroupsIcon sx={{ mr: 1, color: 'success.main', fontSize: 32 }} />
+                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                  Descuentos por Grupo
                 </Typography>
               </Box>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Descuentos especiales para grupos. Mientras más personas, mayor descuento.
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
+                🎪 Más amigos, mayor diversión y mejores precios
               </Typography>
 
-              <TableContainer component={Paper} elevation={1}>
+              <TableContainer 
+                component={Paper} 
+                elevation={3}
+                sx={{ 
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  border: '1px solid',
+                  borderColor: 'success.light'
+                }}
+              >
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: 'success.light' }}>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                        Número de personas
+                    <TableRow sx={{ 
+                      background: 'linear-gradient(45deg, #4caf50 30%, #66bb6a 90%)',
+                      '& th': { border: 'none' }
+                    }}>
+                      <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        color: 'white',
+                        textAlign: 'center',
+                        py: 1.5
+                      }}>
+                        👥 Personas
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                        Descuento aplicado
+                      <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        color: 'white',
+                        textAlign: 'center',
+                        py: 1.5
+                      }}>
+                        🎯 Descuento
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {descuentosPersonas.map((descuento) => (
-                        <TableRow key={descuento.personas} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                          <TableCell>{descuento.personas}</TableCell>
-                          <TableCell>
-                            <Chip
-                                label={descuento.descuento}
-                                color={descuento.descuento === '0%' ? 'default' : 'success'}
-                                size="small"
-                            />
-                          </TableCell>
-                        </TableRow>
+                    {descuentosPersonas.map((descuento, index) => (
+                      <TableRow 
+                        key={descuento.personas} 
+                        sx={{ 
+                          backgroundColor: index % 2 === 0 ? 'rgba(76, 175, 80, 0.05)' : 'white'
+                        }}
+                      >
+                        <TableCell sx={{ 
+                          textAlign: 'center',
+                          fontWeight: 'medium',
+                          py: 1.5
+                        }}>
+                          {descuento.personas}
+                        </TableCell>
+                        <TableCell sx={{ textAlign: 'center', py: 1.5 }}>
+                          <Chip
+                            label={descuento.descuento}
+                            color={descuento.descuento === '0%' ? 'default' : 'success'}
+                            size="medium"
+                            sx={{ 
+                              fontWeight: 'bold',
+                              fontSize: '0.9rem',
+                              px: 1,
+                              ...(descuento.descuento !== '0%' && {
+                                background: 'linear-gradient(45deg, #4caf50 30%, #81c784 90%)',
+                                color: 'white'
+                              })
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -271,47 +418,106 @@ const Information = () => {
 
         {/* Descuentos por Frecuencia */}
         <Grid item xs={12} lg={6}>
-          <Card sx={{ height: '100%', elevation: 3 }}>
+          <Card sx={{ 
+            height: '100%', 
+            elevation: 4,
+            background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%)',
+            border: '2px solid',
+            borderColor: 'warning.light'
+          }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <StarIcon sx={{ mr: 1, color: 'warning.main', fontSize: 28 }} />
-                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
-                  Descuentos para Clientes Frecuentes
+                <StarIcon sx={{ mr: 1, color: 'warning.main', fontSize: 32 }} />
+                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', color: 'warning.dark' }}>
+                  Clientes VIP
                 </Typography>
               </Box>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Premiamos tu fidelidad con descuentos basados en tu frecuencia de visita mensual.
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
+                ⭐ Tu fidelidad tiene recompensa mensual
               </Typography>
 
-              <TableContainer component={Paper} elevation={1}>
+              <TableContainer 
+                component={Paper} 
+                elevation={3}
+                sx={{ 
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  border: '1px solid',
+                  borderColor: 'warning.light'
+                }}
+              >
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: 'warning.light' }}>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                        Categoría
+                    <TableRow sx={{ 
+                      background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
+                      '& th': { border: 'none' }
+                    }}>
+                      <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        color: 'white',
+                        textAlign: 'center',
+                        py: 1.5
+                      }}>
+                        🏆 Nivel
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                        Visitas al mes
+                      <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        color: 'white',
+                        textAlign: 'center',
+                        py: 1.5
+                      }}>
+                        📊 Visitas/Mes
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                        Descuento
+                      <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        color: 'white',
+                        textAlign: 'center',
+                        py: 1.5
+                      }}>
+                        🎁 Beneficio
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {descuentosFrecuencia.map((descuento) => (
-                        <TableRow key={descuento.categoria} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                          <TableCell sx={{ fontWeight: 'medium' }}>{descuento.categoria}</TableCell>
-                          <TableCell>{descuento.visitas}</TableCell>
-                          <TableCell>
-                            <Chip
-                                label={descuento.descuento}
-                                color={descuento.descuento === '0%' ? 'default' : 'warning'}
-                                size="small"
-                            />
-                          </TableCell>
-                        </TableRow>
+                    {descuentosFrecuencia.map((descuento, index) => (
+                      <TableRow 
+                        key={descuento.categoria} 
+                        sx={{ 
+                          backgroundColor: index % 2 === 0 ? 'rgba(255, 152, 0, 0.05)' : 'white'
+                        }}
+                      >
+                        <TableCell sx={{ 
+                          fontWeight: 'medium',
+                          textAlign: 'center',
+                          py: 1.5
+                        }}>
+                          {descuento.categoria}
+                        </TableCell>
+                        <TableCell sx={{ 
+                          textAlign: 'center',
+                          py: 1.5,
+                          fontSize: '0.9rem'
+                        }}>
+                          {descuento.visitas}
+                        </TableCell>
+                        <TableCell sx={{ textAlign: 'center', py: 1.5 }}>
+                          <Chip
+                            label={descuento.descuento}
+                            color={descuento.descuento === '0%' ? 'default' : 'warning'}
+                            size="medium"
+                            sx={{ 
+                              fontWeight: 'bold',
+                              fontSize: '0.9rem',
+                              px: 1,
+                              ...(descuento.descuento !== '0%' && {
+                                background: 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)',
+                                color: 'white'
+                              })
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -322,92 +528,244 @@ const Information = () => {
       </Grid>
 
       {/* Sección de Descuentos de Cumpleaños */}
-      <Card sx={{ mb: 4, elevation: 3 }}>
+      <Card sx={{ 
+        mb: 4, 
+        elevation: 4,
+        background: 'linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%)',
+        border: '2px solid',
+        borderColor: 'error.light'
+      }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <CakeIcon sx={{ mr: 1, color: 'error.main', fontSize: 28 }} />
-            <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-              ¡Promoción Especial de Cumpleaños!
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <CakeIcon sx={{ mr: 1, color: 'error.main', fontSize: 36 }} />
+            <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: 'error.main' }}>
+              🎉 ¡Celebra tu Cumpleaños!
             </Typography>
           </Box>
           
-          <Alert severity="success" sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              🎉 ¡Celebra tu cumpleaños con nosotros!
+          <Alert 
+            severity="success" 
+            sx={{ 
+              mb: 3, 
+              borderRadius: 3,
+              background: 'linear-gradient(45deg, #e8f5e8 30%, #c8e6c9 90%)',
+              border: '2px solid #4caf50'
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, color: 'success.dark' }}>
+              � ¡50% de descuento en tu día especial!
             </Typography>
-            <Typography variant="body2">
-              Si cumples años el día que visitas nuestro kartódromo, ¡tienes un 50% de descuento especial!
+            <Typography variant="body1" sx={{ color: 'success.dark' }}>
+              Si cumples años el día que nos visitas, tienes un descuento súper especial que hará tu celebración aún más memorable.
             </Typography>
           </Alert>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            El descuento se aplica según el tamaño del grupo:
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'medium', textAlign: 'center', color: 'text.primary' }}>
+            📋 Condiciones según el tamaño del grupo:
           </Typography>
 
-          <TableContainer component={Paper} elevation={1}>
+          <TableContainer 
+            component={Paper} 
+            elevation={4}
+            sx={{ 
+              borderRadius: 3,
+              overflow: 'hidden',
+              border: '2px solid',
+              borderColor: 'error.light',
+              mb: 3
+            }}
+          >
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'error.light' }}>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Tamaño del Grupo
+                <TableRow sx={{ 
+                  background: 'linear-gradient(45deg, #e91e63 30%, #f06292 90%)',
+                  '& th': { border: 'none', py: 2.5 }
+                }}>
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white',
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    👥 Tamaño del Grupo
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Personas con Descuento
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white',
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    🎁 Personas con Descuento
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Descuento
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white',
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    💝 Descuento
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Descripción
+                  <TableCell sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'white',
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    📝 Detalles
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {descuentosCumpleanos.map((descuento) => (
-                    <TableRow key={descuento.grupoSize} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{descuento.grupoSize}</TableCell>
-                      <TableCell>{descuento.personasDescuento}</TableCell>
-                      <TableCell>
-                        <Chip
-                            label={descuento.descuento}
-                            color="error"
-                            size="small"
-                            sx={{ fontWeight: 'bold' }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ fontSize: '0.875rem' }}>{descuento.descripcion}</TableCell>
-                    </TableRow>
+                {descuentosCumpleanos.map((descuento, index) => (
+                  <TableRow 
+                    key={descuento.grupoSize} 
+                    sx={{ 
+                      backgroundColor: index % 2 === 0 ? 'rgba(233, 30, 99, 0.05)' : 'white'
+                    }}
+                  >
+                    <TableCell sx={{ 
+                      fontWeight: 'bold', 
+                      textAlign: 'center',
+                      py: 2,
+                      fontSize: '1rem',
+                      color: 'primary.main'
+                    }}>
+                      {descuento.grupoSize}
+                    </TableCell>
+                    <TableCell sx={{ 
+                      textAlign: 'center',
+                      py: 2,
+                      fontWeight: 'medium',
+                      fontSize: '1rem'
+                    }}>
+                      {descuento.personasDescuento}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', py: 2 }}>
+                      <Chip
+                        label={descuento.descuento}
+                        sx={{ 
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          px: 2,
+                          py: 1,
+                          background: 'linear-gradient(45deg, #e91e63 30%, #f06292 90%)',
+                          color: 'white'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ 
+                      fontSize: '0.95rem',
+                      py: 2,
+                      fontStyle: 'italic',
+                      color: 'text.secondary',
+                      textAlign: 'center'
+                    }}>
+                      {descuento.descripcion}
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
 
-          <Alert severity="info" sx={{ mt: 3 }}>
-            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-              📝 Condiciones para el descuento de cumpleaños:
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              borderRadius: 3,
+              background: 'linear-gradient(45deg, #fff3e0 30%, #ffe0b2 90%)',
+              border: '2px solid #ff9800'
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'warning.dark', mb: 2 }}>
+              📋 Requisitos importantes para el descuento:
             </Typography>
-            <Typography variant="body2" component="div">
-              • Debes presentar tu cédula de identidad el día de la visita<br/>
-              • El descuento aplica solo para grupos de 3 o más personas<br/>
-              • Solo válido el día exacto de tu cumpleaños<br/>
-              • No acumulable con otros descuentos
-            </Typography>
+            
+            <Box 
+              
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontSize: '1.2rem' }}>🆔</Typography>
+                  <Typography variant="body1" sx={{ color: 'warning.dark' }}>
+                    <strong>Identificación obligatoria:</strong> Presenta tu cédula de identidad
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontSize: '1.2rem' }}>👥</Typography>
+                  <Typography variant="body1" sx={{ color: 'warning.dark' }}>
+                    <strong>Mínimo 3 personas:</strong> El grupo debe tener al menos 3 integrantes
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontSize: '1.2rem' }}>📅</Typography>
+                  <Typography variant="body1" sx={{ color: 'warning.dark' }}>
+                    <strong>Solo el día exacto:</strong> Válido únicamente en tu fecha de cumpleaños
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontSize: '1.2rem' }}>🚫</Typography>
+                  <Typography variant="body1" sx={{ color: 'warning.dark' }}>
+                    <strong>No acumulable:</strong> No se combina con otros descuentos (siempre aplicamos el mejor)
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
           </Alert>
         </CardContent>
       </Card>
 
       {/* Nota importante actualizada */}
       <Box sx={{ mt: 4 }}>
-        <Alert severity="warning" sx={{ textAlign: 'center' }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+        <Alert severity="warning" sx={{ textAlign: 'center', borderRadius: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
             ⚠️ Importante - Política de Descuentos
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body1" sx={{ mb: 2 }}>
             Los descuentos por número de personas, por frecuencia y por cumpleaños NO son acumulables. 
             Se aplicará automáticamente el descuento más beneficioso para ti. El descuento de cumpleaños 
             siempre tiene prioridad cuando aplica.
           </Typography>
+          <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'warning.dark' }}>
+            💡 <strong>Tip:</strong> Nuestro sistema calculará automáticamente el mejor precio para tu reserva
+          </Typography>
         </Alert>
+      </Box>
+
+      {/* Footer con Call to Action */}
+      <Box sx={{ mt: 6, textAlign: 'center', py: 4, bgcolor: 'grey.50', borderRadius: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: 'primary.main' }}>
+          ¿Listo para la aventura? 🏁
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          No esperes más y asegura tu lugar en la pista
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<BookOnlineIcon />}
+          onClick={() => navigate('/kartBookingForm')}
+          sx={{
+            px: 5,
+            py: 2,
+            borderRadius: '30px',
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            background: ' #ff9800',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: 6
+            },
+            transition: 'all 0.3s ease'
+          }}
+        >
+          Hacer Reserva
+        </Button>
+        <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+          📞 ¿Preguntas? Llámanos al +56 9 1234 5678
+        </Typography>
       </Box>
     </Container>
   );

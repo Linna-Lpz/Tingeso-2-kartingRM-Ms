@@ -34,6 +34,7 @@ export default function Navegate() {
       <AppBar position="static">
         <Toolbar
           sx={{
+            background: 'linear-gradient(135deg, #2E1065 0%, #5B21B6 50%, #1E3A8A 100%)',
             padding: "8px 16px",
             display: "flex",
             justifyContent: "space-between",
