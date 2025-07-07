@@ -466,7 +466,7 @@ const KartBookingForm = () => {
             
             setTimeout(() => {
               navigate("/");
-            }, 4000);
+            }, 8000);
             
           } catch (voucherError) {
             console.error('Error al enviar vouchers:', voucherError);
@@ -475,19 +475,10 @@ const KartBookingForm = () => {
             setBookingTime(null);
             setPeople([]);
             clearErrors();
-            setSuccessMessage('¡Pago procesado exitosamente! Reserva confirmada. Hubo un problema al enviar los vouchers por email, pero puede descargarlos desde "Estado de Reservas"');
-            
-            setTimeout(() => {
-              navigate("/statusKartBooking");
-            }, 5000);
+            setSuccessMessage('¡Pago procesado exitosamente! Reserva confirmada. Hubo un problema al enviar los comprobantes por email, pero puede revisarlos desde "Mis Reservas"');
           }
         } catch (confirmError) {
-          console.error('Error al confirmar la reserva:', confirmError);
-          // Si falla la confirmación, informar al usuario que debe confirmar manualmente
-          setGeneralError('Reserva creada pero hubo un error al procesar el pago. Por favor, vaya a "Estado de Reservas" para completar el pago manualmente.');
-          setTimeout(() => {
-            navigate("/statusKartBooking");
-          }, 5000);
+          console.error('Error al pagar la reserva:', confirmError);
         }
       }
     } catch (error) {

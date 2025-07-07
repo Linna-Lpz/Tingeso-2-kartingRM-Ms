@@ -72,6 +72,17 @@ export default function Navegate() {
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button
               color="inherit"
+              onClick={() => navigate("/StatusKartBooking")}
+              sx={{ 
+                fontSize: "1rem",
+                fontWeight: "medium"
+              }}
+            >
+              Mis reservas
+            </Button>
+
+            <Button
+              color="inherit"
               startIcon={<PersonAddIcon />}
               onClick={() => navigate("/clientRegister")}
               sx={{ 

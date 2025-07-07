@@ -174,9 +174,6 @@ const ParticipantsSection = ({
   return (
     <>
       <Typography variant="h6" gutterBottom>Ingresa los datos de cada integrante</Typography>
-      <Typography variant="subtitle1" gutterBottom color='textPrimary'>
-        ¡Ingresa primero a quien realiza la reserva!
-      </Typography>
       
       {rutError && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -246,7 +243,7 @@ const ParticipantsSection = ({
             value={person.name}
             onChange={handleNameChange}
             error={!!displayNameError}
-            helperText={displayNameError || "Solo letras"}
+            helperText={displayNameError}
           />
         </Grid>
         <Grid item xs={12} sm={3}>
@@ -257,7 +254,7 @@ const ParticipantsSection = ({
             value={person.lastName}
             onChange={handleLastNameChange}
             error={!!displayLastNameError}
-            helperText={displayLastNameError || "Solo letras"}
+            helperText={displayLastNameError}
           />
         </Grid>
         <Grid item xs={12} sm={3}>

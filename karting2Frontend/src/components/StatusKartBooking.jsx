@@ -224,6 +224,31 @@ const StatusKartBooking = () => {
     setError(null);
   };
 
+  // Función para formatear RUT automáticamente
+  const formatRUT = (value) => {
+    // Eliminar todo excepto números y K
+    let clean = value.replace(/[^0-9K]/g, '');
+    
+    // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
+    if (clean.length > 9) {
+      clean = clean.slice(0, 9);
+    }
+    
+    // Agregar guión automáticamente cuando tenga al menos 8 caracteres
+    if (clean.length >= 8) {
+      clean = clean.slice(0, -1) + '-' + clean.slice(-1);
+    }
+    
+    return clean;
+  };
+
+  // Función mejorada para manejar cambios en el RUT
+  const handleRutChange = (e) => {
+    const formattedRut = formatRUT(e.target.value);
+    setRut(formattedRut);
+    if (error) clearError(); // Limpiar error al escribir
+  };
+
   const getDialogActionLabel = () => {
     if (isLoading) return 'Procesando...';
     if (confirmDialog.action === 'confirm') return 'Confirmar Pago';
@@ -313,15 +338,13 @@ const StatusKartBooking = () => {
             fullWidth
             label="RUT del cliente"
             value={rut}
-            onChange={(e) => {
-              setRut(e.target.value);
-              if (error) clearError(); // Limpiar error al escribir
-            }}
+            onChange={handleRutChange}
             onKeyUp={handleKeyPress}
             placeholder="Ej: 12345678-9"
             error={!!error}
             helperText={error || "Ingrese su RUT para buscar sus reservas"}
             disabled={isSearching}
+            inputProps={{ maxLength: 10 }}
             sx={{ 
               maxWidth: 350,
               '& .MuiOutlinedInput-root': {
@@ -364,28 +387,6 @@ const StatusKartBooking = () => {
             {isSearching ? 'Buscando...' : 'Buscar'}
           </Button>
         </Box>
-
-        {/* Ayuda contextual mejorada */}
-        <Alert 
-          severity="info" 
-          sx={{ 
-            mt: 3,
-            borderRadius: 2,
-            border: '2px solid #3B82F6',
-            background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-            '& .MuiAlert-icon': {
-              color: '#3B82F6'
-            },
-            '& .MuiAlert-message': {
-              color: '#1E3A8A',
-              fontWeight: 500
-            }
-          }}
-        >
-          <Typography variant="body2">
-            <strong>Información:</strong> Ingrese su RUT completo con guión y dígito verificador (Ej: 12345678-9)
-          </Typography>
-        </Alert>
       </Paper>
 
       {/* Mensajes de error mejorados */}
