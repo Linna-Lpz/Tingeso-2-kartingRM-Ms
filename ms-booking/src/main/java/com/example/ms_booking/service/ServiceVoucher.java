@@ -76,7 +76,7 @@ public class ServiceVoucher {
 
             Row amountRow = sheet.createRow(booking.getNumOfPeople() + 2);
             Cell cell = amountRow.createCell(columns.length - 1);
-            cell.setCellValue("Total a Pagar");
+            cell.setCellValue("Total Pagado");
             cell.setCellStyle(headerStyle);
 
             Row totalAmountRow = sheet.createRow(booking.getNumOfPeople() + 3);

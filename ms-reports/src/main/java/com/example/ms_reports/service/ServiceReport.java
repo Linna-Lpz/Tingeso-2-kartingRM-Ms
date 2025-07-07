@@ -39,6 +39,7 @@ public class ServiceReport {
             startMonth++;
         }
         incomes.add(totalIncomes);
+        System.out.println("Incomes for laps: " + incomes);
         return incomes;
     }
 
@@ -56,6 +57,7 @@ public class ServiceReport {
             Integer price = Integer.parseInt(booking.getBasePrice());
             incomes += (price * numOfPeople);
         }
+        System.out.println("Incomes for month " + month + " with laps " + lapsOrTimeMax + ": " + incomes);
         return incomes;
     }
 
@@ -76,6 +78,7 @@ public class ServiceReport {
         Integer value2 = getIncomesForMonthOfLaps(15, startMonth, endMonth).get(numMonths + 1);
         Integer value3 = getIncomesForMonthOfLaps(20, startMonth, endMonth).get(numMonths + 1);
         totalIncomes.add(value1 + value2 + value3);
+        System.out.println("Total incomes for laps of month: " + totalIncomes);
         return totalIncomes;
     }
 
@@ -115,6 +118,7 @@ public class ServiceReport {
             startMonth++;
         }
         incomes.add(totalIncomes);
+        System.out.println("Incomes for num of people " + people + ": " + incomes);
         return incomes;
     }
 
@@ -144,6 +148,7 @@ public class ServiceReport {
             Integer price = Integer.parseInt(booking.getBasePrice());
             incomes += (price * numOfPeople);
         }
+        System.out.println("Incomes for month " + month + " with num of people " + people + ": " + incomes);
         return incomes;
     }
 
@@ -163,9 +168,10 @@ public class ServiceReport {
         }
         Integer value1 = getIncomesForMonthOfNumOfPeople(2, startMonth, endMonth).get(numMonths + 1);
         Integer value2 = getIncomesForMonthOfNumOfPeople(5, startMonth, endMonth).get(numMonths + 1);
-        Integer value3 = getIncomesForMonthOfNumOfPeople(10, startMonth, endMonth).get(numMonths + 13);
+        Integer value3 = getIncomesForMonthOfNumOfPeople(10, startMonth, endMonth).get(numMonths + 1);
         Integer value4 = getIncomesForMonthOfNumOfPeople(15, startMonth, endMonth).get(numMonths + 1);
         totalIncomes.add(value1 + value2 + value3 + value4);
+        System.out.println("Total incomes for num of people of month: " + totalIncomes);
         return totalIncomes;
     }
 

@@ -26,7 +26,8 @@ import {
 import { 
   CheckCircle as CheckCircleIcon, 
   Info as InfoIcon,
-  Warning as WarningIcon 
+  Warning as WarningIcon,
+  SportsMotorsports as SportsMotorsportsIcon 
 } from '@mui/icons-material';
 import bookingService from '../services/services.management';
 import { useNavigate } from 'react-router-dom';
@@ -351,9 +352,8 @@ const KartBookingForm = () => {
   };
 
   // Función para eliminar una persona de la lista de participantes
-  const removePerson = (index) => {
-    const updatedPeople = [...people];
-    updatedPeople.splice(index, 1);
+  const removePerson = (rut) => {
+    const updatedPeople = people.filter(person => person.rut !== rut);
     setPeople(updatedPeople);
   };
 
@@ -436,48 +436,112 @@ const KartBookingForm = () => {
   // Función para renderizar el resumen de la reserva completo
   const renderBookingSummary = () => {
     return (
-      <Card sx={{ mb: 3, bgcolor: 'background.paper' }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-            <InfoIcon color="primary" />
-            Resumen de la reserva
+      <Card 
+        sx={{ 
+          mb: 3, 
+          background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
+          border: '2px solid #0EA5E9',
+          borderRadius: 3,
+          boxShadow: '0 8px 25px rgba(14, 165, 233, 0.15)'
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Typography 
+            variant="h4" 
+            gutterBottom 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 2, 
+              mb: 4,
+              color: '#0369A1',
+              fontWeight: 'bold'
+            }}
+          >
+            <InfoIcon sx={{ fontSize: 35, color: '#0EA5E9' }} />
+            Resumen de la Reserva
           </Typography>
           
-          <Box sx={{ display: 'grid', gap: 2 }}>
-            <Typography variant="body1" align="left">
-              <strong>N° de vueltas o tiempo máximo:</strong> {lapsOrMaxTime}
-            </Typography>
-            
-            <Typography variant="body1" align="left">
-              <strong>Cantidad de integrantes:</strong> {numOfPeople}
-            </Typography>
-            
-            <Typography variant="body1" align="left">
-              <strong>Fecha:</strong> {bookingDate ? bookingDate.toLocaleDateString('es-CL') : ''}
-            </Typography>
-
-            <Typography variant="body1" align="left">
-              <strong>Hora:</strong> {bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}
-            </Typography>
-              <Box>
-              <Typography variant="body1" sx={{ mb: 1 }}  align="left">
-                <strong>Datos de los integrantes:</strong>
+          <Box sx={{ display: 'grid', gap: 3 }}>
+            <Box sx={{ 
+              p: 3, 
+              bgcolor: 'white', 
+              borderRadius: 2, 
+              border: '1px solid #BAE6FD',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="h6" sx={{ color: '#0369A1', fontWeight: 'bold', mb: 2 }}>
+                Detalles de la Actividad
               </Typography>
-              <TableContainer component={Paper} sx={{ mt: 2 }}>
+              <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>
+                <strong>N° de vueltas o tiempo máximo:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{lapsOrMaxTime}</span>
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#1E293B' }}>
+                <strong>Cantidad de integrantes:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{numOfPeople}</span>
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              p: 3, 
+              bgcolor: 'white', 
+              borderRadius: 2, 
+              border: '1px solid #BAE6FD',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="h6" sx={{ color: '#0369A1', fontWeight: 'bold', mb: 2 }}>
+                Fecha y Hora
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>
+                <strong>Fecha:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{bookingDate ? bookingDate.toLocaleDateString('es-CL') : ''}</span>
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#1E293B' }}>
+                <strong>Hora:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{bookingTime ? bookingTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+              </Typography>
+            </Box>
+
+            <Box sx={{ 
+              p: 3, 
+              bgcolor: 'white', 
+              borderRadius: 2, 
+              border: '1px solid #BAE6FD',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="h6" sx={{ color: '#0369A1', fontWeight: 'bold', mb: 2 }}>
+                Datos de los Integrantes
+              </Typography>
+              <TableContainer 
+                component={Paper} 
+                sx={{ 
+                  mt: 2,
+                  borderRadius: 2,
+                  border: '1px solid #E2E8F0',
+                  overflow: 'hidden'
+                }}
+              >
                 <Table size="small">
                   <TableHead>
-                    <TableRow>
-                      <TableCell><strong>RUT</strong></TableCell>
-                      <TableCell><strong>Nombre</strong></TableCell>
-                      <TableCell><strong>Email</strong></TableCell>
+                    <TableRow sx={{ background: 'linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%)' }}>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>RUT</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nombre</TableCell>
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {people.map((person) => (
-                        <TableRow key={person.rut}>
-                          <TableCell>{person.rut}</TableCell>
-                          <TableCell>{person.name}</TableCell>
-                          <TableCell>{person.email}</TableCell>
+                    {people.map((person, index) => (
+                        <TableRow 
+                          key={person.rut}
+                          sx={{ 
+                            '&:nth-of-type(odd)': { 
+                              backgroundColor: '#F8FAFC' 
+                            },
+                            '&:hover': {
+                              backgroundColor: '#E0F2FE'
+                            }
+                          }}
+                        >
+                          <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.rut}</TableCell>
+                          <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.name}</TableCell>
+                          <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.email}</TableCell>
                         </TableRow>
                     ))}
                   </TableBody>
@@ -547,7 +611,21 @@ const KartBookingForm = () => {
           variant="outlined"
           onClick={prevStep}
           disabled={activeStep === 0}
-          sx={{ minWidth: 120 }}
+          sx={{ 
+            minWidth: 120,
+            borderColor: '#5B21B6',
+            color: '#5B21B6',
+            fontWeight: 'bold',
+            '&:hover': {
+              borderColor: '#2E1065',
+              color: '#2E1065',
+              backgroundColor: '#F3E8FF'
+            },
+            '&:disabled': {
+              borderColor: '#E2E8F0',
+              color: '#94A3B8'
+            }
+          }}
         >
           Anterior
         </Button>
@@ -558,7 +636,21 @@ const KartBookingForm = () => {
               variant="contained"
               onClick={nextStep}
               disabled={!canProceedToNextStep()}
-              sx={{ minWidth: 120 }}
+              sx={{ 
+                minWidth: 120,
+                background: 'linear-gradient(135deg, #5B21B6 0%, #1E3A8A 100%)',
+                fontWeight: 'bold',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #2E1065 0%, #1E40AF 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 12px rgba(91, 33, 182, 0.3)'
+                },
+                '&:disabled': {
+                  background: '#E2E8F0',
+                  color: '#94A3B8'
+                },
+                transition: 'all 0.3s ease'
+              }}
             >
               Siguiente
             </Button>
@@ -570,7 +662,21 @@ const KartBookingForm = () => {
               color="primary"
               onClick={handleSubmit}
               disabled={isLoading}
-              sx={{ minWidth: 160 }}
+              sx={{ 
+                minWidth: 160,
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                fontWeight: 'bold',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #047857 0%, #065F46 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                },
+                '&:disabled': {
+                  background: '#E2E8F0',
+                  color: '#94A3B8'
+                },
+                transition: 'all 0.3s ease'
+              }}
             >
               {isLoading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -578,7 +684,7 @@ const KartBookingForm = () => {
                   Procesando...
                 </Box>
               ) : (
-                'Realizar reserva'
+                'Pagar reserva'
               )}
             </Button>
           )}
@@ -589,8 +695,65 @@ const KartBookingForm = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 3 }}>
+      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+        {/* Hero Section */}
+        <Box 
+          sx={{ 
+            background: 'linear-gradient(135deg, #2E1065 0%, #5B21B6 50%, #1E3A8A 100%)',
+            color: 'white',
+            py: 3,
+            textAlign: 'center'
+          }}
+        >
+          <Container maxWidth="lg">
+            <SportsMotorsportsIcon sx={{ fontSize: 60, mb: 2, color: 'white' }} />
+            <Typography 
+              variant="h3" 
+              component="h1" 
+              gutterBottom 
+              sx={{ 
+                fontWeight: 'bold',
+                mb: 2,
+                fontSize: { xs: '1.8rem', md: '2.5rem' }
+              }}
+            >
+              Reserva tu Kart
+            </Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                mb: 2,
+                opacity: 0.9,
+                fontSize: { xs: '1rem', md: '1.2rem' }
+              }}
+            >
+              Completa el proceso paso a paso para asegurar tu experiencia
+            </Typography>
+          </Container>
+        </Box>
+
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+          <Paper 
+            elevation={8} 
+            sx={{ 
+              p: 4,
+              background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+              border: '2px solid',
+              borderColor: '#E2E8F0',
+              borderRadius: 3,
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(90deg, #5B21B6 0%, #1E3A8A 100%)'
+              }
+            }}
+          >
           {/* Header con información clara */}
           <Typography variant="h5" align="center" color="text.secondary" sx={{ mb: 2 }}>
             Reserva tu kart
@@ -599,11 +762,44 @@ const KartBookingForm = () => {
 
           {/* Indicador de progreso */}
           <Box sx={{ mb: 4 }}>
+            <Typography 
+              variant="h5" 
+              component="h2" 
+              gutterBottom 
+              sx={{ 
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: '#5B21B6',
+                mb: 3
+              }}
+            >
+              Proceso de Reserva
+            </Typography>
+            
             <Stepper 
               activeStep={activeStep} 
               sx={{ 
+                mb: 3,
                 '& .MuiStepLabel-root': {
                   cursor: 'default'
+                },
+                '& .MuiStepIcon-root': {
+                  color: '#E2E8F0',
+                  '&.Mui-active': {
+                    color: '#5B21B6'
+                  },
+                  '&.Mui-completed': {
+                    color: '#10B981'
+                  }
+                },
+                '& .MuiStepConnector-line': {
+                  borderColor: '#E2E8F0'
+                },
+                '& .MuiStepConnector-root.Mui-active .MuiStepConnector-line': {
+                  borderColor: '#5B21B6'
+                },
+                '& .MuiStepConnector-root.Mui-completed .MuiStepConnector-line': {
+                  borderColor: '#10B981'
                 }
               }}
             >
@@ -626,33 +822,47 @@ const KartBookingForm = () => {
             </Stepper>
             
             {/* Indicador de progreso visual */}
-            <Box sx={{ mt: 2, px: 2 }}>
+            <Box sx={{ mt: 3, px: 2 }}>
               <Box 
                 sx={{ 
                   width: '100%', 
-                  height: 4, 
-                  backgroundColor: 'grey.200', 
-                  borderRadius: 2,
-                  overflow: 'hidden'
+                  height: 6, 
+                  backgroundColor: '#E2E8F0', 
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
                 }}
               >
                 <Box 
                   sx={{ 
                     width: `${(activeStep / (steps.length - 1)) * 100}%`, 
                     height: '100%', 
-                    backgroundColor: 'primary.main',
-                    transition: 'width 0.3s ease-in-out'
+                    background: 'linear-gradient(90deg, #5B21B6 0%, #1E3A8A 100%)',
+                    transition: 'width 0.5s ease-in-out',
+                    borderRadius: 3,
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+                      borderRadius: 3
+                    }
                   }}
                 />
               </Box>
               <Typography 
-                variant="caption" 
+                variant="body2" 
                 sx={{ 
                   display: 'block', 
                   textAlign: 'center', 
-                  mt: 1, 
-                  color: 'text.secondary',
-                  fontWeight: 500
+                  mt: 2, 
+                  color: '#5B21B6',
+                  fontWeight: 600,
+                  fontSize: '0.9rem'
                 }}
               >
                 Paso {activeStep + 1} de {steps.length}
@@ -660,21 +870,22 @@ const KartBookingForm = () => {
             </Box>
           </Box>
 
-          {/* Mensajes de estado */}
-          {successMessage && (
-            <Alert 
-              severity="success" 
-              sx={{ mb: 3 }}
-              icon={<CheckCircleIcon />}
-            >
-              {successMessage}
-            </Alert>
-          )}
-
           {generalError && (
             <Alert 
               severity="error" 
-              sx={{ mb: 3 }}
+              sx={{ 
+                mb: 3,
+                borderRadius: 2,
+                border: '2px solid #EF4444',
+                background: 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)',
+                '& .MuiAlert-icon': {
+                  color: '#EF4444'
+                },
+                '& .MuiAlert-message': {
+                  color: '#991B1B',
+                  fontWeight: 500
+                }
+              }}
               icon={<WarningIcon />}
             >
               {generalError}
@@ -683,7 +894,22 @@ const KartBookingForm = () => {
 
           {/* Información de horarios */}
           {activeStep === 1 && (
-            <Alert severity="info" sx={{ mb: 3 }}>
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mb: 3,
+                borderRadius: 2,
+                border: '2px solid #3B82F6',
+                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                '& .MuiAlert-icon': {
+                  color: '#3B82F6'
+                },
+                '& .MuiAlert-message': {
+                  color: '#1E3A8A',
+                  fontWeight: 500
+                }
+              }}
+            >
               <Typography variant="body2">
                 <strong>Horarios de atención:</strong><br />
                 • Lunes a Viernes: 14:00 - 22:00<br />
@@ -694,23 +920,81 @@ const KartBookingForm = () => {
 
           {/* Indicador de carga para horarios */}
           {loadingTimes && (
-            <Alert severity="info" sx={{ mb: 3 }}>
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mb: 3,
+                borderRadius: 2,
+                border: '2px solid #8B5CF6',
+                background: 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)',
+                '& .MuiAlert-icon': {
+                  color: '#8B5CF6'
+                },
+                '& .MuiAlert-message': {
+                  color: '#5B21B6',
+                  fontWeight: 500
+                }
+              }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <CircularProgress size={20} />
+                <CircularProgress size={20} sx={{ color: '#8B5CF6' }} />
                 Cargando horarios disponibles...
               </Box>
             </Alert>
           )}
 
           {/* Contenido del paso actual */}
-          <Box sx={{ minHeight: 400 }}>
+          <Box 
+            sx={{ 
+              minHeight: 400,
+              background: 'white',
+              borderRadius: 2,
+              p: 3,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+              border: '1px solid #E2E8F0'
+            }}
+          >
             {renderStepContent()}
           </Box>
 
           {/* Botones de navegación */}
           {renderNavigationButtons()}
+
+          {/* Mensajes de estado */}
+          {successMessage && (
+            <Alert 
+              severity="success" 
+              sx={{ 
+                mb: 3,
+                borderRadius: 2,
+                border: '2px solid #10B981',
+                background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
+                '& .MuiAlert-icon': {
+                  color: '#10B981'
+                },
+                '& .MuiAlert-message': {
+                  color: '#065F46',
+                  fontWeight: 500
+                }
+              }}
+              icon={<CheckCircleIcon />}
+            >
+              {successMessage}
+            </Alert>
+          )}
+
+          {/* Help Section */}
+          <Box sx={{ mt: 6, textAlign: 'center', p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid #E2E8F0' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
+              ¿Necesitas ayuda?
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#64748B' }}>
+              Contacta con nosotros: 📞 +56 9 1234 5678 | 📧 unique.bussiness@gmail.com
+            </Typography>
+          </Box>
         </Paper>
       </Container>
+    </Box>
     </LocalizationProvider>
   );
 };

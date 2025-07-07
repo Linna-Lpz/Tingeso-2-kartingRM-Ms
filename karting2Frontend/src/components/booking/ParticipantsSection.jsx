@@ -17,9 +17,9 @@ const ParticipantsSection = ({
 }) => {
   return (
     <>
-      <Typography variant="h6" gutterBottom>Datos de las personas</Typography>
-      <Typography variant="subtitle1" gutterBottom color='textSecondary'>
-        Ingresa primero a quien realiza la reserva
+      <Typography variant="h6" gutterBottom>Ingresa los datos de cada integrante</Typography>
+      <Typography variant="subtitle1" gutterBottom color='textPrimary'>
+        ¡Ingresa primero a quien realiza la reserva!
       </Typography>
       
       {rutError && (
@@ -39,6 +39,29 @@ const ParticipantsSection = ({
           {emailError}
         </Alert>
       )}
+
+      {/* Recuadro para mostrar participantes restantes */}
+      <Paper sx={{ p: 2, mb: 2, bgcolor: people.length === numOfPeople ? '#f1f8e9' : '#f8f9fa', border: '1px solid #e0e0e0' }}>
+        <Typography variant="subtitle1" sx={{ color: people.length === numOfPeople ? '#2e7d32' : '#666666', fontWeight: 'medium' }}>
+          {people.length === numOfPeople ? (
+            <>
+              ✓ Todos los participantes han sido agregados ({people.length}/{numOfPeople})
+            </>
+          ) : (
+            <>
+              Participantes agregados: {people.length}/{numOfPeople}
+            </>
+          )}
+        </Typography>
+        {people.length < numOfPeople && (
+          <Typography variant="body2" sx={{ color: '#757575', mt: 1 }}>
+            {numOfPeople - people.length === 1 
+              ? `Falta agregar 1 participante más` 
+              : `Faltan agregar ${numOfPeople - people.length} participantes más`
+            }
+          </Typography>
+        )}
+      </Paper>
 
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid>

@@ -128,7 +128,7 @@ const DateTimeSection = ({
         <Grid item>
           <Paper sx={{ p: 2, minWidth: 280, height: 'fit-content' }}>
             <Typography variant="subtitle1" gutterBottom>
-              Horarios disponibles
+              Primero, selecciona un bloque de hora
             </Typography>
             
             {!bookingDate ? (
@@ -168,7 +168,7 @@ const DateTimeSection = ({
                 {expandedHour !== null && (
                   <Box sx={{ mt: 2, p: 1, bgcolor: '#f8f9fa', borderRadius: 1 }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Horarios disponibles para las {expandedHour.toString().padStart(2, '0')}:00
+                      Segundo, selecciona una hora de llegada
                     </Typography>
                     <Grid container spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
                       {hourBlocks.find(b => b.hour === expandedHour)?.availableTimes.map((time) => (
@@ -196,6 +196,52 @@ const DateTimeSection = ({
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Recuadro para mostrar la fecha y hora seleccionada */}
+      <Paper sx={{ p: 2, mb: 2, bgcolor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+        <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
+          Resumen de selección
+        </Typography>
+        
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Fecha seleccionada:
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+              {bookingDate ? 
+                bookingDate.toLocaleDateString('es-ES', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }) : 
+                'No seleccionada'
+              }
+            </Typography>
+          </Grid>
+          
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Hora seleccionada:
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+              {bookingTime ? 
+                formatTime(bookingTime) : 
+                'No seleccionada'
+              }
+            </Typography>
+          </Grid>
+        </Grid>
+        
+        {bookingDate && bookingTime && (
+          <Box sx={{ mt: 2, p: 1, bgcolor: 'success.light', borderRadius: 1 }}>
+            <Typography variant="body2" sx={{ color: 'success.dark', fontWeight: 'medium' }}>
+              ✓ Fecha y hora confirmadas para tu reserva
+            </Typography>
+          </Box>
+        )}
+      </Paper>
     </>
   );
 };

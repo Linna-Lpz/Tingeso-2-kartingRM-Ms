@@ -28,7 +28,8 @@ import {
   Info as InfoIcon,
   Schedule as ScheduleIcon,
   Group as GroupIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  SportsMotorsports as SportsMotorsportsIcon
 } from '@mui/icons-material';
 import bookingService from '../services/services.management';
 
@@ -231,26 +232,84 @@ const StatusKartBooking = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* Header con información clara (Nielsen: Estándares y consistencia) */}
-      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" gutterBottom align="center" color="primary">
-          Estado de Reservas
-        </Typography>
-        <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 3 }}>
-          Consulte, confirme o cancele sus reservas de karting
-        </Typography>
-        <Divider />
-      </Paper>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <Box 
+        sx={{ 
+          background: 'linear-gradient(135deg, #2E1065 0%, #5B21B6 50%, #1E3A8A 100%)',
+          color: 'white',
+          py: 3,
+          textAlign: 'center'
+        }}
+      >
+        <Container maxWidth="lg">
+          <SportsMotorsportsIcon sx={{ fontSize: 60, mb: 2, color: 'white' }} />
+          <Typography 
+            variant="h3" 
+            component="h1" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 'bold',
+              mb: 2,
+              fontSize: { xs: '1.8rem', md: '2.5rem' }
+            }}
+          >
+            Estado de Reservas
+          </Typography>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              mb: 2,
+              opacity: 0.9,
+              fontSize: { xs: '1rem', md: '1.2rem' }
+            }}
+          >
+            Consulte, confirme o cancele sus reservas de karting
+          </Typography>
+        </Container>
+      </Box>
 
-      {/* Formulario de búsqueda (Nielsen: Prevención de errores) */}
-      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SearchIcon color="primary" />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Formulario de búsqueda mejorado */}
+      <Paper 
+        elevation={8} 
+        sx={{ 
+          p: 4, 
+          mb: 4,
+          background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+          border: '2px solid',
+          borderColor: '#E2E8F0',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(90deg, #5B21B6 0%, #1E3A8A 100%)'
+          }
+        }}
+      >
+        <Typography 
+          variant="h5" 
+          gutterBottom 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2,
+            color: '#5B21B6',
+            fontWeight: 'bold',
+            mb: 3
+          }}
+        >
+          <SearchIcon sx={{ fontSize: 30, color: '#5B21B6' }} />
           Buscar Reservas
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', mt: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', mt: 3 }}>
           <TextField
             fullWidth
             label="RUT del cliente"
@@ -264,36 +323,103 @@ const StatusKartBooking = () => {
             error={!!error}
             helperText={error || "Ingrese su RUT para buscar sus reservas"}
             disabled={isSearching}
-            sx={{ maxWidth: 300 }}
+            sx={{ 
+              maxWidth: 350,
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'white',
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#5B21B6'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#5B21B6'
+                }
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#5B21B6'
+              }
+            }}
           />
           
           <Button
             variant="contained"
             onClick={fetchBookings}
             disabled={isSearching || !rut.trim()}
-            startIcon={isSearching ? <CircularProgress size={20} /> : <SearchIcon />}
-            sx={{ minWidth: 140, height: 56 }}
+            startIcon={isSearching ? <CircularProgress size={20} color="inherit" /> : <SearchIcon />}
+            sx={{ 
+              minWidth: 140, 
+              height: 56,
+              background: 'linear-gradient(135deg, #5B21B6 0%, #1E3A8A 100%)',
+              fontWeight: 'bold',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #2E1065 0%, #1E40AF 100%)',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(91, 33, 182, 0.3)'
+              },
+              '&:disabled': {
+                background: '#E2E8F0',
+                color: '#94A3B8'
+              },
+              transition: 'all 0.3s ease'
+            }}
           >
             {isSearching ? 'Buscando...' : 'Buscar'}
           </Button>
         </Box>
 
-        {/* Ayuda contextual (Nielsen: Ayuda y documentación) */}
-        <Alert severity="info" sx={{ mt: 2 }}>
+        {/* Ayuda contextual mejorada */}
+        <Alert 
+          severity="info" 
+          sx={{ 
+            mt: 3,
+            borderRadius: 2,
+            border: '2px solid #3B82F6',
+            background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+            '& .MuiAlert-icon': {
+              color: '#3B82F6'
+            },
+            '& .MuiAlert-message': {
+              color: '#1E3A8A',
+              fontWeight: 500
+            }
+          }}
+        >
           <Typography variant="body2">
             <strong>Información:</strong> Ingrese su RUT completo con guión y dígito verificador (Ej: 12345678-9)
           </Typography>
         </Alert>
       </Paper>
 
-      {/* Mensajes de error mejorados (Nielsen: Visibilidad del estado del sistema) */}
+      {/* Mensajes de error mejorados */}
       {error && (
         <Alert 
           severity="error" 
-          sx={{ mb: 3 }}
+          sx={{ 
+            mb: 3,
+            borderRadius: 2,
+            border: '2px solid #EF4444',
+            background: 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)',
+            '& .MuiAlert-icon': {
+              color: '#EF4444'
+            },
+            '& .MuiAlert-message': {
+              color: '#991B1B',
+              fontWeight: 500
+            }
+          }}
           onClose={clearError}
           action={
-            <Button color="inherit" size="small" onClick={clearError}>
+            <Button 
+              color="inherit" 
+              size="small" 
+              onClick={clearError}
+              sx={{ 
+                color: '#991B1B',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: 'rgba(153, 27, 27, 0.1)'
+                }
+              }}
+            >
               Cerrar
             </Button>
           }
@@ -302,11 +428,22 @@ const StatusKartBooking = () => {
         </Alert>
       )}
 
-      {/* Grid de reservas (Nielsen: Reconocimiento antes que recuerdo) */}
+      {/* Grid de reservas mejorado */}
       {bookings.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <InfoIcon color="primary" />
+        <Box sx={{ mb: 4 }}>
+          <Typography 
+            variant="h5" 
+            gutterBottom 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 2,
+              color: '#5B21B6',
+              fontWeight: 'bold',
+              mb: 3
+            }}
+          >
+            <InfoIcon sx={{ fontSize: 30, color: '#5B21B6' }} />
             Sus Reservas ({bookings.length})
           </Typography>
           
@@ -314,14 +451,31 @@ const StatusKartBooking = () => {
             {bookings.map((booking) => (
               <Grid item xs={12} sm={6} md={4} key={booking.id}>
                 <Card 
-                  elevation={2}
+                  elevation={6}
                   sx={{ 
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
+                    border: '2px solid',
+                    borderColor: '#E2E8F0',
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
                     '&:hover': {
-                      boxShadow: 4
+                      boxShadow: '0 12px 24px rgba(91, 33, 182, 0.15)',
+                      transform: 'translateY(-4px)',
+                      borderColor: '#5B21B6'
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '3px',
+                      background: 'linear-gradient(90deg, #5B21B6 0%, #1E3A8A 100%)'
                     }
                   }}
                 >
@@ -335,51 +489,77 @@ const StatusKartBooking = () => {
                     />
                   </Box>
                   {/* Tarjeta con información resumen de la reserva */}
-                  <CardContent sx={{ flexGrow: 1, pt: 5 }}>
-                    {/* Información principal con iconos (Nielsen: Reconocimiento antes que recuerdo) */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CalendarIcon color="primary" fontSize="small" />
-                        <Typography variant="body2">
+                  <CardContent sx={{ flexGrow: 1, pt: 6, px: 3 }}>
+                    {/* Información principal con iconos mejorados */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <CalendarIcon sx={{ color: '#5B21B6', fontSize: 20 }} />
+                        <Typography variant="body1" sx={{ color: '#1E293B', fontWeight: 500 }}>
                           <strong>Fecha:</strong> {booking.bookingDate}
                         </Typography>
                       </Box>
                       
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <ScheduleIcon color="primary" fontSize="small" />
-                        <Typography variant="body2">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ScheduleIcon sx={{ color: '#5B21B6', fontSize: 20 }} />
+                        <Typography variant="body1" sx={{ color: '#1E293B', fontWeight: 500 }}>
                           <strong>Hora:</strong> {booking.bookingTime}
                         </Typography>
                       </Box>
                       
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <GroupIcon color="primary" fontSize="small" />
-                        <Typography variant="body2">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <GroupIcon sx={{ color: '#5B21B6', fontSize: 20 }} />
+                        <Typography variant="body1" sx={{ color: '#1E293B', fontWeight: 500 }}>
                           <strong>Personas:</strong> {booking.numOfPeople}
                         </Typography>
                       </Box>
                       
-                      <Typography variant="body2">
+                      <Typography variant="body1" sx={{ color: '#1E293B', fontWeight: 500, ml: 5 }}>
                         <strong>Vueltas/Tiempo:</strong> {booking.lapsOrMaxTimeAllowed}
                       </Typography>
                       
-                      <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                        <strong>Total: ${booking.totalAmount?.toLocaleString()}</strong>
-                      </Typography>
+                      <Box 
+                        sx={{ 
+                          mt: 2, 
+                          p: 2, 
+                          bgcolor: '#F0F9FF', 
+                          borderRadius: 2, 
+                          border: '1px solid #BAE6FD',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Typography variant="h6" sx={{ color: '#0369A1', fontWeight: 'bold' }}>
+                          Total: ${booking.totalAmount?.toLocaleString()}
+                        </Typography>
+                      </Box>
                     </Box>
                   </CardContent>
 
-                  {/* Acciones contextuales (Nielsen: Control y libertad del usuario) */}
-                  <CardActions sx={{ p: 2, pt: 0 }}>
+                  {/* Acciones contextuales mejoradas */}
+                  <CardActions sx={{ p: 3, pt: 0 }}>
                     {booking.bookingStatus !== 'confirmada' && booking.bookingStatus !== 'cancelada' && (
                       <Button
                         variant="contained"
                         color="success"
-                        size="small"
+                        size="medium"
                         startIcon={<PaymentIcon />}
                         onClick={() => showConfirmDialog(booking, 'confirm')}
                         disabled={isLoading}
                         fullWidth
+                        sx={{
+                          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                          fontWeight: 'bold',
+                          py: 1.5,
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #047857 0%, #065F46 100%)',
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                          },
+                          '&:disabled': {
+                            background: '#E2E8F0',
+                            color: '#94A3B8'
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
                       >
                         Pagar Reserva
                       </Button>
@@ -389,20 +569,40 @@ const StatusKartBooking = () => {
                       <Button
                         variant="outlined"
                         color="error"
-                        size="small"
+                        size="medium"
                         startIcon={<CancelIcon />}
                         onClick={() => showConfirmDialog(booking, 'cancel')}
                         disabled={isLoading}
                         fullWidth
+                        sx={{
+                          borderColor: '#EF4444',
+                          color: '#EF4444',
+                          fontWeight: 'bold',
+                          py: 1.5,
+                          borderWidth: 2,
+                          '&:hover': {
+                            borderColor: '#DC2626',
+                            color: '#DC2626',
+                            backgroundColor: '#FEF2F2',
+                            borderWidth: 2
+                          },
+                          '&:disabled': {
+                            borderColor: '#E2E8F0',
+                            color: '#94A3B8'
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
                       >
                         Cancelar Reserva
                       </Button>
                     )}
 
                     {booking.bookingStatus === 'cancelada' && (
-                      <Typography variant="body2" color="text.secondary" sx={{ width: '100%', textAlign: 'center' }}>
-                        Reserva cancelada
-                      </Typography>
+                      <Box sx={{ width: '100%', textAlign: 'center', py: 1.5 }}>
+                        <Typography variant="body1" sx={{ color: '#64748B', fontWeight: 500 }}>
+                          Reserva cancelada
+                        </Typography>
+                      </Box>
                     )}
                   </CardActions>
                 </Card>
@@ -412,57 +612,110 @@ const StatusKartBooking = () => {
         </Box>
       )}
 
-      {/* Estado vacío (Nielsen: Ayuda y documentación) */}
+      {/* Estado vacío mejorado */}
       {bookings.length === 0 && !error && !isSearching && (
-        <Paper elevation={1} sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.50' }}>
-          <InfoIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
+        <Paper 
+          elevation={4} 
+          sx={{ 
+            p: 6, 
+            textAlign: 'center', 
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+            border: '2px solid #E2E8F0',
+            borderRadius: 3
+          }}
+        >
+          <InfoIcon sx={{ fontSize: 64, color: '#94A3B8', mb: 3 }} />
+          <Typography variant="h5" sx={{ color: '#5B21B6', fontWeight: 'bold', mb: 2 }}>
             No hay reservas para mostrar
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Ingrese su RUT para buscar sus reservas de karting
+          <Typography variant="body1" sx={{ color: '#64748B', maxWidth: 400, mx: 'auto' }}>
+            Ingrese su RUT para buscar sus reservas de karting y gestionar sus experiencias
           </Typography>
         </Paper>
       )}
 
-      {/* Diálogo de confirmación (Nielsen: Prevención de errores) */}
+      {/* Diálogo de confirmación mejorado */}
       <Dialog
         open={confirmDialog.open}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle sx={{ 
+          color: '#5B21B6', 
+          fontWeight: 'bold', 
+          fontSize: '1.5rem',
+          borderBottom: '2px solid #E2E8F0',
+          pb: 2
+        }}>
           {confirmDialog.action === 'confirm' ? 'Confirmar Pago' : 'Cancelar Reserva'}
         </DialogTitle>
         
-        <DialogContent>
+        <DialogContent sx={{ pt: 3 }}>
           {confirmDialog.booking && (
             <Box>
-              <Alert severity={confirmDialog.action === 'confirm' ? 'info' : 'warning'} sx={{ mb: 2 }}>
+              <Alert 
+                severity={confirmDialog.action === 'confirm' ? 'info' : 'warning'} 
+                sx={{ 
+                  mb: 3,
+                  borderRadius: 2,
+                  border: '2px solid',
+                  borderColor: confirmDialog.action === 'confirm' ? '#3B82F6' : '#F59E0B',
+                  background: confirmDialog.action === 'confirm' 
+                    ? 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)'
+                    : 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+                  '& .MuiAlert-icon': {
+                    color: confirmDialog.action === 'confirm' ? '#3B82F6' : '#F59E0B'
+                  },
+                  '& .MuiAlert-message': {
+                    color: confirmDialog.action === 'confirm' ? '#1E3A8A' : '#92400E',
+                    fontWeight: 500
+                  }
+                }}
+              >
                 {confirmDialog.action === 'confirm' 
                   ? 'Al confirmar el pago, se procesará su reserva y se enviará a cada integrante, un comprobante por email. Este debe ser presentado al momento de la visita.'
                   : 'Esta acción no se puede deshacer. ¿Está seguro de que desea cancelar esta reserva?'
                 }
               </Alert>
               
-              <Typography variant="body1" gutterBottom>
-                <strong>Detalles de la reserva:</strong>
+              <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
+                Detalles de la reserva:
               </Typography>
               
-              <Box sx={{ ml: 2 }}>
-                <Typography variant="body2">• Fecha: {confirmDialog.booking.bookingDate}</Typography>
-                <Typography variant="body2">• Hora: {confirmDialog.booking.bookingTime}</Typography>
-                <Typography variant="body2">• Personas: {confirmDialog.booking.numOfPeople}</Typography>
-                <Typography variant="body2">• Total: ${confirmDialog.booking.totalAmount?.toLocaleString()}</Typography>
+              <Box sx={{ 
+                ml: 2, 
+                p: 3, 
+                bgcolor: '#F8FAFC', 
+                borderRadius: 2, 
+                border: '1px solid #E2E8F0' 
+              }}>
+                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Fecha:</strong> {confirmDialog.booking.bookingDate}</Typography>
+                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Hora:</strong> {confirmDialog.booking.bookingTime}</Typography>
+                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Personas:</strong> {confirmDialog.booking.numOfPeople}</Typography>
+                <Typography variant="body1" sx={{ color: '#1E293B' }}>• <strong>Total:</strong> <span style={{ color: '#0369A1', fontWeight: 'bold' }}>${confirmDialog.booking.totalAmount?.toLocaleString()}</span></Typography>
               </Box>
             </Box>
           )}
         </DialogContent>
         
-        <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={isLoading}>
-            Cancelar
+        <DialogActions sx={{ p: 3, gap: 2 }}>
+          <Button 
+            onClick={handleCloseDialog} 
+            disabled={isLoading}
+            sx={{
+              borderColor: '#64748B',
+              color: '#64748B',
+              fontWeight: 'bold',
+              '&:hover': {
+                borderColor: '#475569',
+                color: '#475569',
+                backgroundColor: '#F8FAFC'
+              }
+            }}
+            variant="outlined"
+          >
+            Cerrar
           </Button>
           <Button
               onClick={() => {
@@ -473,16 +726,36 @@ const StatusKartBooking = () => {
                 }
               }}
               variant="contained"
-              color={confirmDialog.action === 'confirm' ? 'success' : 'error'}
               disabled={isLoading}
-              startIcon={isLoading ? <CircularProgress size={16} /> : null}
+              startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : null}
+              sx={{
+                background: confirmDialog.action === 'confirm' 
+                  ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                  : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                fontWeight: 'bold',
+                minWidth: 160,
+                '&:hover': {
+                  background: confirmDialog.action === 'confirm'
+                    ? 'linear-gradient(135deg, #047857 0%, #065F46 100%)'
+                    : 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: confirmDialog.action === 'confirm'
+                    ? '0 4px 12px rgba(16, 185, 129, 0.3)'
+                    : '0 4px 12px rgba(239, 68, 68, 0.3)'
+                },
+                '&:disabled': {
+                  background: '#E2E8F0',
+                  color: '#94A3B8'
+                },
+                transition: 'all 0.3s ease'
+              }}
           >
             {getDialogActionLabel()}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar para mensajes de éxito (Nielsen: Visibilidad del estado del sistema) */}
+      {/* Snackbar para mensajes de éxito mejorado */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -492,13 +765,28 @@ const StatusKartBooking = () => {
         <Alert 
           onClose={() => setSnackbarOpen(false)} 
           severity="success" 
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            borderRadius: 2,
+            fontWeight: 'bold'
+          }}
           variant="filled"
         >
           {successMessage}
         </Alert>
       </Snackbar>
+
+      {/* Help Section */}
+      <Box sx={{ mt: 6, textAlign: 'center', p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid #E2E8F0' }}>
+        <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
+          ¿Necesitas ayuda?
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#64748B' }}>
+          Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
+        </Typography>
+      </Box>
     </Container>
+  </Box>
   );
 };
 
