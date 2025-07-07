@@ -46,7 +46,7 @@ const KartBookingForm = () => {
   const [lapsOrMaxTime, setLapsOrMaxTime] = useState(10);
   // Variables para manejar datos del cliente
   const [numOfPeople, setNumOfPeople] = useState(1);
-  const [person, setPerson] = useState({ rut: '', name: '', email: '' });
+  const [person, setPerson] = useState({ rut: '', name: '', lastName: '', email: '' });
   const [people, setPeople] = useState([]);
   
   // Estados para errores específicos
@@ -56,6 +56,7 @@ const KartBookingForm = () => {
   const [timeError, setTimeError] = useState('');
   const [rutError, setRutError] = useState('');
   const [nameError, setNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [generalError, setGeneralError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -126,6 +127,7 @@ const KartBookingForm = () => {
     setTimeError('');
     setRutError('');
     setNameError('');
+    setLastNameError('');
     setEmailError('');
     setGeneralError('');
     setSuccessMessage('');
@@ -314,26 +316,54 @@ const KartBookingForm = () => {
   // Función para validar de los datos del cliente que reserva
   const validatePerson = () => {
     let hasErrors = false;
+    let updatedPerson = { ...person };
     
-    if (!person.rut) {
-      setRutError('RUT es requerido');
+    // Validar RUT
+    const rutValidation = validateRUT(person.rut);
+    if (!rutValidation.isValid) {
+      setRutError(rutValidation.error);
       hasErrors = true;
     } else {
       setRutError('');
+      updatedPerson.rut = rutValidation.formattedRut;
     }
     
-    if (!person.name) {
-      setNameError('Nombre es requerido');
+    // Validar nombre
+    const nameValidation = validateName(person.name);
+    if (!nameValidation.isValid) {
+      setNameError(nameValidation.error);
       hasErrors = true;
     } else {
       setNameError('');
     }
     
-    if (!person.email) {
-      setEmailError('Email es requerido');
+    // Validar apellido
+    const lastNameValidation = validateLastName(person.lastName);
+    if (!lastNameValidation.isValid) {
+      setLastNameError(lastNameValidation.error);
+      hasErrors = true;
+    } else {
+      setLastNameError('');
+    }
+    
+    // Validar email
+    const emailValidation = validateEmail(person.email);
+    if (!emailValidation.isValid) {
+      setEmailError(emailValidation.error);
       hasErrors = true;
     } else {
       setEmailError('');
+    }
+    
+    // Verificar que no exista una persona con el mismo RUT
+    if (rutValidation.isValid && people.some(p => p.rut === rutValidation.formattedRut)) {
+      setRutError('Ya existe una persona con este RUT');
+      hasErrors = true;
+    }
+    
+    // Si no hay errores, actualizar el estado con el RUT formateado
+    if (!hasErrors && updatedPerson.rut !== person.rut) {
+      setPerson(updatedPerson);
     }
     
     return hasErrors;
@@ -347,7 +377,7 @@ const KartBookingForm = () => {
     }
     
     setPeople([...people, person]);
-    setPerson({ rut: '', name: '', email: '' });
+    setPerson({ rut: '', name: '', lastName: '', email: '' });
     clearErrors();
   };
 
@@ -398,7 +428,7 @@ const KartBookingForm = () => {
     const endTime = calculateEndTime(bookingTime, duration);
 
     const clientsRUT = people.map(p => p.rut).join(',');
-    const clientsNames = people.map(p => p.name).join(',');
+    const clientsNames = people.map(p => `${p.name} ${p.lastName}`).join(',');
     const clientsEmails = people.map(p => p.email).join(',');
 
     const reservationData = {
@@ -575,7 +605,7 @@ const KartBookingForm = () => {
                           }}
                         >
                           <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.rut}</TableCell>
-                          <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.name}</TableCell>
+                          <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{`${person.name} ${person.lastName}`}</TableCell>
                           <TableCell sx={{ color: '#1E293B', fontWeight: 500 }}>{person.email}</TableCell>
                         </TableRow>
                     ))}
@@ -628,6 +658,7 @@ const KartBookingForm = () => {
             onRemovePerson={removePerson}
             rutError={rutError}
             nameError={nameError}
+            lastNameError={lastNameError}
             emailError={emailError}
           />
         );
@@ -726,6 +757,94 @@ const KartBookingForm = () => {
         </Box>
       </Box>
     );
+  };
+
+  // Funciones de validación
+  const validateRUT = (rut) => {
+    // Eliminar espacios y convertir a mayúsculas
+    let cleanRut = rut.replace(/\s/g, '').replace(/\./g, '').toUpperCase();
+    
+    // Si no tiene guión, agregarlo automáticamente
+    if (!cleanRut.includes('-') && cleanRut.length >= 8) {
+      cleanRut = cleanRut.slice(0, -1) + '-' + cleanRut.slice(-1);
+    }
+    
+    // Verificar formato básico
+    const rutRegex = /^[0-9]{7,8}-[0-9K]$/;
+    if (!rutRegex.test(cleanRut)) {
+      return { isValid: false, formattedRut: cleanRut, error: 'RUT debe tener formato 12345678-9' };
+    }
+    
+    // Validar dígito verificador
+    const rutParts = cleanRut.split('-');
+    const rutNumber = rutParts[0];
+    const dv = rutParts[1];
+    
+    let sum = 0;
+    let multiplier = 2;
+    
+    for (let i = rutNumber.length - 1; i >= 0; i--) {
+      sum += parseInt(rutNumber.charAt(i)) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    
+    const remainder = sum % 11;
+    const calculatedDV = remainder === 0 ? '0' : remainder === 1 ? 'K' : (11 - remainder).toString();
+    
+    if (dv !== calculatedDV) {
+      return { isValid: false, formattedRut: cleanRut, error: 'RUT no es válido' };
+    }
+    
+    return { isValid: true, formattedRut: cleanRut, error: '' };
+  };
+
+  const validateName = (name) => {
+    if (!name || name.trim().length === 0) {
+      return { isValid: false, error: 'Nombre es requerido' };
+    }
+    
+    // No debe contener números ni caracteres especiales
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (!nameRegex.test(name)) {
+      return { isValid: false, error: 'Nombre solo debe contener letras' };
+    }
+    
+    if (name.trim().length < 2) {
+      return { isValid: false, error: 'Nombre debe tener al menos 2 caracteres' };
+    }
+    
+    return { isValid: true, error: '' };
+  };
+
+  const validateLastName = (lastName) => {
+    if (!lastName || lastName.trim().length === 0) {
+      return { isValid: false, error: 'Apellido es requerido' };
+    }
+    
+    // No debe contener números ni caracteres especiales
+    const lastNameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (!lastNameRegex.test(lastName)) {
+      return { isValid: false, error: 'Apellido solo debe contener letras' };
+    }
+    
+    if (lastName.trim().length < 2) {
+      return { isValid: false, error: 'Apellido debe tener al menos 2 caracteres' };
+    }
+    
+    return { isValid: true, error: '' };
+  };
+
+  const validateEmail = (email) => {
+    if (!email || email.trim().length === 0) {
+      return { isValid: false, error: 'Email es requerido' };
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { isValid: false, error: 'Email no tiene formato válido' };
+    }
+    
+    return { isValid: true, error: '' };
   };
 
   return (
@@ -1024,7 +1143,7 @@ const KartBookingForm = () => {
               ¿Necesitas ayuda?
             </Typography>
             <Typography variant="body2" sx={{ color: '#64748B' }}>
-              Contacta con nosotros: 📞 +56 9 1234 5678 | 📧 unique.bussiness@gmail.com
+              Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
             </Typography>
           </Box>
         </Paper>
