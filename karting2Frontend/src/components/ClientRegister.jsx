@@ -6,7 +6,7 @@ import {
 import clientService from '../services/services.management';
 
 const ClientRegister = () => {
-  const [clientRUT, setClientRut] = useState('');
+  const [clientRUT, setClientRUT] = useState('');
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [day, setDay] = useState('');
@@ -73,7 +73,7 @@ const ClientRegister = () => {
       const response = await clientService.saveClient(newClient);
       
       // Limpiar los campos del formulario después de enviar
-      setClientRut('');
+      setClientRUT('');
       setClientName('');
       setClientEmail('');
       setDay('');
@@ -250,7 +250,7 @@ const ClientRegister = () => {
                   value={clientRUT}
                   onChange={(e) => {
                     const value = e.target.value.slice(0, 10);
-                    setClientRut(value);
+                    setClientRUT(value);
                   }}
                   required
                   error={!!rutError}

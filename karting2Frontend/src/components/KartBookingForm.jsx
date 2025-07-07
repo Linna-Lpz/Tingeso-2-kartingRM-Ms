@@ -761,7 +761,7 @@ const KartBookingForm = () => {
     }
     
     // Verificar formato básico
-    const rutRegex = /^[0-9]{7,8}-[0-9K]$/;
+    const rutRegex = /^\d{7,8}-[\dK]$/;
     if (!rutRegex.test(cleanRut)) {
       return { isValid: false, formattedRut: cleanRut, error: 'RUT debe tener formato 12345678-9' };
     }
@@ -780,7 +780,14 @@ const KartBookingForm = () => {
     }
     
     const remainder = sum % 11;
-    const calculatedDV = remainder === 0 ? '0' : remainder === 1 ? 'K' : (11 - remainder).toString();
+    let calculatedDV;
+    if (remainder === 0) {
+      calculatedDV = '0';
+    } else if (remainder === 1) {
+      calculatedDV = 'K';
+    } else {
+      calculatedDV = (11 - remainder).toString();
+    }
     
     if (dv !== calculatedDV) {
       return { isValid: false, formattedRut: cleanRut, error: 'RUT no es válido' };

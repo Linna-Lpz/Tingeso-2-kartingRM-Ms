@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  Payment as PaymentIcon,
   Cancel as CancelIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
@@ -226,7 +225,6 @@ const StatusKartBooking = () => {
 
   // Función para formatear RUT automáticamente
   const formatRUT = (value) => {
-    // Eliminar todo excepto números y K
     let clean = value.replace(/[^0-9K]/g, '');
     
     // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
@@ -389,7 +387,7 @@ const StatusKartBooking = () => {
         </Box>
       </Paper>
 
-      {/* Mensajes de error mejorados */}
+      {/* Mensajes de error */}
       {error && (
         <Alert 
           severity="error" 
@@ -428,7 +426,7 @@ const StatusKartBooking = () => {
         </Alert>
       )}
 
-      {/* Grid de reservas mejorado */}
+      {/* Grid de reservas */}
       {bookings.length > 0 && (
         <Box sx={{ mb: 4 }}>
           <Typography 
@@ -534,37 +532,8 @@ const StatusKartBooking = () => {
                     </Box>
                   </CardContent>
 
-                  {/* Acciones contextuales mejoradas */}
+                  {/* Acciones contextuales */}
                   <CardActions sx={{ p: 3, pt: 0 }}>
-                    {booking.bookingStatus !== 'confirmada' && booking.bookingStatus !== 'cancelada' && (
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="medium"
-                        startIcon={<PaymentIcon />}
-                        onClick={() => showConfirmDialog(booking, 'confirm')}
-                        disabled={isLoading}
-                        fullWidth
-                        sx={{
-                          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                          fontWeight: 'bold',
-                          py: 1.5,
-                          '&:hover': {
-                            background: 'linear-gradient(135deg, #047857 0%, #065F46 100%)',
-                            transform: 'translateY(-1px)',
-                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                          },
-                          '&:disabled': {
-                            background: '#E2E8F0',
-                            color: '#94A3B8'
-                          },
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        Pagar Reserva
-                      </Button>
-                    )}
-
                     {booking.bookingStatus === 'confirmada' && (
                       <Button
                         variant="outlined"
@@ -593,7 +562,7 @@ const StatusKartBooking = () => {
                           transition: 'all 0.3s ease'
                         }}
                       >
-                        Cancelar Reserva
+                        Anular Reserva
                       </Button>
                     )}
 
