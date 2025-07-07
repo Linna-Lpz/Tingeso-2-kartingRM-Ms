@@ -17,19 +17,13 @@ import {
     Container,
     Alert,
     CircularProgress,
-    Card,
-    CardContent,
-    Grid,
     Chip
 } from '@mui/material';
 import {
     SportsMotorsports as SportsMotorsportsIcon,
     Assessment as AssessmentIcon,
     Search as SearchIcon,
-    CalendarMonth as CalendarIcon,
-    TrendingUp as TrendingUpIcon,
-    Group as GroupIcon,
-    Speed as SpeedIcon
+    CalendarMonth as CalendarIcon
 } from '@mui/icons-material';
 import bookingService from '../services/services.management';
 

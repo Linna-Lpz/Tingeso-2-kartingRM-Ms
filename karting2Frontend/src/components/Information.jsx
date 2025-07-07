@@ -38,7 +38,6 @@ import {
   People as PeopleIcon,
   Grade as GradeIcon,
   TrendingUp as TrendingUpIcon,
-  EventAvailable as EventAvailableIcon,
   Badge as BadgeIcon,
   CalendarToday as CalendarTodayIcon,
   Block as BlockIcon,

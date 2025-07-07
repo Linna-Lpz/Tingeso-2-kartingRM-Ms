@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Divider,
   Paper,
   Snackbar
 } from '@mui/material';

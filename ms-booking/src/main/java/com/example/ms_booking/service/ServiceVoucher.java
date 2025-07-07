@@ -162,6 +162,7 @@ public class ServiceVoucher {
             Document document = new Document();
             PdfWriter.getInstance(document, pdfOutputStream);
             document.open();
+            document.add(new Paragraph("Comprobante de Reserva y Pago - KartingRM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
 
             // Se agregan los datos de la reserva como párrafos antes de la tabla
             document.add(new Paragraph("Código de la reserva: " + id));
@@ -213,7 +214,7 @@ public class ServiceVoucher {
             // Se añade la tabla al documento
             document.add(pdfTable);
             // Se añade el precio total al final del documento
-            document.add(new Paragraph("Total a pagar: $" + totalAmount));
+            document.add(new Paragraph("Total Pagado: $" + totalAmount));
             document.close();
 
             byte[] pdfBytes = pdfOutputStream.toByteArray();
