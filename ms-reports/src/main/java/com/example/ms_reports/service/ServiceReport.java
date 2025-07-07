@@ -159,7 +159,7 @@ public class ServiceReport {
     public List<Integer> getIncomesForNumOfPeopleOfMonth(Integer startMonth, Integer endMonth){
         int numMonths = endMonth - startMonth;
         List<Integer> totalIncomes = new ArrayList<>();
-        for (int i = 0; i < numMonths; i++){
+        for (int i = 0; i <= numMonths; i++){
             Integer value1 = getIncomesForMonthOfNumOfPeople(2, startMonth, endMonth).get(i);
             Integer value2 = getIncomesForMonthOfNumOfPeople(5, startMonth, endMonth).get(i);
             Integer value3 = getIncomesForMonthOfNumOfPeople(10, startMonth, endMonth).get(i);
