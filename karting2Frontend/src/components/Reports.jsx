@@ -460,6 +460,9 @@ const Reports = () => {
                                     if (people === 5) return `3 a ${people} personas`;
                                     return `${people - 4} a ${people} personas`;
                                 };
+                                const total = selectedMonths.reduce(
+                                    (acc, _, i) => acc + (data[startMonth + i - 1] || 0), 0
+                                );
                                 return (
                                 <TableRow key={people}>
                                     <TableCell align="center">
@@ -471,7 +474,7 @@ const Reports = () => {
                                         </TableCell>
                                     ))}
                                     <TableCell align="center">
-                                        {data[12] || 0}
+                                        {total}
                                     </TableCell>
                                 </TableRow>
                                 );
@@ -484,7 +487,11 @@ const Reports = () => {
                                     </TableCell>
                                 ))}
                                 <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                                    {Array.isArray(totalIncomes2) ? (totalIncomes2[11] || 0) : 0}
+                                    {Array.isArray(totalIncomes2)
+                                        ? selectedMonths.reduce(
+                                            (acc, _, idx) => acc + (totalIncomes2[startMonth + idx - 1] || 0), 0
+                                        )
+                                        : 0}
                                 </TableCell>
                             </TableRow>
                         </TableBody>
@@ -493,7 +500,7 @@ const Reports = () => {
                 </>
             )}
 
-            {/* Estado vacío mejorado */}
+            {/* Estado vacío */}
             {!showTables && !isLoading && (
                 <Paper 
                     elevation={4} 

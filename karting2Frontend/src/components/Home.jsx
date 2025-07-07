@@ -220,7 +220,7 @@ const Home = () => {
               ¿Necesitas ayuda?
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Contacta con nosotros: 📞 +56 9 1234 5678 | 📧 unique.bussiness@gmail.com
+              Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
             </Typography>
           </Box>
         </Container>

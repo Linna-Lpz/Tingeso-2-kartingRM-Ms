@@ -153,11 +153,11 @@ const StatusKartBooking = () => {
       await bookingService.confirmBooking(bookingId);
       await bookingService.sendVoucherByEmail(bookingId);
       
-      setSuccessMessage('Reserva confirmada con éxito. Voucher enviado al correo electrónico.');
+      setSuccessMessage('Reserva pagada con éxito. Voucher enviado al correo electrónico.');
       setSnackbarOpen(true);
       setRefresh((prev) => !prev);
     } catch (err) {
-      console.error('Error al confirmar la reserva:', err);
+      console.error('Error al pagar la reserva:', err);
       // Usar el mensaje del backend
       setError(extractErrorMessage(err));
     } finally {
