@@ -27,7 +27,29 @@ import {
   Cake as CakeIcon,
   Home as HomeIcon,
   NavigateNext as NavigateNextIcon,
-  BookOnline as BookOnlineIcon
+  BookOnline as BookOnlineIcon,
+  Assignment as AssignmentIcon,
+  Info as InfoIcon,
+  AccessTime as AccessTimeIcon,
+  Weekend as WeekendIcon,
+  MonetizationOn as MonetizationOnIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  CardGiftcard as CardGiftcardIcon,
+  People as PeopleIcon,
+  Grade as GradeIcon,
+  TrendingUp as TrendingUpIcon,
+  EventAvailable as EventAvailableIcon,
+  Badge as BadgeIcon,
+  CalendarToday as CalendarTodayIcon,
+  Block as BlockIcon,
+  LightbulbOutlined as LightbulbOutlinedIcon,
+  Phone as PhoneIcon,
+  SportsMotorsports as SportsMotorsportsIcon,
+  EmojiEvents as EmojiEventsIcon,
+  Timer as TimerIcon,
+  MoneyOff as MoneyOffIcon,
+  PersonAdd as PersonAddIcon,
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -110,9 +132,12 @@ const Information = () => {
 
       {/* Header Principal */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
-          📋 Tarifas y Horarios
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+          <AssignmentIcon sx={{ fontSize: 48, color: '#5B21B6', mr: 1 }} />
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
+            Tarifas y Horarios
+          </Typography>
+        </Box>
         <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
           Información completa sobre precios y beneficios
         </Typography>
@@ -146,24 +171,30 @@ const Information = () => {
       <Card sx={{ mb: 4, elevation: 3 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <ScheduleIcon sx={{ mr: 1, color: '#1E3A8A', fontSize: 32 }} />
+            <AccessTimeIcon sx={{ mr: 1, color: '#1E3A8A', fontSize: 32 }} />
             <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', color: '#1E3A8A' }}>
-              🕒 Horarios de Atención
+              Horarios de Atención
             </Typography>
           </Box>
           
           <Alert severity="info" sx={{ mb: 3, borderRadius: 2, bgcolor: '#DBEAFE', border: '1px solid #1E3A8A' }}>
-            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
-              ⏰ <strong>Estado actual:</strong> Abierto hoy hasta las 22:00 hrs
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <InfoIcon sx={{ mr: 1, color: '#1E3A8A' }} />
+              <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
+                <strong>Estado actual:</strong> Abierto hoy hasta las 22:00 hrs
+              </Typography>
+            </Box>
           </Alert>
           
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Alert severity="info" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1, color: '#5B21B6' }}>
-                  Lunes a Viernes
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <ScheduleIcon sx={{ mr: 1, color: '#5B21B6' }} />
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
+                    Lunes a Viernes
+                  </Typography>
+                </Box>
                 <Typography variant="h6" color="#5B21B6">
                   14:00 - 22:00 horas
                 </Typography>
@@ -171,9 +202,12 @@ const Information = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <Alert severity="success" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1, color: '#5B21B6' }}>
-                  Sábados, Domingos y Feriados
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <WeekendIcon sx={{ mr: 1, color: '#5B21B6' }} />
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#5B21B6' }}>
+                    Sábados, Domingos y Feriados
+                  </Typography>
+                </Box>
                 <Typography variant="h6" color="#5B21B6">
                   10:00 - 22:00 horas
                 </Typography>
@@ -194,9 +228,16 @@ const Information = () => {
           </Box>
           
           <Alert severity="info" sx={{ mb: 3, borderRadius: 2, bgcolor: '#DBEAFE', border: '1px solid #1E3A8A' }}>
-            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
-              💰 Precios sin IVA incluido | 🎯 Aplicamos automáticamente el mejor descuento disponible
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <MonetizationOnIcon sx={{ mr: 1, color: '#1E3A8A' }} />
+              <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
+                Precios sin IVA incluido | 
+              </Typography>
+              <AutoAwesomeIcon sx={{ mx: 1, color: '#1E3A8A' }} />
+              <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
+                Aplicamos automáticamente el mejor descuento disponible
+              </Typography>
+            </Box>
           </Alert>
           
           <TableContainer 
@@ -225,7 +266,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    🏁 Vueltas / Tiempo Máximo
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <SportsMotorsportsIcon sx={{ mr: 1 }} />
+                      Vueltas / Tiempo Máximo
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ 
                     fontWeight: 'bold', 
@@ -233,7 +277,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    💵 Precio Base
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <AttachMoneyIcon sx={{ mr: 1 }} />
+                      Precio Base
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ 
                     fontWeight: 'bold', 
@@ -241,7 +288,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    ⏱️ Duración Total
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <TimerIcon sx={{ mr: 1 }} />
+                      Duración Total
+                    </Box>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -303,9 +353,12 @@ const Information = () => {
             border: '1px dashed #D97706',
             textAlign: 'center'
           }}>
-            <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#B45309' }}>
-              ✨ Los precios mostrados se ajustarán automáticamente según los descuentos que apliquen
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AutoAwesomeIcon sx={{ mr: 1, color: '#B45309' }} />
+              <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#B45309' }}>
+                Los precios mostrados se ajustarán automáticamente según los descuentos que apliquen
+              </Typography>
+            </Box>
           </Box>
         </CardContent>
       </Card>
@@ -338,8 +391,11 @@ const Information = () => {
                 </Typography>
               </Box>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
-                🎪 Más amigos, mayor diversión y mejores precios
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }} component="div">
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <EmojiEventsIcon sx={{ mr: 1, color: 'success.main' }} />
+                  Más amigos, mayor diversión y mejores precios
+                </Box>
               </Typography>
 
               <TableContainer 
@@ -364,7 +420,10 @@ const Information = () => {
                         textAlign: 'center',
                         py: 1.5
                       }}>
-                        👥 Personas
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <PeopleIcon sx={{ mr: 1 }} />
+                          Personas
+                        </Box>
                       </TableCell>
                       <TableCell sx={{ 
                         fontWeight: 'bold', 
@@ -372,7 +431,10 @@ const Information = () => {
                         textAlign: 'center',
                         py: 1.5
                       }}>
-                        🎯 Descuento
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <CardGiftcardIcon sx={{ mr: 1 }} />
+                          Descuento
+                        </Box>
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -433,8 +495,11 @@ const Information = () => {
                 </Typography>
               </Box>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }}>
-                ⭐ Tu fidelidad tiene recompensa mensual
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontStyle: 'italic' }} component="div">
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <GradeIcon sx={{ mr: 1, color: 'warning.main' }} />
+                  Tu fidelidad tiene recompensa mensual
+                </Box>
               </Typography>
 
               <TableContainer 
@@ -459,7 +524,10 @@ const Information = () => {
                         textAlign: 'center',
                         py: 1.5
                       }}>
-                        🏆 Nivel
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <EmojiEventsIcon sx={{ mr: 1 }} />
+                          Nivel
+                        </Box>
                       </TableCell>
                       <TableCell sx={{ 
                         fontWeight: 'bold', 
@@ -467,7 +535,10 @@ const Information = () => {
                         textAlign: 'center',
                         py: 1.5
                       }}>
-                        📊 Visitas/Mes
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <TrendingUpIcon sx={{ mr: 1 }} />
+                          Visitas/Mes
+                        </Box>
                       </TableCell>
                       <TableCell sx={{ 
                         fontWeight: 'bold', 
@@ -475,7 +546,10 @@ const Information = () => {
                         textAlign: 'center',
                         py: 1.5
                       }}>
-                        🎁 Beneficio
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <CardGiftcardIcon sx={{ mr: 1 }} />
+                          Beneficio
+                        </Box>
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -539,7 +613,7 @@ const Information = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <CakeIcon sx={{ mr: 1, color: 'error.main', fontSize: 36 }} />
             <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: 'error.main' }}>
-              🎉 ¡Celebra tu Cumpleaños!
+              ¡Celebra tu Cumpleaños!
             </Typography>
           </Box>
           
@@ -552,16 +626,22 @@ const Information = () => {
               border: '2px solid #4caf50'
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, color: 'success.dark' }}>
-              � ¡50% de descuento en tu día especial!
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <MoneyOffIcon sx={{ mr: 1, color: 'success.dark', fontSize: 28 }} />
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                ¡50% de descuento en tu día especial!
+              </Typography>
+            </Box>
             <Typography variant="body1" sx={{ color: 'success.dark' }}>
               Si cumples años el día que nos visitas, tienes un descuento súper especial que hará tu celebración aún más memorable.
             </Typography>
           </Alert>
 
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'medium', textAlign: 'center', color: 'text.primary' }}>
-            📋 Condiciones según el tamaño del grupo:
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'medium', textAlign: 'center', color: 'text.primary' }} component="div">
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AssignmentIcon sx={{ mr: 1, color: 'text.primary' }} />
+              Condiciones según el tamaño del grupo:
+            </Box>
           </Typography>
 
           <TableContainer 
@@ -587,7 +667,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    👥 Tamaño del Grupo
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <GroupsIcon sx={{ mr: 1 }} />
+                      Tamaño del Grupo
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ 
                     fontWeight: 'bold', 
@@ -595,7 +678,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    🎁 Personas con Descuento
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <PersonAddIcon sx={{ mr: 1 }} />
+                      Personas con Descuento
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ 
                     fontWeight: 'bold', 
@@ -603,7 +689,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    💝 Descuento
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <CardGiftcardIcon sx={{ mr: 1 }} />
+                      Descuento
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ 
                     fontWeight: 'bold', 
@@ -611,7 +700,10 @@ const Information = () => {
                     fontSize: '1rem',
                     textAlign: 'center'
                   }}>
-                    📝 Detalles
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <InfoIcon sx={{ mr: 1 }} />
+                      Detalles
+                    </Box>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -676,37 +768,38 @@ const Information = () => {
               border: '2px solid #ff9800'
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'warning.dark', mb: 2 }}>
-              📋 Requisitos importantes para el descuento:
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'warning.dark', mb: 2 }} component="div">
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <AssignmentIcon sx={{ mr: 1 }} />
+                Requisitos importantes para el descuento:
+              </Box>
             </Typography>
             
-            <Box 
-              
-            >
+            <Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontSize: '1.2rem' }}>🆔</Typography>
+                  <BadgeIcon sx={{ color: 'warning.dark' }} />
                   <Typography variant="body1" sx={{ color: 'warning.dark' }}>
                     <strong>Identificación obligatoria:</strong> Presenta tu cédula de identidad
                   </Typography>
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontSize: '1.2rem' }}>👥</Typography>
+                  <GroupsIcon sx={{ color: 'warning.dark' }} />
                   <Typography variant="body1" sx={{ color: 'warning.dark' }}>
                     <strong>Mínimo 3 personas:</strong> El grupo debe tener al menos 3 integrantes
                   </Typography>
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontSize: '1.2rem' }}>📅</Typography>
+                  <CalendarTodayIcon sx={{ color: 'warning.dark' }} />
                   <Typography variant="body1" sx={{ color: 'warning.dark' }}>
                     <strong>Solo el día exacto:</strong> Válido únicamente en tu fecha de cumpleaños
                   </Typography>
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontSize: '1.2rem' }}>🚫</Typography>
+                  <BlockIcon sx={{ color: 'warning.dark' }} />
                   <Typography variant="body1" sx={{ color: 'warning.dark' }}>
                     <strong>No acumulable:</strong> No se combina con otros descuentos (siempre aplicamos el mejor)
                   </Typography>
@@ -719,26 +812,33 @@ const Information = () => {
 
       {/* Nota importante actualizada */}
       <Box sx={{ mt: 4 }}>
-        <Alert severity="warning" sx={{ textAlign: 'center', borderRadius: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-            ⚠️ Importante - Política de Descuentos
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+            <WarningIcon sx={{ mr: 1, color: 'warning.main' }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Importante - Política de Descuentos
+            </Typography>
+          </Box>
           <Typography variant="body1" sx={{ mb: 2 }}>
             Los descuentos por número de personas, por frecuencia y por cumpleaños NO son acumulables. 
             Se aplicará automáticamente el descuento más beneficioso para ti. El descuento de cumpleaños 
             siempre tiene prioridad cuando aplica.
           </Typography>
-          <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'warning.dark' }}>
-            💡 <strong>Tip:</strong> Nuestro sistema calculará automáticamente el mejor precio para tu reserva
-          </Typography>
-        </Alert>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <LightbulbOutlinedIcon sx={{ mr: 1, color: 'warning.dark' }} />
+            <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'warning.dark' }}>
+              <strong>Tip:</strong> Nuestro sistema calculará automáticamente el mejor precio para tu reserva
+            </Typography>
+          </Box>
       </Box>
 
       {/* Footer con Call to Action */}
       <Box sx={{ mt: 6, textAlign: 'center', py: 4, bgcolor: 'grey.50', borderRadius: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: 'primary.main' }}>
-          ¿Listo para la aventura? 🏁
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+          <SportsMotorsportsIcon sx={{ mr: 1, color: 'primary.main', fontSize: 32 }} />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            ¿Listo para la aventura?
+          </Typography>
+        </Box>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           No esperes más y asegura tu lugar en la pista
         </Typography>
@@ -763,9 +863,12 @@ const Information = () => {
         >
           Hacer Reserva
         </Button>
-        <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
-          📞 ¿Preguntas? Llámanos al +56 9 1234 5678
-        </Typography>
+        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            ¿Preguntas? Llámanos al +56 9 1234 5678
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );

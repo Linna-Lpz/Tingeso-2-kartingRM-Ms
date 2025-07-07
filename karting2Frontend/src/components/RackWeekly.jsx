@@ -116,20 +116,23 @@ const RackWeekly = () => {
   // Mostrar si hay error
   if (error) {
     return (
-      <Paper elevation={3} sx={{ p: 3, m: 2, borderRadius: 2 }}>
+      <Paper elevation={8} sx={{ p: 3, m: 2, borderRadius: 3, background: 'linear-gradient(135deg, #FEF3C7 0%, #FBBF24 100%)', border: '2px solid #D97706' }}>
         <Alert 
           severity="error" 
           sx={{ 
-            borderRadius: 2,
+            borderRadius: 3,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            border: '2px solid #EF4444',
             '& .MuiAlert-icon': {
-              fontSize: '1.5rem'
+              fontSize: '1.5rem',
+              color: '#DC2626'
             }
           }}
         >
-          <Typography variant="h6" sx={{ mb: 1 }}>
+          <Typography variant="h6" sx={{ mb: 1, color: '#DC2626', fontWeight: 'bold' }}>
             ⚠️ Error de Conexión
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ color: '#7F1D1D' }}>
             {error}
           </Typography>
         </Alert>
@@ -139,23 +142,24 @@ const RackWeekly = () => {
 
   return (
     <Paper 
-      elevation={3}
+      elevation={8}
       sx={{ 
         width: '100%', 
         overflow: 'hidden',
-        borderRadius: 2,
-        border: '1px solid',
-        borderColor: 'grey.200'
+        borderRadius: 3,
+        border: '2px solid',
+        borderColor: '#A78BFA',
+        background: 'linear-gradient(135deg, #F3E8FF 0%, #DDD6FE 100%)'
       }}
     >
       {/* Cabecera con controles de navegación */}
       <Box 
         sx={{ 
           p: 3, 
-          backgroundColor: 'primary.main',
+          background: 'linear-gradient(135deg, #2E1065 0%, #5B21B6 50%, #1E3A8A 100%)',
           color: 'white',
           borderBottom: '2px solid',
-          borderBottomColor: 'primary.dark'
+          borderBottomColor: '#2E1065'
         }}
       >
         <Grid container spacing={2} alignItems="center" justifyContent="space-between">
@@ -168,7 +172,7 @@ const RackWeekly = () => {
                 letterSpacing: 0.5
               }}
             >
-              🏁 Rack Semanal de Ocupación
+              Rack Semanal de Ocupación
             </Typography>
             <Typography 
               variant="body2" 
@@ -186,26 +190,31 @@ const RackWeekly = () => {
           <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, gap: 2 }}>
               <FormControl 
-                size="small" 
-                sx={{ 
-                  minWidth: 140,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
-                    '&:hover': {
-                      backgroundColor: 'grey.50'
+                size="small"                  sx={{ 
+                    minWidth: 140,
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'rgba(255,255,255,0.95)',
+                      borderRadius: 2,
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      '&:hover': {
+                        backgroundColor: 'white',
+                        borderColor: '#A78BFA',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 12px rgba(167, 139, 250, 0.3)'
+                      }
                     }
-                  }
-                }}
-              >
-                <Select
-                  value={selectedMonth}
-                  onChange={handleMonthChange}
-                  displayEmpty
-                  sx={{
-                    borderRadius: 2,
-                    fontWeight: 'medium'
                   }}
                 >
+                  <Select
+                    value={selectedMonth}
+                    onChange={handleMonthChange}
+                    displayEmpty
+                    sx={{
+                      borderRadius: 2,
+                      fontWeight: 'bold',
+                      color: '#5B21B6'
+                    }}
+                  >
                   {months.map((month) => (
                     <MenuItem key={month} value={month}>
                       {format(new Date(2000, month, 1), 'MMMM', { locale: es })}
@@ -219,9 +228,14 @@ const RackWeekly = () => {
                 sx={{ 
                   minWidth: 100,
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    borderRadius: 2,
+                    border: '2px solid rgba(255,255,255,0.3)',
                     '&:hover': {
-                      backgroundColor: 'grey.50'
+                      backgroundColor: 'white',
+                      borderColor: '#A78BFA',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(167, 139, 250, 0.3)'
                     }
                   }
                 }}
@@ -232,7 +246,8 @@ const RackWeekly = () => {
                   displayEmpty
                   sx={{
                     borderRadius: 2,
-                    fontWeight: 'medium'
+                    fontWeight: 'bold',
+                    color: '#5B21B6'
                   }}
                 >
                   {years.map((year) => (
@@ -253,22 +268,24 @@ const RackWeekly = () => {
           justifyContent: 'space-between', 
           px: 3, 
           py: 2,
-          backgroundColor: 'grey.50',
-          borderBottom: '1px solid',
-          borderBottomColor: 'grey.200'
+          background: 'linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%)',
+          borderBottom: '2px solid',
+          borderBottomColor: '#A78BFA'
         }}
       >
         <IconButton 
           onClick={goToPreviousWeek}
           sx={{
-            backgroundColor: 'primary.main',
+            background: ' #5B21B6',
             color: 'white',
+            border: '2px solid rgba(255,255,255,0.2)',
             '&:hover': {
-              backgroundColor: 'primary.dark',
-              transform: 'scale(1.05)'
+              background: ' #5B21B6',
+              transform: 'scale(1.1) translateY(-2px)',
+              boxShadow: '0 8px 20px rgba(91, 33, 182, 0.4)'
             },
-            transition: 'all 0.2s ease-in-out',
-            boxShadow: 2
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 12px rgba(91, 33, 182, 0.3)'
           }}
           size="large"
         >
@@ -282,24 +299,27 @@ const RackWeekly = () => {
             fontWeight="bold"
             sx={{ 
               mb: 0.5,
-              color: 'primary.main'
+              color: '#5B21B6',
+              textShadow: '1px 1px 2px rgba(91, 33, 182, 0.2)'
             }}
           >
-            📅 Semana del {format(weekDays[0], 'dd MMMM', { locale: es })} al {format(weekDays[6], 'dd MMMM', { locale: es })}
+            Semana del {format(weekDays[0], 'dd MMMM', { locale: es })} al {format(weekDays[6], 'dd MMMM', { locale: es })}
           </Typography>
         </Box>
         
         <IconButton 
           onClick={goToNextWeek}
           sx={{
-            backgroundColor: 'primary.main',
+            background: ' #5B21B6',
             color: 'white',
+            border: '2px solid rgba(255,255,255,0.2)',
             '&:hover': {
-              backgroundColor: 'primary.dark',
-              transform: 'scale(1.05)'
+              background: ' #5B21B6',
+              transform: 'scale(1.1) translateY(-2px)',
+              boxShadow: '0 8px 20px rgba(91, 33, 182, 0.4)'
             },
-            transition: 'all 0.2s ease-in-out',
-            boxShadow: 2
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 12px rgba(91, 33, 182, 0.3)'
           }}
           size="large"
         >
@@ -308,21 +328,22 @@ const RackWeekly = () => {
       </Box>
       
       {/* Tabla con las reservas */}
-      <TableContainer sx={{ maxHeight: 650, backgroundColor: 'white' }}>
+      <TableContainer sx={{ maxHeight: 650, backgroundColor: 'rgba(255,255,255,0.95)' }}>
         <Table stickyHeader aria-label="rack de reservas">
           <TableHead>
             <TableRow>
               <TableCell 
                 sx={{ 
                   width: '100px', 
-                  backgroundColor: 'primary.main',
+                  background: ' #5B21B6',
                   color: 'white',
                   borderRight: '2px solid',
-                  borderRightColor: 'primary.dark'
+                  borderRightColor: '#2E1065',
+                  boxShadow: '2px 0 8px rgba(91, 33, 182, 0.3)'
                 }}
               >
                 <Typography variant="subtitle1" fontWeight="bold" sx={{ textAlign: 'center' }}>
-                  ⏰ Hora
+                  Hora
                 </Typography>
               </TableCell>
               
@@ -332,15 +353,16 @@ const RackWeekly = () => {
                   align="center" 
                   sx={{ 
                     width: '130px', 
-                    backgroundColor: index % 2 === 0 ? 'primary.main' : 'primary.dark',
+                    background: ' #5B21B6',
                     color: 'white',
-                    borderRight: index < weekDays.length - 1 ? '1px solid rgba(255,255,255,0.2)' : 'none'
+                    borderRight: index < weekDays.length - 1 ? '2px solid rgba(255,255,255,0.2)' : 'none',
+                    boxShadow: index % 2 === 0 ? '0 2px 8px rgba(91, 33, 182, 0.3)' : '0 2px 8px rgba(46, 16, 101, 0.3)'
                   }}
                 >
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ textTransform: 'capitalize' }}>
+                  <Typography variant="subtitle1" fontWeight="bold" sx={{ textTransform: 'capitalize', textShadow: '1px 1px 2px rgba(0,0,0,0.3)' }}>
                     {format(day, 'EEEE', { locale: es })}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9, fontWeight: 'medium' }}>
+                  <Typography variant="body2" sx={{ opacity: 0.95, fontWeight: 'medium' }}>
                     {format(day, 'dd/MM')}
                   </Typography>
                 </TableCell>
@@ -355,16 +377,18 @@ const RackWeekly = () => {
               >
                 <TableCell 
                   sx={{ 
-                    backgroundColor: 'primary.main',
+                    background: ' #5B21B6',
                     color: 'white',
                     fontWeight: 'bold',
                     fontSize: '1rem',
                     position: 'sticky',
                     left: 0,
                     borderRight: '2px solid',
-                    borderRightColor: 'primary.dark',
+                    borderRightColor: '#2E1065',
                     zIndex: 1,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+                    boxShadow: '2px 0 8px rgba(91, 33, 182, 0.3)'
                   }}
                 >
                   {timeBlock}
@@ -380,8 +404,10 @@ const RackWeekly = () => {
                         verticalAlign: 'top',
                         height: '90px',
                         padding: 1.5,
-                        border: '1px solid',
-                        borderColor: 'grey.300',
+                        border: '2px solid',
+                        borderColor: '#C7D2FE',
+                        backgroundColor: colIndex % 2 === 0 ? 'rgba(231, 229, 254, 0.3)' : 'rgba(255,255,255,0.8)',
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       {slotBookings.length === 0 ? (
@@ -392,11 +418,15 @@ const RackWeekly = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'grey.400',
-                            fontStyle: 'italic'
+                            color: '#A78BFA',
+                            fontStyle: 'italic',
+                            backgroundColor: 'rgba(243, 232, 255, 0.3)',
+                            borderRadius: 2,
+                            border: '2px dashed',
+                            borderColor: '#C7D2FE'
                           }}
                         >
-                          <Typography variant="body2" sx={{ opacity: 0.6 }}>
+                          <Typography variant="body2" sx={{ opacity: 0.8, fontWeight: 'medium' }}>
                             Disponible
                           </Typography>
                         </Box>
@@ -407,12 +437,12 @@ const RackWeekly = () => {
                             sx={{ 
                               p: 1.5, 
                               borderRadius: 2, 
-                              background: 'rgb(0, 170, 108)',
+                              background: 'rgb(148, 88, 245)',
                               color: 'white',
                               mb: bookingIndex < slotBookings.length - 1 ? 1 : 0,
                               fontSize: '0.85rem',
                               border: '2px solid',
-                              position: 'relative',
+                              position: 'relative'
                             }}
                           >
                             <Typography 
@@ -424,7 +454,7 @@ const RackWeekly = () => {
                                 mb: 0.5
                               }}
                             >
-                              👤 {getClientName(booking)}
+                              {getClientName(booking)}
                             </Typography>
                             <Typography 
                               variant="body2" 
@@ -434,7 +464,7 @@ const RackWeekly = () => {
                                 fontWeight: 'medium'
                               }}
                             >
-                              🕒 {booking.bookingTime} - {booking.bookingTimeEnd}
+                              {booking.bookingTime} - {booking.bookingTimeEnd}
                             </Typography>
                           </Box>
                         ))
