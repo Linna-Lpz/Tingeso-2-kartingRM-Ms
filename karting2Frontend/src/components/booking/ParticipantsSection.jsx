@@ -15,9 +15,23 @@ const ParticipantsSection = ({
   lastNameError,
   emailError
 }) => {
+  // Constantes para evitar duplicación de strings
+  const ERROR_MESSAGES = {
+    EMAIL_FORMAT: 'Formato: usuario@ejemplo.com',
+    RUT_FORMAT: 'Formato: 12345678-9',
+    INVALID_RUT: 'RUT no es válido',
+    DUPLICATE_RUT: 'Este RUT ya fue agregado'
+  };
+
+  const REGEX_PATTERNS = {
+    SPANISH_TEXT: /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
+    RUT_CLEAN: /[^0-9K]/g,
+    RUT_VALIDATION: /^\d{7,8}-[\dK]$/,
+    EMAIL_VALIDATION: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  };
   // Función para formatear RUT automáticamente
   const formatRUT = (value) => {
-    let clean = value.replace(/[^0-9K]/g, '');
+    let clean = value.replace(REGEX_PATTERNS.RUT_CLEAN, '');
     
     // Limitar a máximo 9 caracteres
     if (clean.length > 9) {
@@ -32,6 +46,22 @@ const ParticipantsSection = ({
     return clean;
   };
 
+  // Función auxiliar para calcular dígito verificador del RUT
+  const calculateRutDV = (rutNumber) => {
+    let sum = 0;
+    let multiplier = 2;
+    
+    for (let i = rutNumber.length - 1; i >= 0; i--) {
+      sum += parseInt(rutNumber.charAt(i)) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    
+    const remainder = sum % 11;
+    if (remainder === 0) return '0';
+    if (remainder === 1) return 'K';
+    return (11 - remainder).toString();
+  };
+
   // Función para validar RUT en tiempo real
   const validateRUTRealTime = (rut) => {
     if (!rut) return '';
@@ -44,47 +74,27 @@ const ParticipantsSection = ({
       return '';
     }
     
-    // Si no tiene guión, agregarlo automáticamente para la validación
+    // Si no tiene guion, agregarlo automáticamente para la validación
     if (!cleanRut.includes('-') && cleanRut.length >= 8) {
       cleanRut = cleanRut.slice(0, -1) + '-' + cleanRut.slice(-1);
     }
     
     // Verificar formato básico
-    const rutRegex = /^\d{7,8}-[\dK]$/;
-    if (!rutRegex.test(cleanRut)) {
-      return 'Formato: 12345678-9';
+    if (!REGEX_PATTERNS.RUT_VALIDATION.test(cleanRut)) {
+      return ERROR_MESSAGES.RUT_FORMAT;
     }
     
-    // Validar dígito verificador solo si el formato es correcto
-    const rutParts = cleanRut.split('-');
-    const rutNumber = rutParts[0];
-    const dv = rutParts[1];
-    
-    let sum = 0;
-    let multiplier = 2;
-    
-    for (let i = rutNumber.length - 1; i >= 0; i--) {
-      sum += parseInt(rutNumber.charAt(i)) * multiplier;
-      multiplier = multiplier === 7 ? 2 : multiplier + 1;
-    }
-    
-    const remainder = sum % 11;
-    let calculatedDV;
-    if (remainder === 0) {
-      calculatedDV = '0';
-    } else if (remainder === 1) {
-      calculatedDV = 'K';
-    } else {
-      calculatedDV = (11 - remainder).toString();
-    }
+    // Validar dígito verificador
+    const [rutNumber, dv] = cleanRut.split('-');
+    const calculatedDV = calculateRutDV(rutNumber);
     
     if (dv !== calculatedDV) {
-      return 'RUT no es válido';
+      return ERROR_MESSAGES.INVALID_RUT;
     }
     
     // Verificar duplicados
     if (people.some(p => p.rut === cleanRut)) {
-      return 'Este RUT ya fue agregado';
+      return ERROR_MESSAGES.DUPLICATE_RUT;
     }
     
     return '';
@@ -112,31 +122,30 @@ const ParticipantsSection = ({
     return email.startsWith('@') || email.endsWith('@') || email.split('@').length > 2;
   };
 
-// Función auxiliar para validar el dominio del email
+  // Función auxiliar para validar el dominio del email
   const isDomainInvalid = (domain) => {
     if (!domain.includes('.')) {
       return domain.length > 2;
     }
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return !emailRegex.test(domain);
+    return !REGEX_PATTERNS.EMAIL_VALIDATION.test(domain);
   };
 
-// Refactorización de validateEmailRealTime
+  // Validación de email
   const validateEmailRealTime = (email) => {
     if (!email) return '';
 
     const trimmedEmail = email.trim();
     if (trimmedEmail.length > 0 && !trimmedEmail.includes('@')) {
-      return trimmedEmail.length > 10 ? 'Formato: usuario@ejemplo.com' : '';
+      return trimmedEmail.length > 10 ? ERROR_MESSAGES.EMAIL_FORMAT : '';
     }
 
     if (trimmedEmail.includes('@')) {
       if (isBasicEmailFormatInvalid(trimmedEmail)) {
-        return 'Formato: usuario@ejemplo.com';
+        return ERROR_MESSAGES.EMAIL_FORMAT;
       }
-      const [domain] = trimmedEmail.split('@');
+      const domain = trimmedEmail.split('@')[1];
       if (domain && isDomainInvalid(trimmedEmail)) {
-        return 'Formato: usuario@ejemplo.com';
+        return ERROR_MESSAGES.EMAIL_FORMAT;
       }
     }
 
@@ -149,14 +158,14 @@ const ParticipantsSection = ({
     onPersonChange({ ...person, [field]: value });
   };
 
-  // Manejadores de cambio con validación en tiempo real
+  // Validación en tiempo real
   const handleRutChange = (e) => {
     const formattedRut = formatRUT(e.target.value);
     onPersonChange({ ...person, rut: formattedRut });
   };
 
-  const handleNameChange = handleTextFieldChange('name', /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g);
-  const handleLastNameChange = handleTextFieldChange('lastName', /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g);
+  const handleNameChange = handleTextFieldChange('name', REGEX_PATTERNS.SPANISH_TEXT);
+  const handleLastNameChange = handleTextFieldChange('lastName', REGEX_PATTERNS.SPANISH_TEXT);
   const handleEmailChange = handleTextFieldChange('email');
 
   // Obtener errores en tiempo real
