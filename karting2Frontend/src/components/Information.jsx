@@ -176,17 +176,8 @@ const Information = () => {
             </Typography>
           </Box>
           
-          <Alert severity="info" sx={{ mb: 3, borderRadius: 2, bgcolor: '#DBEAFE', border: '1px solid #1E3A8A' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <InfoIcon sx={{ mr: 1, color: '#1E3A8A' }} />
-              <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
-                <strong>Estado actual:</strong> Abierto hoy hasta las 22:00 hrs
-              </Typography>
-            </Box>
-          </Alert>
-          
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid >
               <Alert severity="info" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <ScheduleIcon sx={{ mr: 1, color: '#5B21B6' }} />
@@ -199,7 +190,7 @@ const Information = () => {
                 </Typography>
               </Alert>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid >
               <Alert severity="success" sx={{ height: '100%', bgcolor: '#F3E8FF', border: '1px solid #A78BFA' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <WeekendIcon sx={{ mr: 1, color: '#5B21B6' }} />
@@ -230,11 +221,7 @@ const Information = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <MonetizationOnIcon sx={{ mr: 1, color: '#1E3A8A' }} />
               <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
-                Precios sin IVA incluido | 
-              </Typography>
-              <AutoAwesomeIcon sx={{ mx: 1, color: '#1E3A8A' }} />
-              <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#1E3A8A' }}>
-                Aplicamos automáticamente el mejor descuento disponible
+                Precios sin IVA incluido 
               </Typography>
             </Box>
           </Alert>
@@ -355,7 +342,7 @@ const Information = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <AutoAwesomeIcon sx={{ mr: 1, color: '#B45309' }} />
               <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#B45309' }}>
-                Los precios mostrados se ajustarán automáticamente según los descuentos que apliquen
+                Los precios mostrados se ajustarán automáticamente según los descuentos que apliquen (solo para clientes registrados)
               </Typography>
             </Box>
           </Box>
@@ -809,7 +796,7 @@ const Information = () => {
         </CardContent>
       </Card>
 
-      {/* Nota importante actualizada */}
+      {/* Nota importante */}
       <Box sx={{ mt: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
             <WarningIcon sx={{ mr: 1, color: 'warning.main' }} />
@@ -865,7 +852,7 @@ const Information = () => {
         <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            ¿Preguntas? Llámanos al +56 9 1234 5678
+            ¿Preguntas? Llámanos al +56 9 72618375
           </Typography>
         </Box>
       </Box>

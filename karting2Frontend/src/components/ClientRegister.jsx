@@ -7,7 +7,8 @@ import clientService from '../services/services.management';
 
 const ClientRegister = () => {
   const [clientRUT, setClientRUT] = useState('');
-  const [clientName, setClientName] = useState('');
+  const [clientFirstName, setClientFirstName] = useState('');
+  const [clientLastName, setClientLastName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
@@ -21,15 +22,147 @@ const ClientRegister = () => {
   
   // Estados para errores específicos de cada campo
   const [rutError, setRutError] = useState('');
-  const [nameError, setNameError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [birthdayError, setBirthdayError] = useState('');
+
+  // Función para formatear RUT automáticamente
+  const formatRUT = (value) => {
+    // Eliminar todo excepto números y K
+    let clean = value.replace(/[^0-9K]/g, '');
+    
+    // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
+    if (clean.length > 9) {
+      clean = clean.slice(0, 9);
+    }
+    
+    // Agregar guión automáticamente cuando tenga al menos 8 caracteres
+    if (clean.length >= 8) {
+      clean = clean.slice(0, -1) + '-' + clean.slice(-1);
+    }
+    
+    return clean;
+  };
+
+  // Función para validar RUT en tiempo real
+  const validateRUTRealTime = (rut) => {
+    if (!rut) return '';
+    
+    // Eliminar espacios y convertir a mayúsculas
+    let cleanRut = rut.replace(/\s/g, '').replace(/\./g, '').toUpperCase();
+    
+    // Si está escribiendo y no tiene suficientes caracteres, no mostrar error
+    if (cleanRut.length < 9) { // Incluyendo el guión
+      return '';
+    }
+    
+    // Si no tiene guión, agregarlo automáticamente para la validación
+    if (!cleanRut.includes('-') && cleanRut.length >= 8) {
+      cleanRut = cleanRut.slice(0, -1) + '-' + cleanRut.slice(-1);
+    }
+    
+    // Verificar formato básico - acepta tanto 7 como 8 dígitos antes del guión
+    const rutRegex = /^[0-9]{7,8}-[0-9K]$/;
+    if (!rutRegex.test(cleanRut)) {
+      return 'Formato: 12345678-9';
+    }
+    
+    // Validar dígito verificador solo si el formato es correcto
+    const rutParts = cleanRut.split('-');
+    const rutNumber = rutParts[0];
+    const dv = rutParts[1];
+    
+    let sum = 0;
+    let multiplier = 2;
+    
+    for (let i = rutNumber.length - 1; i >= 0; i--) {
+      sum += parseInt(rutNumber.charAt(i)) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    
+    const remainder = sum % 11;
+    const calculatedDV = remainder === 0 ? '0' : remainder === 1 ? 'K' : (11 - remainder).toString();
+    
+    if (dv !== calculatedDV) {
+      return 'RUT no es válido';
+    }
+    
+    return '';
+  };
+
+  // Función para validar nombre en tiempo real
+  const validateNameRealTime = (name) => {
+    if (!name) return '';
+    
+    if (name.trim().length > 0 && name.trim().length < 2) {
+      return 'Mínimo 2 caracteres';
+    }
+    
+    // Verificar caracteres no válidos
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+    if (!nameRegex.test(name)) {
+      return 'Solo se permiten letras';
+    }
+    
+    return '';
+  };
+
+  // Función para validar email en tiempo real
+  const validateEmailRealTime = (email) => {
+    if (!email) return '';
+    
+    // Solo validar formato si tiene @ y algún contenido después
+    if (email.includes('@')) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return 'Formato: usuario@ejemplo.com';
+      }
+    }
+    
+    return '';
+  };
+
+  // Manejadores de cambio con validación en tiempo real
+  const handleRutChange = (e) => {
+    const formattedRut = formatRUT(e.target.value);
+    setClientRUT(formattedRut);
+  };
+
+  const handleFirstNameChange = (e) => {
+    // Solo permitir letras, espacios y caracteres especiales del español
+    const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    setClientFirstName(value);
+  };
+
+  const handleLastNameChange = (e) => {
+    // Solo permitir letras, espacios y caracteres especiales del español
+    const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    setClientLastName(value);
+  };
+
+  const handleEmailChange = (e) => {
+    setClientEmail(e.target.value);
+  };
+
+  // Obtener errores en tiempo real
+  const realtimeRutError = validateRUTRealTime(clientRUT);
+  const realtimeFirstNameError = validateNameRealTime(clientFirstName);
+  const realtimeLastNameError = validateNameRealTime(clientLastName);
+  const realtimeEmailError = validateEmailRealTime(clientEmail);
+
+  // Usar el error del backend si existe, sino usar el error en tiempo real
+  const displayRutError = rutError || realtimeRutError;
+  const displayFirstNameError = firstNameError || realtimeFirstNameError;
+  const displayLastNameError = lastNameError || realtimeLastNameError;
+  const displayEmailError = emailError || realtimeEmailError;
 
   // Función para limpiar todos los errores
   const clearErrors = () => {
     setErrorMessage('');
     setRutError('');
-    setNameError('');
+    setFirstNameError('');
+    setLastNameError('');
     setEmailError('');
     setBirthdayError('');
   };
@@ -41,7 +174,9 @@ const ClientRegister = () => {
     if (errorMsg.includes('RUT')) {
       setRutError(errorMsg);
     } else if (errorMsg.includes('nombre')) {
-      setNameError(errorMsg);
+      setFirstNameError(errorMsg);
+    } else if (errorMsg.includes('apellido')) {
+      setLastNameError(errorMsg);
     } else if (errorMsg.includes('email')) {
       setEmailError(errorMsg);
     } else if (errorMsg.includes('fecha') || errorMsg.includes('edad')) {
@@ -61,9 +196,12 @@ const ClientRegister = () => {
     // Construir la fecha en formato YYYY-MM-DD
     const clientBirthday = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
+    // Combinar nombre y apellido
+    const clientName = `${clientFirstName.trim()} ${clientLastName.trim()}`.trim();
+    
     const newClient = {
       clientRUT,
-      clientName,
+      clientName, // Se envía como nombre completo
       clientEmail,
       clientBirthday,
       visitsPerMonth
@@ -74,7 +212,8 @@ const ClientRegister = () => {
       
       // Limpiar los campos del formulario después de enviar
       setClientRUT('');
-      setClientName('');
+      setClientFirstName('');
+      setClientLastName('');
       setClientEmail('');
       setDay('');
       setMonth('');
@@ -242,19 +381,17 @@ const ClientRegister = () => {
             
             <Grid container spacing={3}>
               {/* RUT - Campo principal de identificación */}
-              <Grid item xs={12} sm={6}>
+              <Grid>
                 <TextField
                   fullWidth
                   label="RUT"
                   placeholder="Ej: 12345678-9"
                   value={clientRUT}
-                  onChange={(e) => {
-                    const value = e.target.value.slice(0, 10);
-                    setClientRUT(value);
-                  }}
+                  onChange={handleRutChange}
                   required
-                  error={!!rutError}
-                  helperText={rutError || "Ingrese el RUT sin puntos y con guión"}
+                  error={!!displayRutError}
+                  helperText={displayRutError}
+                  inputProps={{ maxLength: 10 }}
                   sx={{ 
                     '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                     '& .MuiOutlinedInput-root': {
@@ -267,17 +404,40 @@ const ClientRegister = () => {
                 />
               </Grid>
               
-              {/* Nombre completo */}
-              <Grid item xs={12} sm={6}>
+              {/* Nombre */}
+              <Grid>
                 <TextField
                   fullWidth 
-                  label="Nombre y Apellido"
-                  placeholder="Ej: Juan Pérez"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
+                  label="Nombre(s)"
+                  placeholder="Ej: Juan Carlos"
+                  value={clientFirstName}
+                  onChange={handleFirstNameChange}
                   required
-                  error={!!nameError}
-                  helperText={nameError || "Ingrese nombre y apellido"}
+                  error={!!displayFirstNameError}
+                  helperText={displayFirstNameError}
+                  sx={{ 
+                    '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#5B21B6',
+                        borderWidth: 2
+                      }
+                    }
+                  }}
+                />
+              </Grid>
+
+              {/* Apellido */}
+              <Grid>
+                <TextField
+                  fullWidth 
+                  label="Apellido(s)"
+                  placeholder="Ej: Pérez González"
+                  value={clientLastName}
+                  onChange={handleLastNameChange}
+                  required
+                  error={!!displayLastNameError}
+                  helperText={displayLastNameError}
                   sx={{ 
                     '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                     '& .MuiOutlinedInput-root': {
@@ -324,17 +484,17 @@ const ClientRegister = () => {
             <Divider sx={{ mb: 3, backgroundColor: '#A78BFA', height: 2 }} />
             
             <Grid container spacing={3} justifyContent="center">
-              <Grid item xs={12} sm={8}>
+              <Grid>
                 <TextField
                   fullWidth
                   label="Correo Electrónico"
                   type="email"
                   placeholder="ejemplo@correo.com"
                   value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   required
-                  error={!!emailError}
-                  helperText={emailError || "Será usado para enviar su comprobante de compra"}
+                  error={!!displayEmailError}
+                  helperText={displayEmailError || "Será usado para enviar su comprobante de compra"}
                   sx={{ 
                     '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                     '& .MuiOutlinedInput-root': {
@@ -398,9 +558,9 @@ const ClientRegister = () => {
               Seleccione su fecha de nacimiento
             </Typography>
             
-            <Grid container spacing={3} justifyContent="center">
+            <Grid justifyContent="center" >
               {/* Día */}
-              <Grid item xs={12} sm={4}>
+              <Grid>
                 <TextField
                   select
                   fullWidth
@@ -429,7 +589,7 @@ const ClientRegister = () => {
               </Grid>
               
               {/* Mes */}
-              <Grid item xs={12} sm={4}>
+              <Grid>
                 <TextField
                   select
                   fullWidth
@@ -458,7 +618,7 @@ const ClientRegister = () => {
               </Grid>
               
               {/* Año */}
-              <Grid item xs={12} sm={4}>
+              <Grid>
                 <TextField
                   select
                   fullWidth
