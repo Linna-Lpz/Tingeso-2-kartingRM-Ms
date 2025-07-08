@@ -8,7 +8,7 @@ import com.example.ms_booking.service.ServiceClient;
 
 @RestController
 @RequestMapping("/client")
-
+@CrossOrigin(origins = "*")
 public class ControlClient {
 
     private final ServiceClient serviceClient;

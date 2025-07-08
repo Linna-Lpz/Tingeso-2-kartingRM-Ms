@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rates")
-
+@CrossOrigin(origins = "*")
 public class ControlRates {
 
     private final ServiceRates serviceRates;
