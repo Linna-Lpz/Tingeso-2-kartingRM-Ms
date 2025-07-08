@@ -64,7 +64,7 @@ const Home = () => {
 
             <Grid container spacing={3}>
               {/* Reservar */}
-              <Grid item xs={12} md={6}>
+              <Grid>
                 <Card 
                   sx={{ 
                     height: '100%',
@@ -94,13 +94,7 @@ const Home = () => {
                       sx={{ 
                         fontWeight: 'bold',
                         bgcolor: '#D97706',
-                        color: 'white',
-                        '&:hover': { 
-                      boxShadow: 8,
-                      transform: 'translateY(-4px)',
-                      borderColor: '#5B21B6',
-                      background: 'linear-gradient(135deg, #C7D2FE 0%, #A78BFA 100%)'
-                    },
+                        color: 'white'
                       }}
                       size="small"
                     />
@@ -109,7 +103,7 @@ const Home = () => {
               </Grid>
 
               {/* Ver Reservas */}
-              <Grid item xs={12} md={6}>
+              <Grid>
                 <Card 
                   sx={{ 
                     height: '100%',
@@ -146,7 +140,7 @@ const Home = () => {
                       Ver Mis Reservas
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Consulta y gestiona tus reservas existentes
+                      Consulta aquí tus reservas existentes
                     </Typography>
                   </CardContent>
                 </Card>
@@ -185,8 +179,7 @@ const Home = () => {
                   size="small" 
                   sx={{ 
                     borderColor: '#D97706', 
-                    color: '#D97706',
-                    '&:hover': { bgcolor: '#FEF3C7' }
+                    color: '#D97706'
                   }}
                   variant="outlined" 
                 />
@@ -195,8 +188,7 @@ const Home = () => {
                   size="small" 
                   sx={{ 
                     borderColor: '#1E3A8A', 
-                    color: '#1E3A8A',
-                    '&:hover': { bgcolor: '#DBEAFE' }
+                    color: '#1E3A8A'
                   }}
                   variant="outlined" 
                 />
@@ -205,8 +197,7 @@ const Home = () => {
                   size="small" 
                   sx={{ 
                     borderColor: '#5B21B6', 
-                    color: '#5B21B6',
-                    '&:hover': { bgcolor: '#F3E8FF' }
+                    color: '#5B21B6'
                   }}
                   variant="outlined" 
                 />

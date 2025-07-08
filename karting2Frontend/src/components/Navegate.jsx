@@ -7,7 +7,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 import { useNavigate } from "react-router-dom";
 
@@ -78,12 +77,11 @@ export default function Navegate() {
                 fontWeight: "medium"
               }}
             >
-              Mis reservas
+              Mis reservas  
             </Button>
 
             <Button
               color="inherit"
-              startIcon={<PersonAddIcon />}
               onClick={() => navigate("/clientRegister")}
               sx={{ 
                 fontSize: "1rem",

@@ -29,7 +29,6 @@ const ClientRegister = () => {
 
   // Función para formatear RUT automáticamente
   const formatRUT = (value) => {
-    // Eliminar todo excepto números y K
     let clean = value.replace(/[^0-9K]/g, '');
     
     // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
@@ -63,7 +62,7 @@ const ClientRegister = () => {
     }
     
     // Verificar formato básico - acepta tanto 7 como 8 dígitos antes del guión
-    const rutRegex = /^[0-9]{7,8}-[0-9K]$/;
+    const rutRegex = /^\d{7,8}-[\dK]$/;
     if (!rutRegex.test(cleanRut)) {
       return 'Formato: 12345678-9';
     }
@@ -82,7 +81,14 @@ const ClientRegister = () => {
     }
     
     const remainder = sum % 11;
-    const calculatedDV = remainder === 0 ? '0' : remainder === 1 ? 'K' : (11 - remainder).toString();
+    let calculatedDV;
+    if (remainder === 0) {
+      calculatedDV = '0';
+    } else if (remainder === 1) {
+      calculatedDV = 'K';
+    } else {
+      calculatedDV = (11 - remainder).toString();
+    }
     
     if (dv !== calculatedDV) {
       return 'RUT no es válido';
