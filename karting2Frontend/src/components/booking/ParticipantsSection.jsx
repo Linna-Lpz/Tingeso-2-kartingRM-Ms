@@ -18,7 +18,7 @@ const ParticipantsSection = ({
   // Constantes para evitar duplicación de strings
   const ERROR_MESSAGES = {
     EMAIL_FORMAT: 'Formato: usuario@ejemplo.com',
-    RUT_FORMAT: 'Formato: 12345678-9',
+    RUT_FORMAT: 'Formato: 21021021-0',
     INVALID_RUT: 'RUT no es válido',
     DUPLICATE_RUT: 'Este RUT ya fue agregado'
   };
@@ -197,7 +197,7 @@ const ParticipantsSection = ({
 
   // Configuraciones de los campos
   const fieldConfigs = [
-    { field: 'rut', label: 'RUT', placeholder: 'Formato 12345678-9', value: person.rut, onChange: handleRutChange, error: displayRutError, helperText: 'Ej: 12345678-9' },
+    { field: 'rut', label: 'RUT', placeholder: 'Formato 21021021-0', value: person.rut, onChange: handleRutChange, error: displayRutError, helperText: 'Ej: 12345678-9' },
     { field: 'name', label: 'Nombre', placeholder: 'Ej: Juan', value: person.name, onChange: handleNameChange, error: displayNameError, helperText: '' },
     { field: 'lastName', label: 'Apellido', placeholder: 'Ej: Pérez', value: person.lastName, onChange: handleLastNameChange, error: displayLastNameError, helperText: '' },
     { field: 'email', label: 'Email', placeholder: 'correo@ejemplo.com', value: person.email, onChange: handleEmailChange, error: displayEmailError, helperText: 'usuario@ejemplo.com', type: 'email' }

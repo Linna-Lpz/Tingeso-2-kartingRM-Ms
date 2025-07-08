@@ -380,7 +380,7 @@ const AdminLogin = () => {
                 placeholder="admin@admin.cl"
                 required
                 error={!!error}
-                helperText={error || "Ingrese el correo electrónico autorizado"}
+                helperText={error || "Ingrese el correo electrónico autorizado admin@admin.cl"}
                 sx={{ 
                   '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                   '& .MuiOutlinedInput-root': {
