@@ -1,0 +1,6 @@
+projectKey=karting2Frontend
+serverUrl=http://localhost:9000
+serverVersion=25.6.0.109173
+dashboardUrl=http://localhost:9000/dashboard?id=karting2Frontend
+ceTaskId=77972de6-1bf0-486d-9d49-4c50ce92461e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=77972de6-1bf0-486d-9d49-4c50ce92461e

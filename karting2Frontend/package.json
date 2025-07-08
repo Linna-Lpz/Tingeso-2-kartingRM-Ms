@@ -7,6 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:report": "eslint . --format json --output-file eslint-report.json",
+    "sonar": "npm run lint:report && sonar-scanner",
+    "sonar:token": "npm run lint:report && sonar-scanner -Dsonar.login=%SONAR_TOKEN%",
     "preview": "vite preview"
   },
   "dependencies": {
