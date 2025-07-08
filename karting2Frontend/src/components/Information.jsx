@@ -15,9 +15,7 @@ import {
   Paper,
   Chip,
   Alert,
-  Button,
-  Breadcrumbs,
-  Link
+  Button
 } from '@mui/material';
 import {
   Schedule as ScheduleIcon,
@@ -25,8 +23,6 @@ import {
   Star as StarIcon,
   AttachMoney as AttachMoneyIcon,
   Cake as CakeIcon,
-  Home as HomeIcon,
-  NavigateNext as NavigateNextIcon,
   BookOnline as BookOnlineIcon,
   Assignment as AssignmentIcon,
   Info as InfoIcon,
@@ -104,31 +100,6 @@ const Information = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, mx: 'auto' }}>
-      {/* Breadcrumb Navigation */}
-      <Breadcrumbs 
-        aria-label="breadcrumb" 
-        sx={{ mb: 3 }}
-        separator={<NavigateNextIcon fontSize="small" />}
-      >
-        <Link 
-          underline="hover" 
-          color="inherit" 
-          href="#" 
-          onClick={() => navigate('/')}
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            '&:hover': { color: '#5B21B6' }
-          }}
-        >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-          Inicio
-        </Link>
-        <Typography color="#5B21B6" sx={{ fontWeight: 'medium' }}>
-          Tarifas y Horarios
-        </Typography>
-      </Breadcrumbs>
-
       {/* Header Principal */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>

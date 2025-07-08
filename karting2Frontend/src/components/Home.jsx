@@ -40,7 +40,7 @@ const Home = () => {
                 fontSize: { xs: '1.2rem', md: '1.5rem' }
               }}
             >
-              Experimenta la emoción del karting con tus amigos y familiares
+              ¡Experimenta la emoción del karting con tus amigos y familiares!
             </Typography>
           </Container>
         </Box>

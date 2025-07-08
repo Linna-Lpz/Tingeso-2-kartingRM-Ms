@@ -31,9 +31,9 @@ const ActivityDetailsSection = ({
 
   // Definir opciones con precios
   const lapsOptions = [
-    { value: 10, label: '10 vueltas o minutos', price: '$15.000' },
-    { value: 15, label: '15 vueltas o minutos', price: '$20.000' },
-    { value: 20, label: '20 vueltas o minutos', price: '$25.000' }
+    { value: 10, label: '10 vueltas / 10 minutos', price: '$15.000' },
+    { value: 15, label: '15 vueltas / 20 minutos', price: '$20.000' },
+    { value: 20, label: '20 vueltas / 30 minutos', price: '$25.000' }
   ];
 
   return (
@@ -51,7 +51,7 @@ const ActivityDetailsSection = ({
       )}
 
         {/* Selector de cantidad de integrantes */}
-        <Grid item xs={12}>
+        <Grid>
           <Box sx={{ mb: 3 }}>
             <Typography variant="body1" sx={{ mb: 2 }}>
               Cantidad de integrantes
@@ -75,7 +75,7 @@ const ActivityDetailsSection = ({
         </Grid>
 
         {/* Selector de vueltas con precios */}
-        <Grid item xs={12}>
+        <Grid>
           <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
             Vueltas o minutos a reservar
           </Typography>
@@ -132,7 +132,7 @@ const ActivityDetailsSection = ({
         </Grid>
 
         {/* Texto promocional */}
-        <Grid item xs={12}>
+        <Grid>
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Typography 
               variant="body2" 

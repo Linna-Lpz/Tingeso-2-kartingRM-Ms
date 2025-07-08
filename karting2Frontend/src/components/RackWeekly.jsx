@@ -371,7 +371,7 @@ const RackWeekly = () => {
           </TableHead>
           
           <TableBody>
-            {timeBlocks.map((timeBlock, rowIndex) => (
+            {timeBlocks.map((timeBlock) => (
               <TableRow 
                 key={timeBlock}
               >

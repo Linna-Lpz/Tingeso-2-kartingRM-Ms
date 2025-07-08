@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 const DateTimeSection = ({ 
   bookingDate, 
   bookingTime, 
+  bookingTimeEnd,
   onDateChange, 
   onTimeChange, 
   shouldDisableTime, 
@@ -111,7 +112,7 @@ const DateTimeSection = ({
       )}
 
       <Grid container spacing={2} sx={{ mb: 2 }} justifyContent={'center'}>
-        <Grid item>
+        <Grid>
           <DateCalendar
             value={bookingDate}
             onChange={onDateChange}
@@ -125,10 +126,10 @@ const DateTimeSection = ({
             }}
           />
         </Grid>
-        <Grid item>
+        <Grid>
           <Paper sx={{ p: 2, minWidth: 280, height: 'fit-content' }}>
             <Typography variant="subtitle1" gutterBottom>
-              Primero, selecciona un bloque de hora
+              Elige un bloque de hora de llegada
             </Typography>
             
             {!bookingDate ? (
@@ -140,7 +141,7 @@ const DateTimeSection = ({
                 {/* Mostrar los bloques de horas disponibles */}
                 <Grid container spacing={1}>
                   {hourBlocks.map((block) => (
-                    <Grid item xs={4} key={block.hour}>
+                    <Grid key={block.hour}>
                       <Button
                         fullWidth
                         variant={expandedHour === block.hour ? "contained" : "outlined"}
@@ -172,7 +173,7 @@ const DateTimeSection = ({
                     </Typography>
                     <Grid container spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
                       {hourBlocks.find(b => b.hour === expandedHour)?.availableTimes.map((time) => (
-                          <Grid item xs={4} key={time.getTime()}>
+                          <Grid key={time.getTime()}>
                           <Button
                             fullWidth
                             variant={bookingTime && formatTime(bookingTime) === formatTime(time) ? "contained" : "outlined"}
@@ -204,7 +205,7 @@ const DateTimeSection = ({
         </Typography>
         
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid>
             <Typography variant="subtitle2" color="text.secondary">
               Fecha seleccionada:
             </Typography>
@@ -221,13 +222,24 @@ const DateTimeSection = ({
             </Typography>
           </Grid>
           
-          <Grid item xs={12} md={6}>
+          <Grid>
             <Typography variant="subtitle2" color="text.secondary">
-              Hora seleccionada:
+              Hora de llegada:
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
               {bookingTime ? 
                 formatTime(bookingTime) : 
+                'No seleccionada'
+              }
+            </Typography>
+          </Grid>
+          <Grid>
+            <Typography variant="subtitle2" color="text.secondary">
+              Hora de término:
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+              {bookingTime ? 
+                formatTime(bookingTimeEnd) : 
                 'No seleccionada'
               }
             </Typography>
@@ -248,6 +260,7 @@ const DateTimeSection = ({
 DateTimeSection.propTypes = {
   bookingDate: PropTypes.instanceOf(Date),
   bookingTime: PropTypes.instanceOf(Date),
+  bookingTimeEnd: PropTypes.instanceOf(Date),
   onDateChange: PropTypes.func.isRequired,
   onTimeChange: PropTypes.func.isRequired,
   shouldDisableTime: PropTypes.func.isRequired,
