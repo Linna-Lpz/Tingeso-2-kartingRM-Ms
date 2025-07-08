@@ -210,8 +210,8 @@ const Home = () => {
             <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary' }}>
               ¿Necesitas ayuda?
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              ¿Preguntas? Contacta con nosotros: unique.bussiness@gmail.com
             </Typography>
           </Box>
         </Container>

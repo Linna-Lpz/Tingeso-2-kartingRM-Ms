@@ -1,32 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import HomeIcon from "@mui/icons-material/Home";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useNavigate } from "react-router-dom";
 
 export default function Navegate() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleGestionClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuItemClick = (route) => {
-    navigate(route);
-    handleClose();
-  };
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: "100%" }}>
@@ -93,34 +75,15 @@ export default function Navegate() {
 
             <Button
               color="inherit"
-              startIcon={<ViewKanbanIcon />}
-              endIcon={<ArrowDropDownIcon />}
-              onClick={handleGestionClick}
+              startIcon={<AdminPanelSettingsIcon />}
+              onClick={() => navigate("/admin-login")}
               sx={{ 
                 fontSize: "1rem",
                 fontWeight: "medium"
               }}
             >
-              Gestión
+              Administrador
             </Button>
-
-              <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  slotProps={{
-                      menuList: {
-                          'aria-labelledby': 'gestión-button',
-                      },
-                  }}
-              >
-                  <MenuItem onClick={() => handleMenuItemClick("/reports")}>
-                      Reporte de ventas
-                  </MenuItem>
-                  <MenuItem onClick={() => handleMenuItemClick("/rackWeekly")}>
-                      Rack semanal
-                  </MenuItem>
-              </Menu>
           </Box>
         </Toolbar>
       </AppBar>

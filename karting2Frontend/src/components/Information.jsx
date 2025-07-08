@@ -38,7 +38,6 @@ import {
   CalendarToday as CalendarTodayIcon,
   Block as BlockIcon,
   LightbulbOutlined as LightbulbOutlinedIcon,
-  Phone as PhoneIcon,
   SportsMotorsports as SportsMotorsportsIcon,
   EmojiEvents as EmojiEventsIcon,
   Timer as TimerIcon,
@@ -332,7 +331,7 @@ const Information = () => {
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Descuentos por Número de Personas */}
-        <Grid item xs={12} lg={6}>
+        <Grid>
           <Card sx={{ 
             height: '100%', 
             elevation: 4,
@@ -436,7 +435,7 @@ const Information = () => {
         </Grid>
 
         {/* Descuentos por Frecuencia */}
-        <Grid item xs={12} lg={6}>
+        <Grid>
           <Card sx={{ 
             height: '100%', 
             elevation: 4,
@@ -821,9 +820,8 @@ const Information = () => {
           Hacer Reserva
         </Button>
         <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            ¿Preguntas? Llámanos al +56 9 72618375
+            ¿Preguntas? Contacta con nosotros: unique.bussiness@gmail.com
           </Typography>
         </Box>
       </Box>

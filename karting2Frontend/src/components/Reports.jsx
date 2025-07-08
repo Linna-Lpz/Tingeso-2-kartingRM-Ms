@@ -519,11 +519,8 @@ const Reports = () => {
 
             {/* Help Section */}
             <Box sx={{ mt: 6, textAlign: 'center', p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid #E2E8F0' }}>
-                <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
-                    ¿Necesitas ayuda?
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#64748B' }}>
-                    Contacta con nosotros: 📞 +56 9 1234 5678 | 📧 unique.bussiness@gmail.com
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                ¿Preguntas? Contacta con nosotros: unique.bussiness@gmail.com
                 </Typography>
             </Box>
         </Container>

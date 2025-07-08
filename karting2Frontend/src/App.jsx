@@ -8,6 +8,8 @@ import RackWeekly from './components/RackWeekly';
 import StatusKartBooking from './components/StatusKartBooking';
 import Reports from './components/Reports';
 import Information from './components/Information';
+import PaymentConfirmation from './components/PaymentConfirmation';
+import AdminLogin from './components/AdminLogin';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
               <Route path="/statusKartBooking" element={<StatusKartBooking/>} />
               <Route path="/reports" element={<Reports/>} />
               <Route path="/information" element={<Information/>} />
+              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
             </Routes>
           </div>
       </Router>

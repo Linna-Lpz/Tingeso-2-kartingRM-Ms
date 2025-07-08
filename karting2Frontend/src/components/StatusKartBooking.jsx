@@ -11,10 +11,6 @@ import {
   Alert,
   Box,
   Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   CircularProgress,
   Paper,
   Snackbar
@@ -27,7 +23,8 @@ import {
   Schedule as ScheduleIcon,
   Group as GroupIcon,
   CalendarToday as CalendarIcon,
-  SportsMotorsports as SportsMotorsportsIcon
+  SportsMotorsports as SportsMotorsportsIcon,
+  Email as EmailIcon
 } from '@mui/icons-material';
 import bookingService from '../services/services.management';
 
@@ -41,7 +38,6 @@ const StatusKartBooking = () => {
   // Estados para mejorar UX (Nielsen: Visibilidad del estado del sistema)
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({ open: false, booking: null, action: null });
   const [successMessage, setSuccessMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -144,36 +140,6 @@ const StatusKartBooking = () => {
     }
   };
 
-  // Función para confirmar la reserva (Nielsen: Control y libertad del usuario)
-  const handleConfirmBooking = async (bookingId) => {
-    setIsLoading(true);
-    try {
-      await bookingService.confirmBooking(bookingId);
-      await bookingService.sendVoucherByEmail(bookingId);
-      
-      setSuccessMessage('Reserva pagada con éxito. Voucher enviado al correo electrónico.');
-      setSnackbarOpen(true);
-      setRefresh((prev) => !prev);
-    } catch (err) {
-      console.error('Error al pagar la reserva:', err);
-      // Usar el mensaje del backend
-      setError(extractErrorMessage(err));
-    } finally {
-      setIsLoading(false);
-      setConfirmDialog({ open: false, booking: null, action: null });
-    }
-  };
-
-  // Función para mostrar diálogo de confirmación (Nielsen: Prevención de errores)
-  const showConfirmDialog = (booking, action) => {
-    setConfirmDialog({ open: true, booking, action });
-  };
-
-  // Función para cerrar diálogo
-  const handleCloseDialog = () => {
-    setConfirmDialog({ open: false, booking: null, action: null });
-  };
-
   // useEffect para manejar la cancelación de reservas (Nielsen: Visibilidad del estado del sistema)
   useEffect(() => {
     const cancelBooking = async () => {
@@ -209,6 +175,21 @@ const StatusKartBooking = () => {
   // Función para establecer el bookingId a cancelar (Nielsen: Control y libertad del usuario)
   const handleCancelBooking = (bookingId) => {
     setCancelBookingId(bookingId);
+  };
+
+  // Función para enviar comprobante por correo
+  const handleSendVoucher = async (bookingId) => {
+    setIsLoading(true);
+    try {
+      await bookingService.sendVoucherByEmail(bookingId);
+      setSuccessMessage('Comprobante enviado exitosamente al correo electrónico.');
+      setSnackbarOpen(true);
+    } catch (err) {
+      console.error('Error al enviar el comprobante:', err);
+      setError(extractErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Función para manejar el Enter en el campo de búsqueda (Nielsen: Flexibilidad y eficiencia de uso)
@@ -247,12 +228,6 @@ const StatusKartBooking = () => {
     if (error) clearError(); // Limpiar error al escribir
   };
 
-  const getDialogActionLabel = () => {
-    if (isLoading) return 'Procesando...';
-    if (confirmDialog.action === 'confirm') return 'Confirmar Pago';
-    return 'Cancelar Reserva';
-  };
-
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* Hero Section */}
@@ -273,7 +248,7 @@ const StatusKartBooking = () => {
             sx={{ 
               fontWeight: 'bold',
               mb: 2,
-              fontSize: { xs: '1.8rem', md: '2.5rem' }
+              fontSize: { xs: '1.8rem' }
             }}
           >
             Estado de Reservas
@@ -283,7 +258,7 @@ const StatusKartBooking = () => {
             sx={{ 
               mb: 2,
               opacity: 0.9,
-              fontSize: { xs: '1rem', md: '1.2rem' }
+              fontSize: { xs: '1rem' }
             }}
           >
             Consulte, confirme o cancele sus reservas de karting
@@ -342,7 +317,6 @@ const StatusKartBooking = () => {
             error={!!error}
             helperText={error || "Ingrese su RUT para buscar sus reservas"}
             disabled={isSearching}
-            inputProps={{ maxLength: 10 }}
             sx={{ 
               maxWidth: 350,
               '& .MuiOutlinedInput-root': {
@@ -447,7 +421,7 @@ const StatusKartBooking = () => {
           
           <Grid container spacing={3}>
             {bookings.map((booking) => (
-              <Grid item xs={12} sm={6} md={4} key={booking.id}>
+              <Grid key={booking.id}>
                 <Card 
                   elevation={6}
                   sx={{ 
@@ -461,11 +435,6 @@ const StatusKartBooking = () => {
                     borderRadius: 3,
                     overflow: 'hidden',
                     transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: '0 12px 24px rgba(91, 33, 182, 0.15)',
-                      transform: 'translateY(-4px)',
-                      borderColor: '#5B21B6'
-                    },
                     '&::before': {
                       content: '""',
                       position: 'absolute',
@@ -488,7 +457,7 @@ const StatusKartBooking = () => {
                   </Box>
                   {/* Tarjeta con información resumen de la reserva */}
                   <CardContent sx={{ flexGrow: 1, pt: 6, px: 3 }}>
-                    {/* Información principal con iconos mejorados */}
+                    {/* Información principal */}
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <CalendarIcon sx={{ color: '#5B21B6', fontSize: 20 }} />
@@ -534,13 +503,50 @@ const StatusKartBooking = () => {
 
                   {/* Acciones contextuales */}
                   <CardActions sx={{ p: 3, pt: 0 }}>
+                    {/* Botón para enviar comprobante de reserva */}
+                    {booking.bookingStatus === 'confirmada' && (
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="medium"
+                        startIcon={<EmailIcon />}
+                        onClick={() => handleSendVoucher(booking.id)}
+                        disabled={isLoading}
+                        fullWidth
+                        sx={{
+                          borderColor: '#5B21B6',
+                          color: '#5B21B6',
+                          backgroundColor: '#F8FAFC',
+                          fontWeight: 'bold',
+                          py: 1.5,
+                          mb: 1,
+                          borderWidth: 2,
+                          '&:hover': {
+                            borderColor: '#2E1065',
+                            color: '#2E1065',
+                            backgroundColor: '#EDE9FE',
+                            borderWidth: 2
+                          },
+                          '&:disabled': {
+                            borderColor: '#E2E8F0',
+                            color: '#94A3B8',
+                            backgroundColor: '#F8FAFC'
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        Enviar Comprobante
+                      </Button>
+                    )}
+
+                    {/* Botón para anular reserva */}
                     {booking.bookingStatus === 'confirmada' && (
                       <Button
                         variant="outlined"
                         color="error"
                         size="medium"
                         startIcon={<CancelIcon />}
-                        onClick={() => showConfirmDialog(booking, 'cancel')}
+                        onClick={() => handleCancelBooking(booking.id)}
                         disabled={isLoading}
                         fullWidth
                         sx={{
@@ -603,127 +609,6 @@ const StatusKartBooking = () => {
         </Paper>
       )}
 
-      {/* Diálogo de confirmación mejorado */}
-      <Dialog
-        open={confirmDialog.open}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ 
-          color: '#5B21B6', 
-          fontWeight: 'bold', 
-          fontSize: '1.5rem',
-          borderBottom: '2px solid #E2E8F0',
-          pb: 2
-        }}>
-          {confirmDialog.action === 'confirm' ? 'Confirmar Pago' : 'Cancelar Reserva'}
-        </DialogTitle>
-        
-        <DialogContent sx={{ pt: 3 }}>
-          {confirmDialog.booking && (
-            <Box>
-              <Alert 
-                severity={confirmDialog.action === 'confirm' ? 'info' : 'warning'} 
-                sx={{ 
-                  mb: 3,
-                  borderRadius: 2,
-                  border: '2px solid',
-                  borderColor: confirmDialog.action === 'confirm' ? '#3B82F6' : '#F59E0B',
-                  background: confirmDialog.action === 'confirm' 
-                    ? 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)'
-                    : 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-                  '& .MuiAlert-icon': {
-                    color: confirmDialog.action === 'confirm' ? '#3B82F6' : '#F59E0B'
-                  },
-                  '& .MuiAlert-message': {
-                    color: confirmDialog.action === 'confirm' ? '#1E3A8A' : '#92400E',
-                    fontWeight: 500
-                  }
-                }}
-              >
-                {confirmDialog.action === 'confirm' 
-                  ? 'Al confirmar el pago, se procesará su reserva y se enviará a cada integrante, un comprobante por email. Este debe ser presentado al momento de la visita.'
-                  : 'Esta acción no se puede deshacer. ¿Está seguro de que desea cancelar esta reserva?'
-                }
-              </Alert>
-              
-              <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
-                Detalles de la reserva:
-              </Typography>
-              
-              <Box sx={{ 
-                ml: 2, 
-                p: 3, 
-                bgcolor: '#F8FAFC', 
-                borderRadius: 2, 
-                border: '1px solid #E2E8F0' 
-              }}>
-                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Fecha:</strong> {confirmDialog.booking.bookingDate}</Typography>
-                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Hora:</strong> {confirmDialog.booking.bookingTime}</Typography>
-                <Typography variant="body1" sx={{ mb: 1, color: '#1E293B' }}>• <strong>Personas:</strong> {confirmDialog.booking.numOfPeople}</Typography>
-                <Typography variant="body1" sx={{ color: '#1E293B' }}>• <strong>Total:</strong> <span style={{ color: '#0369A1', fontWeight: 'bold' }}>${confirmDialog.booking.totalAmount?.toLocaleString()}</span></Typography>
-              </Box>
-            </Box>
-          )}
-        </DialogContent>
-        
-        <DialogActions sx={{ p: 3, gap: 2 }}>
-          <Button 
-            onClick={handleCloseDialog} 
-            disabled={isLoading}
-            sx={{
-              borderColor: '#64748B',
-              color: '#64748B',
-              fontWeight: 'bold',
-              '&:hover': {
-                borderColor: '#475569',
-                color: '#475569',
-                backgroundColor: '#F8FAFC'
-              }
-            }}
-            variant="outlined"
-          >
-            Cerrar
-          </Button>
-          <Button
-              onClick={() => {
-                if (confirmDialog.action === 'confirm') {
-                  handleConfirmBooking(confirmDialog.booking.id);
-                } else {
-                  handleCancelBooking(confirmDialog.booking.id);
-                }
-              }}
-              variant="contained"
-              disabled={isLoading}
-              startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : null}
-              sx={{
-                background: confirmDialog.action === 'confirm' 
-                  ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                  : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-                fontWeight: 'bold',
-                minWidth: 160,
-                '&:hover': {
-                  background: confirmDialog.action === 'confirm'
-                    ? 'linear-gradient(135deg, #047857 0%, #065F46 100%)'
-                    : 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-                  transform: 'translateY(-1px)',
-                  boxShadow: confirmDialog.action === 'confirm'
-                    ? '0 4px 12px rgba(16, 185, 129, 0.3)'
-                    : '0 4px 12px rgba(239, 68, 68, 0.3)'
-                },
-                '&:disabled': {
-                  background: '#E2E8F0',
-                  color: '#94A3B8'
-                },
-                transition: 'all 0.3s ease'
-              }}
-          >
-            {getDialogActionLabel()}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       {/* Snackbar para mensajes de éxito mejorado */}
       <Snackbar
         open={snackbarOpen}
@@ -747,11 +632,8 @@ const StatusKartBooking = () => {
 
       {/* Help Section */}
       <Box sx={{ mt: 6, textAlign: 'center', p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid #E2E8F0' }}>
-        <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
-          ¿Necesitas ayuda?
-        </Typography>
-        <Typography variant="body2" sx={{ color: '#64748B' }}>
-          Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          ¿Preguntas? Contacta con nosotros: unique.bussiness@gmail.com
         </Typography>
       </Box>
     </Container>

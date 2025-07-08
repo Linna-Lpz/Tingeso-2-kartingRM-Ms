@@ -397,8 +397,7 @@ const ClientRegister = () => {
                   required
                   error={!!displayRutError}
                   helperText={displayRutError}
-                  inputProps={{ maxLength: 10 }}
-                  sx={{ 
+                  sx={{
                     '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                     '& .MuiOutlinedInput-root': {
                       '&.Mui-focused .MuiOutlinedInput-notchedOutline': {

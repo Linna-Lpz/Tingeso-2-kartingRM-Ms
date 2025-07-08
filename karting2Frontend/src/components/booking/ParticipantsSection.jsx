@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Grid, TextField, IconButton, Paper, List, ListItem, ListItemText, Alert, Button } from '@mui/material';
+import { Typography, Grid, TextField, IconButton, Paper, List, ListItem, ListItemText, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const ParticipantsSection = ({ 
   person, 
-  people, 
+  people,
   numOfPeople, 
   onPersonChange, 
   onAddPerson, 
@@ -15,6 +15,23 @@ const ParticipantsSection = ({
   lastNameError,
   emailError
 }) => {
+  // Función para formatear RUT automáticamente
+  const formatRUT = (value) => {
+    let clean = value.replace(/[^0-9K]/g, '');
+    
+    // Limitar a máximo 9 caracteres
+    if (clean.length > 9) {
+      clean = clean.slice(0, 9);
+    }
+    
+    // Agregar guión automáticamente
+    if (clean.length >= 8) {
+      clean = clean.slice(0, -1) + '-' + clean.slice(-1);
+    }
+    
+    return clean;
+  };
+
   // Función para validar RUT en tiempo real
   const validateRUTRealTime = (rut) => {
     if (!rut) return '';
@@ -73,70 +90,63 @@ const ParticipantsSection = ({
     return '';
   };
 
-  // Función para validar nombre en tiempo real
-  const validateNameRealTime = (name) => {
-    if (!name) return '';
+  // Función para validar campos de texto (nombre y apellido)
+  const validateTextFieldRealTime = (value, fieldName) => {
+    if (!value) return '';
     
-    if (name.trim().length > 0 && name.trim().length < 2) {
-      return 'Mínimo 2 caracteres';
-    }
-    
-    // Verificar caracteres no válidos
-    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
-    if (!nameRegex.test(name)) {
-      return 'Solo se permiten letras';
+    if (value.trim().length > 0 && value.trim().length < 2) {
+      return `Ingrese un ${fieldName} válido`;
     }
     
     return '';
   };
+
+  // Función para validar nombre en tiempo real
+  const validateNameRealTime = (name) => validateTextFieldRealTime(name, 'nombre');
 
   // Función para validar apellido en tiempo real
-  const validateLastNameRealTime = (lastName) => {
-    if (!lastName) return '';
-    
-    if (lastName.trim().length > 0 && lastName.trim().length < 2) {
-      return 'Mínimo 2 caracteres';
-    }
-    
-    // Verificar caracteres no válidos
-    const lastNameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
-    if (!lastNameRegex.test(lastName)) {
-      return 'Solo se permiten letras';
-    }
-    
-    return '';
+  const validateLastNameRealTime = (lastName) => validateTextFieldRealTime(lastName, 'apellido');
+
+  // Función auxiliar para validar el formato básico del email
+  const isBasicEmailFormatInvalid = (email) => {
+    return email.startsWith('@') || email.endsWith('@') || email.split('@').length > 2;
   };
 
-  // Función para validar email en tiempo real
+// Función auxiliar para validar el dominio del email
+  const isDomainInvalid = (domain) => {
+    if (!domain.includes('.')) {
+      return domain.length > 2;
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return !emailRegex.test(domain);
+  };
+
+// Refactorización de validateEmailRealTime
   const validateEmailRealTime = (email) => {
     if (!email) return '';
-    
-    // Solo validar formato si tiene @ y algún contenido después
-    if (email.includes('@')) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+
+    const trimmedEmail = email.trim();
+    if (trimmedEmail.length > 0 && !trimmedEmail.includes('@')) {
+      return trimmedEmail.length > 10 ? 'Formato: usuario@ejemplo.com' : '';
+    }
+
+    if (trimmedEmail.includes('@')) {
+      if (isBasicEmailFormatInvalid(trimmedEmail)) {
+        return 'Formato: usuario@ejemplo.com';
+      }
+      const [domain] = trimmedEmail.split('@');
+      if (domain && isDomainInvalid(trimmedEmail)) {
         return 'Formato: usuario@ejemplo.com';
       }
     }
-    
+
     return '';
   };
 
-  // Función para formatear RUT automáticamente
-  const formatRUT = (value) => {
-    let clean = value.replace(/[^0-9K]/g, '');
-    
-    // Limitar a máximo 9 caracteres
-    if (clean.length > 9) {
-      clean = clean.slice(0, 9);
-    }
-    
-    // Agregar guión automáticamente
-    if (clean.length >= 2) {
-      clean = clean.slice(0, -1) + '-' + clean.slice(-1);
-    }
-    
-    return clean;
+  // Función reutilizable para manejar cambios en campos de texto
+  const handleTextFieldChange = (field, regex) => (e) => {
+    const value = regex ? e.target.value.replace(regex, '') : e.target.value;
+    onPersonChange({ ...person, [field]: value });
   };
 
   // Manejadores de cambio con validación en tiempo real
@@ -145,21 +155,9 @@ const ParticipantsSection = ({
     onPersonChange({ ...person, rut: formattedRut });
   };
 
-  const handleNameChange = (e) => {
-    // Solo permitir letras, espacios y caracteres especiales del español
-    const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    onPersonChange({ ...person, name: value });
-  };
-
-  const handleLastNameChange = (e) => {
-    // Solo permitir letras, espacios y caracteres especiales del español
-    const value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    onPersonChange({ ...person, lastName: value });
-  };
-
-  const handleEmailChange = (e) => {
-    onPersonChange({ ...person, email: e.target.value });
-  };
+  const handleNameChange = handleTextFieldChange('name', /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g);
+  const handleLastNameChange = handleTextFieldChange('lastName', /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g);
+  const handleEmailChange = handleTextFieldChange('email');
 
   // Obtener errores en tiempo real
   const realtimeRutError = validateRUTRealTime(person.rut);
@@ -167,43 +165,46 @@ const ParticipantsSection = ({
   const realtimeLastNameError = validateLastNameRealTime(person.lastName);
   const realtimeEmailError = validateEmailRealTime(person.email);
 
-  // Usar el error del padre si existe, sino usar el error en tiempo real
+  // Usar el error del padre si existe, si no usar el error en tiempo real
   const displayRutError = rutError || realtimeRutError;
   const displayNameError = nameError || realtimeNameError;
   const displayLastNameError = lastNameError || realtimeLastNameError;
   const displayEmailError = emailError || realtimeEmailError;
 
+  // Función para crear configuración de TextField
+  const createTextFieldConfig = (configData) => {
+    const { label, placeholder, value, onChange, error, helperText, type = 'text' } = configData;
+    return {
+      fullWidth: true,
+      label,
+      placeholder,
+      value,
+      onChange,
+      error: !!error,
+      helperText: error || helperText,
+      ...(type !== 'text' && { type })
+    };
+  };
+
+  // Configuraciones de los campos
+  const fieldConfigs = [
+    { field: 'rut', label: 'RUT', placeholder: 'Formato 12345678-9', value: person.rut, onChange: handleRutChange, error: displayRutError, helperText: 'Ej: 12345678-9' },
+    { field: 'name', label: 'Nombre', placeholder: 'Ej: Juan', value: person.name, onChange: handleNameChange, error: displayNameError, helperText: '' },
+    { field: 'lastName', label: 'Apellido', placeholder: 'Ej: Pérez', value: person.lastName, onChange: handleLastNameChange, error: displayLastNameError, helperText: '' },
+    { field: 'email', label: 'Email', placeholder: 'correo@ejemplo.com', value: person.email, onChange: handleEmailChange, error: displayEmailError, helperText: 'usuario@ejemplo.com', type: 'email' }
+  ];
+
   // Verificar si todos los campos son válidos para habilitar el botón
   const isFormValid = person.rut && person.name && person.lastName && person.email &&
+                     person.rut.length >= 9 && // RUT completo (8 o 9 caracteres con guión)
+                     person.name.trim().length >= 2 &&
+                     person.lastName.trim().length >= 2 &&
+                     person.email.includes('@') && person.email.includes('.') && // Email básicamente completo
                      !displayRutError && !displayNameError && !displayLastNameError && !displayEmailError;
 
   return (
     <>
       <Typography variant="h6" gutterBottom>Ingresa los datos de cada integrante</Typography>
-      
-      {rutError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {rutError}
-        </Alert>
-      )}
-      
-      {nameError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {nameError}
-        </Alert>
-      )}
-      
-      {lastNameError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {lastNameError}
-        </Alert>
-      )}
-      
-      {emailError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {emailError}
-        </Alert>
-      )}
 
       {/* Recuadro para mostrar participantes restantes */}
       <Paper sx={{ p: 2, mb: 2, bgcolor: people.length === numOfPeople ? '#f1f8e9' : '#f8f9fa', border: '1px solid #e0e0e0' }}>
@@ -229,53 +230,12 @@ const ParticipantsSection = ({
       </Paper>
 
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            fullWidth
-            label="RUT"
-            placeholder="Formato 12345678-9"
-            value={person.rut}
-            onChange={handleRutChange}
-            error={!!displayRutError}
-            helperText={displayRutError || "Ej: 12345678-9"}
-            inputProps={{ maxLength: 10 }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            fullWidth
-            label="Nombre"
-            placeholder="Ej: Juan"
-            value={person.name}
-            onChange={handleNameChange}
-            error={!!displayNameError}
-            helperText={displayNameError}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            fullWidth
-            label="Apellido"
-            placeholder="Ej: Pérez"
-            value={person.lastName}
-            onChange={handleLastNameChange}
-            error={!!displayLastNameError}
-            helperText={displayLastNameError}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            placeholder="correo@ejemplo.com"
-            value={person.email}
-            onChange={handleEmailChange}
-            error={!!displayEmailError}
-            helperText={displayEmailError || "usuario@ejemplo.com"}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3} sx={{ display: 'flex', alignItems: 'center' }}>
+        {fieldConfigs.map((config) => (
+          <Grid key={config.field}>
+            <TextField {...createTextFieldConfig(config)} />
+          </Grid>
+        ))}
+        <Grid sx={{ display: 'flex', alignItems: 'center' }}>
           <Button
             color="primary"
             variant="contained"

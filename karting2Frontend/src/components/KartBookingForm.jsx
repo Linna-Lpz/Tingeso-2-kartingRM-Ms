@@ -7,7 +7,6 @@ import {
   Typography, 
   Button, 
   Paper, 
-  Divider, 
   Box, 
   Alert,
   Stepper,
@@ -27,7 +26,6 @@ import {
   CheckCircle as CheckCircleIcon, 
   Info as InfoIcon,
   Warning as WarningIcon,
-  SportsMotorsports as SportsMotorsportsIcon 
 } from '@mui/icons-material';
 import bookingService from '../services/services.management';
 import { useNavigate } from 'react-router-dom';
@@ -133,50 +131,6 @@ const KartBookingForm = () => {
     setSuccessMessage('');
   };
 
-  // Función mejorada para mostrar feedback específico (Nielsen: Prevención de errores)
-  const handleValidationError = (errorMsg) => {
-    clearErrors();
-    
-    // Errores específicos de vueltas/tiempo máximo
-    if (errorMsg.includes('vueltas') || errorMsg.includes('tiempo máximo') || errorMsg.includes('10, 15 o 20')) {
-      setLapsError(errorMsg);
-      setActiveStep(0);
-    } 
-    // Errores específicos de número de personas
-    else if (errorMsg.includes('número de personas') || errorMsg.includes('mayor a 0') || errorMsg.includes('menor o igual a 15')) {
-      setPeopleError(errorMsg);
-      setActiveStep(0);
-    } 
-    // Errores específicos de fecha
-    else if (errorMsg.includes('fecha de reserva') || errorMsg.includes('fecha') || errorMsg.includes('nula')) {
-      setDateError(errorMsg);
-      setActiveStep(1);
-    } 
-    // Errores específicos de hora
-    else if (errorMsg.includes('hora de reserva') || errorMsg.includes('hora')) {
-      setTimeError(errorMsg);
-      setActiveStep(1);
-    } 
-    // Errores específicos de RUT
-    else if (errorMsg.includes('RUT') || errorMsg.includes('formato correcto') || errorMsg.includes('12345678-9')) {
-      setRutError(errorMsg);
-      setActiveStep(2);
-    } 
-    // Errores específicos de nombre
-    else if (errorMsg.includes('nombre') || errorMsg.includes('nulo o vacío')) {
-      setNameError(errorMsg);
-      setActiveStep(2);
-    } 
-    // Errores específicos de email
-    else if (errorMsg.includes('email') || errorMsg.includes('correo')) {
-      setEmailError(errorMsg);
-      setActiveStep(2);
-    } 
-    // Errores generales de validación
-    else {
-      setGeneralError(errorMsg);
-    }
-  };
 
   // Función mejorada con indicador de carga (Nielsen: Visibilidad del estado del sistema)
   const fetchReservedTimes = async (date) => {
@@ -225,6 +179,22 @@ const KartBookingForm = () => {
     }
   };
   
+  // Función para calcular la hora de término basada en las vueltas
+  const calculateBookingTimeEnd = (startTime, laps) => {
+    if (!startTime) return null;
+    
+    const endTime = new Date(startTime);
+    let additionalMinutes;
+    
+    if (laps === 10) additionalMinutes = 30;
+    else if (laps === 15) additionalMinutes = 35;
+    else if (laps === 20) additionalMinutes = 40;
+    else additionalMinutes = 0; // valor por defecto
+    
+    endTime.setMinutes(endTime.getMinutes() + additionalMinutes);
+    return endTime;
+  };
+
   // Función para manejar el cambio de hora seleccionada
   const handleTimeChange = (newTime) => {
     setBookingTime(newTime);
@@ -387,31 +357,6 @@ const KartBookingForm = () => {
     setPeople(updatedPeople);
   };
 
-  // Función mejorada con mejor feedback (Nielsen: Visibilidad del estado del sistema)
-  const handleBackendError = (error) => {
-    if (error.response?.data) {
-      let errorMessage;
-      if (typeof error.response.data === 'string') {
-        errorMessage = error.response.data;
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response.data.error) {
-        errorMessage = error.response.data.error;
-      } else {
-        errorMessage = 'Error de validación en el servidor';
-      }
-      handleValidationError(errorMessage);
-    } else if (error.message) {
-      if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
-        setGeneralError('Error de conexión. Por favor, verifique su conexión a internet e intente nuevamente.');
-      } else {
-        setGeneralError(error.message);
-      }
-    } else {
-      setGeneralError('Error inesperado. Por favor intente nuevamente.');
-    }
-  };
-
 // Refactor de handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -457,33 +402,60 @@ const KartBookingForm = () => {
           // Intentar enviar vouchers, pero no fallar si esto no funciona
           try {
             await bookingService.sendVoucherByEmail(bookingId);
-            // Limpiar formulario y mostrar mensaje de éxito completo
-            setBookingDate(null);
-            setBookingTime(null);
-            setPeople([]);
-            clearErrors();
-            setSuccessMessage('¡Pago procesado exitosamente! Reserva confirmada. Los vouchers han sido enviados por email a cada participante.');
-            
-            setTimeout(() => {
-              navigate("/");
-            }, 8000);
+            // Redirigir a página de confirmación con éxito completo
+            navigate('/payment-confirmation', {
+              state: {
+                paymentResult: {
+                  success: true,
+                  message: '¡Pago procesado exitosamente! Comprobante enviado por email a cada participante.',
+                  bookingId: bookingId,
+                  hasVoucherError: false
+                }
+              }
+            });
             
           } catch (voucherError) {
-            console.error('Error al enviar vouchers:', voucherError);
+            console.error('Error al enviar comprobante:', voucherError);
             // La reserva está confirmada, pero los vouchers no se pudieron enviar
-            setBookingDate(null);
-            setBookingTime(null);
-            setPeople([]);
-            clearErrors();
-            setSuccessMessage('¡Pago procesado exitosamente! Reserva confirmada. Hubo un problema al enviar los comprobantes por email, pero puede revisarlos desde "Mis Reservas"');
+            navigate('/payment-confirmation', {
+              state: {
+                paymentResult: {
+                  success: true,
+                  message: '¡Pago procesado exitosamente! Reserva confirmada. Hubo un problema al enviar el comprobante por email, pero puede revisarlos desde "Mis Reservas".',
+                  bookingId: bookingId,
+                  hasVoucherError: true
+                }
+              }
+            });
           }
         } catch (confirmError) {
           console.error('Error al pagar la reserva:', confirmError);
+          // Redirigir a página de confirmación con error de pago
+          navigate('/payment-confirmation', {
+            state: {
+              paymentResult: {
+                success: false,
+                message: 'Error al procesar el pago. Por favor, intente nuevamente o contacte con soporte.',
+                bookingId: bookingId,
+                hasVoucherError: false
+              }
+            }
+          });
         }
       }
     } catch (error) {
       console.error('Error al guardar la reserva:', error);
-      handleBackendError(error);
+      // Para errores en la creación de la reserva, redirigir con error general
+      navigate('/payment-confirmation', {
+        state: {
+          paymentResult: {
+            success: false,
+            message: 'Error al crear la reserva. Por favor, verifique los datos e intente nuevamente.',
+            bookingId: null,
+            hasVoucherError: false
+          }
+        }
+      });
     } finally {
       setIsLoading(false);
     }
@@ -583,7 +555,7 @@ const KartBookingForm = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {people.map((person, index) => (
+                    {people.map((person) => (
                         <TableRow 
                           key={person.rut}
                           sx={{ 
@@ -629,6 +601,7 @@ const KartBookingForm = () => {
           <DateTimeSection
             bookingDate={bookingDate}
             bookingTime={bookingTime}
+            bookingTimeEnd={calculateBookingTimeEnd(bookingTime, lapsOrMaxTime)}
             onDateChange={handleDateChange}
             onTimeChange={handleTimeChange}
             shouldDisableTime={shouldDisableTime}
@@ -848,42 +821,6 @@ const KartBookingForm = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-        {/* Hero Section */}
-        <Box 
-          sx={{ 
-            background: 'linear-gradient(135deg, #2E1065 0%, #5B21B6 50%, #1E3A8A 100%)',
-            color: 'white',
-            py: 3,
-            textAlign: 'center'
-          }}
-        >
-          <Container maxWidth="lg">
-            <SportsMotorsportsIcon sx={{ fontSize: 60, mb: 2, color: 'white' }} />
-            <Typography 
-              variant="h3" 
-              component="h1" 
-              gutterBottom 
-              sx={{ 
-                fontWeight: 'bold',
-                mb: 2,
-                fontSize: { xs: '1.8rem', md: '2.5rem' }
-              }}
-            >
-              Reserva tu Kart
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                mb: 2,
-                opacity: 0.9,
-                fontSize: { xs: '1rem', md: '1.2rem' }
-              }}
-            >
-              Completa el proceso paso a paso para asegurar tu experiencia
-            </Typography>
-          </Container>
-        </Box>
-
         <Container maxWidth="xl" sx={{ py: 4 }}>
           <Paper 
             elevation={8} 
@@ -906,11 +843,6 @@ const KartBookingForm = () => {
               }
             }}
           >
-          {/* Header con información clara */}
-          <Typography variant="h5" align="center" color="text.secondary" sx={{ mb: 2 }}>
-            Reserva tu kart
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
 
           {/* Indicador de progreso */}
           <Box sx={{ mb: 4 }}>
@@ -925,7 +857,7 @@ const KartBookingForm = () => {
                 mb: 3
               }}
             >
-              Proceso de Reserva
+              Reserva tu kart
             </Typography>
             
             <Stepper 
@@ -961,7 +893,7 @@ const KartBookingForm = () => {
                     icon={activeStep > index ? <CheckCircleIcon color="success" /> : undefined}
                     sx={{
                       '& .MuiStepLabel-label': {
-                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                        fontSize: { sm: '0.875rem' },
                         fontWeight: activeStep === index ? 600 : 400,
                         color: activeStep === index ? 'primary.main' : 'text.secondary'
                       }
@@ -1044,32 +976,6 @@ const KartBookingForm = () => {
             </Alert>
           )}
 
-          {/* Información de horarios */}
-          {activeStep === 1 && (
-            <Alert 
-              severity="info" 
-              sx={{ 
-                mb: 3,
-                borderRadius: 2,
-                border: '2px solid #3B82F6',
-                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-                '& .MuiAlert-icon': {
-                  color: '#3B82F6'
-                },
-                '& .MuiAlert-message': {
-                  color: '#1E3A8A',
-                  fontWeight: 500
-                }
-              }}
-            >
-              <Typography variant="body2">
-                <strong>Horarios de atención:</strong><br />
-                • Lunes a Viernes: 14:00 - 22:00<br />
-                • Fines de semana y feriados: 10:00 - 22:00
-              </Typography>
-            </Alert>
-          )}
-
           {/* Indicador de carga para horarios */}
           {loadingTimes && (
             <Alert 
@@ -1137,11 +1043,8 @@ const KartBookingForm = () => {
 
           {/* Help Section */}
           <Box sx={{ mt: 6, textAlign: 'center', p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid #E2E8F0' }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#5B21B6', fontWeight: 'bold' }}>
-              ¿Necesitas ayuda?
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#64748B' }}>
-              Contacta con nosotros: 📞 +56 9 72618375 | 📧 unique.bussiness@gmail.com
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              ¿Preguntas? Contacta con nosotros: unique.bussiness@gmail.com
             </Typography>
           </Box>
         </Paper>
