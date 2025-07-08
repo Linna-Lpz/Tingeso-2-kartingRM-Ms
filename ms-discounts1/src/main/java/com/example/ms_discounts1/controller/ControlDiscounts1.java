@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/discounts1")
-@CrossOrigin(origins = "*")
+
 public class ControlDiscounts1 {
 
     private final ServiceDiscounts1 serviceDiscounts1;

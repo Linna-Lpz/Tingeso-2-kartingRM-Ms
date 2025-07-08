@@ -12,7 +12,7 @@ import com.example.ms_rack.service.ServiceRack;
 
 @RestController
 @RequestMapping("/rack")
-@CrossOrigin(origins = "*")
+
 public class ControlRack {
 
     private final ServiceRack serviceRack;

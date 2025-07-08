@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/voucher")
-@CrossOrigin(origins = "*")
+
 public class ControlVoucher {
 
     private final ServiceVoucher serviceVoucher;
