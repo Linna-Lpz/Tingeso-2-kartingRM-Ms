@@ -40,12 +40,10 @@ public class ServiceClient {
      * @return Cliente encontrado o null si no existe
      */
     public EntityClient getClientByRut(String clientRUT) {
-        System.out.println("Buscando cliente con RUT: " + clientRUT);
         EntityClient client = repoClient.findByClientRUT(clientRUT);
         if (client != null) {
             return client;
         } else {
-            System.out.println("Cliente no encontrado, intentando con formato estándar");
             String rutFormatted = convertRut(clientRUT);
             client = repoClient.findByClientRUT(rutFormatted);
             if (client != null) {

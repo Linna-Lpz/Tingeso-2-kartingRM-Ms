@@ -27,7 +27,7 @@ const ParticipantsSection = ({
   const REGEX_PATTERNS = {
     SPANISH_TEXT: /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
     RUT_CLEAN: /[^0-9Kk]/g,
-    RUT_VALIDATION: /^\d{7,8}-[\dKk]$/i,
+    RUT_VALIDATION: /^\d{7,8}-[\dK]$/i,
     EMAIL_VALIDATION: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   };
   // Función para formatear RUT automáticamente
@@ -103,11 +103,10 @@ const ParticipantsSection = ({
 
   // Función para buscar cliente por RUT
   const searchClientByRut = async (rut) => {
-    try {
       const response = await clientService.getClientByRut(rut);
       const client = response.data;
       
-      if (client && client.clientName && client.clientEmail) {
+      if (client?.clientName && client?.clientEmail) {
         // Separar nombre y apellido (asumiendo que vienen en clientName)
         const nameParts = client.clientName.trim().split(' ');
         const firstName = nameParts[0] || '';
@@ -122,10 +121,6 @@ const ParticipantsSection = ({
           email: client.clientEmail
         });
       }
-    } catch (error) {
-      // Si no encuentra el cliente, no hacer nada (silencioso)
-      console.log('Cliente no encontrado para RUT:', rut);
-    }
   };
 
   // Función para validar campos de texto (nombre y apellido)
@@ -234,7 +229,7 @@ const ParticipantsSection = ({
 
   // Configuraciones de los campos
   const fieldConfigs = [
-    { field: 'rut', label: 'RUT', placeholder: 'Formato 21021021-0', value: person.rut, onChange: handleRutChange, error: displayRutError, helperText: 'Ej: 12345678-9' },
+    { field: 'rut', label: 'RUT', placeholder: 'Formato 21021021-0', value: person.rut, onChange: handleRutChange, error: displayRutError, helperText: 'Ej: 21021021-0' },
     { field: 'name', label: 'Nombre', placeholder: 'Ej: Juan', value: person.name, onChange: handleNameChange, error: displayNameError, helperText: '' },
     { field: 'lastName', label: 'Apellido', placeholder: 'Ej: Pérez', value: person.lastName, onChange: handleLastNameChange, error: displayLastNameError, helperText: '' },
     { field: 'email', label: 'Email', placeholder: 'correo@ejemplo.com', value: person.email, onChange: handleEmailChange, error: displayEmailError, helperText: 'usuario@ejemplo.com', type: 'email' }

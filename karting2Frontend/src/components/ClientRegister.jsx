@@ -434,7 +434,7 @@ const ClientRegister = () => {
                 <TextField
                   fullWidth
                   label="RUT"
-                  placeholder="Ej: 12345678-9"
+                  placeholder="Ej: 21021021-0"
                   value={clientRUT}
                   onChange={handleRutChange}
                   required

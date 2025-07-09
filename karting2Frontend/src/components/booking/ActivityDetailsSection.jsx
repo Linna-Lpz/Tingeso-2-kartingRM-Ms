@@ -12,7 +12,6 @@ import {
   Paper,
   Chip
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
 const ActivityDetailsSection = ({ 
   lapsOrMaxTime, 
@@ -24,12 +23,6 @@ const ActivityDetailsSection = ({
   showOnlyPeople = false,
   showOnlyLaps = false
 }) => {
-  const navigate = useNavigate();
-
-  // Función para redirigir al registro de cliente
-  const handleRegisterClick = () => {
-    navigate('/clientRegister');
-  };
 
   // Definir opciones con precios
   const lapsOptions = [
