@@ -68,9 +68,9 @@ const KartBookingForm = () => {
 
   // Pasos del proceso (Nielsen: Visibilidad del estado del sistema)
   const steps = [
+    'Participantes',
     'Detalles de la actividad',
     'Fecha y hora',
-    'Participantes',
     'Confirmar reserva'
   ];
 
@@ -104,12 +104,12 @@ const KartBookingForm = () => {
   // Función para validar si se puede avanzar al siguiente paso
   const canProceedToNextStep = () => {
     switch (activeStep) {
-      case 0: // Detalles de la actividad
+      case 0: // Participantes
+        return people.length === numOfPeople && numOfPeople >= 1 && numOfPeople <= 15;
+      case 1: // Detalles de la actividad
         return lapsOrMaxTime && numOfPeople >= 1 && numOfPeople <= 15;
-      case 1: // Fecha y hora
+      case 2: // Fecha y hora
         return bookingDate && bookingTime;
-      case 2: // Participantes
-        return people.length === numOfPeople;
       case 3: // Confirmar reserva
         return true;
       default:
@@ -505,7 +505,7 @@ const KartBookingForm = () => {
                 <strong>N° de vueltas o tiempo máximo:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{lapsOrMaxTime}</span>
               </Typography>
               <Typography variant="body1" sx={{ color: '#1E293B' }}>
-                <strong>Cantidad de integrantes:</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{numOfPeople}</span>
+                <strong>Cantidad de :</strong> <span style={{ color: '#0EA5E9', fontWeight: 'bold' }}>{numOfPeople}</span>
               </Typography>
             </Box>
             
@@ -587,6 +587,35 @@ const KartBookingForm = () => {
     switch (activeStep) {
       case 0:
         return (
+          <Box>
+            <Typography variant="h6" gutterBottom>¿Cuántas personas asistirán?</Typography>
+            <ActivityDetailsSection
+              lapsOrMaxTime={lapsOrMaxTime}
+              numOfPeople={numOfPeople}
+              onLapsChange={handleLapsOrMaxTimeChange}
+              onPeopleChange={handleNumOfPeopleChange}
+              lapsError={lapsError}
+              peopleError={peopleError}
+              showOnlyPeople={true}
+            />
+            <Box sx={{ mt: 3 }}>
+              <ParticipantsSection
+                person={person}
+                people={people}
+                numOfPeople={numOfPeople}
+                onPersonChange={setPerson}
+                onAddPerson={addPerson}
+                onRemovePerson={removePerson}
+                rutError={rutError}
+                nameError={nameError}
+                lastNameError={lastNameError}
+                emailError={emailError}
+              />
+            </Box>
+          </Box>
+        );
+      case 1:
+        return (
           <ActivityDetailsSection
             lapsOrMaxTime={lapsOrMaxTime}
             numOfPeople={numOfPeople}
@@ -594,9 +623,10 @@ const KartBookingForm = () => {
             onPeopleChange={handleNumOfPeopleChange}
             lapsError={lapsError}
             peopleError={peopleError}
+            showOnlyLaps={true}
           />
         );
-      case 1:
+      case 2:
         return (
           <DateTimeSection
             bookingDate={bookingDate}
@@ -609,21 +639,6 @@ const KartBookingForm = () => {
             timeError={timeError}
             loadingTimes={loadingTimes}
             isHoliday={isHoliday}
-          />
-        );
-      case 2:
-        return (
-          <ParticipantsSection
-            person={person}
-            people={people}
-            numOfPeople={numOfPeople}
-            onPersonChange={setPerson}
-            onAddPerson={addPerson}
-            onRemovePerson={removePerson}
-            rutError={rutError}
-            nameError={nameError}
-            lastNameError={lastNameError}
-            emailError={emailError}
           />
         );
       case 3:

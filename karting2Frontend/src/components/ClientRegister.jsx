@@ -29,7 +29,7 @@ const ClientRegister = () => {
 
   // Función para formatear RUT automáticamente
   const formatRUT = (value) => {
-    let clean = value.replace(/[^0-9K]/g, '');
+    let clean = value.replace(/[^0-9Kk]/g, '');
     
     // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
     if (clean.length > 9) {
@@ -90,7 +90,7 @@ const ClientRegister = () => {
       calculatedDV = (11 - remainder).toString();
     }
     
-    if (dv !== calculatedDV) {
+    if (dv.toUpperCase() !== calculatedDV) {
       return 'RUT no es válido';
     }
     
@@ -212,7 +212,7 @@ const ClientRegister = () => {
       clientBirthday,
       visitsPerMonth
     };
-  
+
     try {
       const response = await clientService.saveClient(newClient);
       
@@ -229,6 +229,12 @@ const ClientRegister = () => {
       setSuccessMessage('Cliente creado con éxito!');
       console.log('Cliente creado:', response.data);
 
+      // Desplazar hacia arriba para mostrar el mensaje de éxito
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
     } catch (error) {
       console.error('Error al crear el cliente:', error);
       
@@ -244,6 +250,12 @@ const ClientRegister = () => {
       } else {
         setErrorMessage('Error de conexión. Por favor, intente nuevamente.');
       }
+
+      // También desplazar hacia arriba en caso de error
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     } finally {
       setLoading(false);
     }
@@ -316,23 +328,54 @@ const ClientRegister = () => {
           }}
         >
 
-        {/* Mensajes de estado con mejor visibilidad */}
+        {/* Mensajes de estado */}
         {successMessage && (
-          <Alert 
-            severity="success" 
-            sx={{ 
-              mb: 3,
-              '& .MuiAlert-icon': {
-                fontSize: '1.5rem'
-              },
-              fontWeight: 'medium',
-              borderRadius: 2,
-              background: 'linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%)',
-              border: '1px solid #16A34A'
-            }}
-          >
-            ✅ {successMessage}
-          </Alert>
+          <Box sx={{ mb: 3 }}>
+            <Alert 
+              severity="success" 
+              sx={{ 
+                mb: 2,
+                '& .MuiAlert-icon': {
+                  fontSize: '1.5rem'
+                },
+                fontWeight: 'medium',
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%)',
+                border: '1px solid #16A34A'
+              }}
+            >
+              ✅ {successMessage}
+            </Alert>
+            
+            {/* Botón de reserva */}
+            <Box sx={{ textAlign: 'center' }}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => window.location.href = '/kartBookingForm'}
+                sx={{
+                  background: 'linear-gradient(135deg, #5B21B6 0%, #1E3A8A 100%)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  py: 1.5,
+                  px: 4,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1.1rem',
+                  minWidth: 200,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #2E1065 0%, #1E40AF 100%)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 16px rgba(91, 33, 182, 0.3)'
+                  },
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 12px rgba(91, 33, 182, 0.2)'
+                }}
+              >
+                Reservar Ahora
+              </Button>
+            </Box>
+          </Box>
         )}
 
         {errorMessage && (

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Grid, TextField, IconButton, Paper, List, ListItem, ListItemText, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import clientService from '../../services/services.management';
 
 const ParticipantsSection = ({ 
   person, 
@@ -25,8 +26,8 @@ const ParticipantsSection = ({
 
   const REGEX_PATTERNS = {
     SPANISH_TEXT: /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-    RUT_CLEAN: /[^0-9K]/g,
-    RUT_VALIDATION: /^\d{7,8}-[\dK]$/,
+    RUT_CLEAN: /[^0-9Kk]/g,
+    RUT_VALIDATION: /^\d{7,8}-[\dKk]$/i,
     EMAIL_VALIDATION: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   };
   // Función para formatear RUT automáticamente
@@ -88,7 +89,7 @@ const ParticipantsSection = ({
     const [rutNumber, dv] = cleanRut.split('-');
     const calculatedDV = calculateRutDV(rutNumber);
     
-    if (dv !== calculatedDV) {
+    if (dv.toUpperCase() !== calculatedDV) {
       return ERROR_MESSAGES.INVALID_RUT;
     }
     
@@ -98,6 +99,33 @@ const ParticipantsSection = ({
     }
     
     return '';
+  };
+
+  // Función para buscar cliente por RUT
+  const searchClientByRut = async (rut) => {
+    try {
+      const response = await clientService.getClientByRut(rut);
+      const client = response.data;
+      
+      if (client && client.clientName && client.clientEmail) {
+        // Separar nombre y apellido (asumiendo que vienen en clientName)
+        const nameParts = client.clientName.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
+        // Actualizar los campos automáticamente
+        onPersonChange({
+          ...person,
+          rut: rut,
+          name: firstName,
+          lastName: lastName,
+          email: client.clientEmail
+        });
+      }
+    } catch (error) {
+      // Si no encuentra el cliente, no hacer nada (silencioso)
+      console.log('Cliente no encontrado para RUT:', rut);
+    }
   };
 
   // Función para validar campos de texto (nombre y apellido)
@@ -159,9 +187,18 @@ const ParticipantsSection = ({
   };
 
   // Validación en tiempo real
-  const handleRutChange = (e) => {
+  const handleRutChange = async (e) => {
     const formattedRut = formatRUT(e.target.value);
     onPersonChange({ ...person, rut: formattedRut });
+    
+    // Si el RUT está completo y es válido, buscar el cliente
+    if (formattedRut.length >= 9) {
+      const rutError = validateRUTRealTime(formattedRut);
+      if (!rutError) {
+        // RUT válido, buscar cliente
+        await searchClientByRut(formattedRut);
+      }
+    }
   };
 
   const handleNameChange = handleTextFieldChange('name', REGEX_PATTERNS.SPANISH_TEXT);
@@ -213,7 +250,29 @@ const ParticipantsSection = ({
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>Ingresa los datos de cada integrante</Typography>
+      <Typography 
+        variant="subtitle1" 
+        gutterBottom 
+        sx={{
+          backgroundColor: '#f0f9ff',
+          border: '2px solid #bfdbfe',
+          borderRadius: 2,
+          padding: 2,
+          textAlign: 'center',
+          fontWeight: 'medium',
+          color: '#1e40af',
+          mb: 3,
+          '&::before': {
+            display: 'inline-block',
+            marginRight: 1,
+            fontSize: '1.2em'
+          }
+        }}
+      >
+        Necesitamos tu RUT para confirmar que eres una persona y tu correo para enviar el comprobante de reserva
+      </Typography>
+
+      <Typography variant="h6" gutterBottom>Ingresa los datos de quienes asistirán</Typography>
 
       {/* Recuadro para mostrar participantes restantes */}
       <Paper sx={{ p: 2, mb: 2, bgcolor: people.length === numOfPeople ? '#f1f8e9' : '#f8f9fa', border: '1px solid #e0e0e0' }}>

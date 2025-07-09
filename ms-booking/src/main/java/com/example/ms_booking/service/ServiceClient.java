@@ -22,11 +22,14 @@ public class ServiceClient {
      * @param client Cliente a crear
      */
     public void saveClient(EntityClient client) {
+        String rut = convertRut(client.getClientRUT());
+
         if (validateRut(client.getClientRUT()) &&
             validateName(client.getClientName()) &&
             validateBirthday(client.getClientBirthday()) &&
             validateEmail(client.getClientEmail())) {
             client.setVisitsPerMonth(0);
+
             repoClient.save(client);
         }
     }
@@ -41,8 +44,32 @@ public class ServiceClient {
         if (client != null) {
             return client;
         } else {
-            throw new ClientValidationException("El cliente no está registrado");
+            String rutFormatted = convertRut(clientRUT);
+            client = repoClient.findByClientRUT(rutFormatted);
+            if (client != null) {
+                return client;
+            } else {
+                throw new ClientValidationException("El cliente no está registrado");
+            }
+
         }
+    }
+
+    /**
+     * Método para convertir el dígito verificador de un RUT a mayúscula
+     * @param clientRUT RUT del cliente a convertir
+     * @return RUT en formato estándar (sin puntos y con guion)
+     */
+    public String convertRut(String clientRUT) {
+        if (clientRUT != null && clientRUT.contains("-")) {
+            String[] parts = clientRUT.split("-");
+            if (parts.length == 2) {
+                String dv = parts[1].toUpperCase();
+                clientRUT = parts[0] + "-" + dv;
+                return clientRUT;
+            }
+        }
+        return "";
     }
 
     /**
@@ -104,8 +131,8 @@ public class ServiceClient {
         }
 
         // Validar que el nombre no contenga números
-        if (!clientName.matches("[a-zA-Z ]+")) {
-            throw new ClientValidationException("El nombre no debe contener números");
+        if (!clientName.matches("[a-zA-ZáéíóúüÁÉÍÓÚÜñÑ ]+")) {
+            throw new ClientValidationException("El nombre no debe contener números ni caracteres especiales");
         }
         return true;
     }

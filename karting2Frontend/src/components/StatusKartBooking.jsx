@@ -206,7 +206,7 @@ const StatusKartBooking = () => {
 
   // Función para formatear RUT automáticamente
   const formatRUT = (value) => {
-    let clean = value.replace(/[^0-9K]/g, '');
+    let clean = value.replace(/[^0-9Kk]/g, '');
     
     // Limitar a máximo 9 caracteres (8 dígitos + 1 dígito verificador)
     if (clean.length > 9) {
