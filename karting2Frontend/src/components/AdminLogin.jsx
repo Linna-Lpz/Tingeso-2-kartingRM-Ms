@@ -52,7 +52,7 @@ const AdminLogin = () => {
         // Guardar en localStorage para mantener la sesión
         localStorage.setItem('adminEmail', email.toLowerCase().trim());
       } else {
-        setError('Correo electrónico no autorizado. Solo administradores pueden acceder.');
+        setError('Correo electrónico no autorizado. Solo para administradores admin@admin.cl');
       }
       setLoading(false);
     }, 1000);
@@ -380,7 +380,6 @@ const AdminLogin = () => {
                 placeholder="admin@admin.cl"
                 required
                 error={!!error}
-                helperText={error || "Ingrese el correo electrónico autorizado admin@admin.cl"}
                 sx={{ 
                   '& .MuiFormLabel-root.Mui-focused': { color: '#5B21B6' },
                   '& .MuiOutlinedInput-root': {
@@ -392,20 +391,6 @@ const AdminLogin = () => {
                 }}
               />
             </Box>
-
-            {error && (
-              <Alert 
-                severity="error" 
-                sx={{ 
-                  mb: 3,
-                  borderRadius: 2,
-                  background: 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)',
-                  border: '1px solid #EF4444'
-                }}
-              >
-                {error}
-              </Alert>
-            )}
 
             <Button
               type="submit"

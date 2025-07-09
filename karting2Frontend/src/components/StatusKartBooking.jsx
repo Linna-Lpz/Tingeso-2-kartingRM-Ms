@@ -124,7 +124,9 @@ const StatusKartBooking = () => {
     setError(null);
 
     try {
-      const response = await bookingService.getBookingByUserRut(rut);
+      // Convertir dígito verificador a mayúsculas antes de buscar
+      const normalizedRut = rut.toUpperCase();
+      const response = await bookingService.getBookingByUserRut(normalizedRut);
       setBookings(response.data);
       
       if (response.data.length === 0) {
